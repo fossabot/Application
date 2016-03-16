@@ -1,10 +1,20 @@
 import unittest
 
+from Application import Application
+from controller.CurrentController import CurrentController
+
 class CurrentControllerTest(unittest.TestCase):
     application = None
     controller = None
 
+    @classmethod
+    def setUpClass(cls):
+        cls.application = Application()
+        print("Loaded Application")
+
     def setUp(self):
+        self.controller = CurrentControllerTest.application.controller(CurrentController)
+
         self.controller.setBank(0)
         self.controller.setPatch(0)
         
