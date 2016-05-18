@@ -23,7 +23,7 @@ class BankDao:
         
         for file in glob.glob(dataPath + "*.json"):
             bank = Bank(DataBank.read(file))
-            banks.append(bank)
+            banks.insert(bank.data["index"], bank)
         
         return banks
 

@@ -13,8 +13,13 @@ class Banks:
     def __getitem__(self, index):
         return self.get(index)
 
+    def __delitem__(self, index):
+        try:
+            del self.banks[index]
+        except IndexError:
+            raise IndexError("Element not found")
+
     def get(self, index):
-        hasBank = len(self.banks) >= index+1
         try:
             return self.banks[index]
         except IndexError:
@@ -22,6 +27,12 @@ class Banks:
     
     def append(self, bank):
         self.banks.append(bank)
+    
+    def insert(self, index, bank):
+        self.banks.insert(index, bank)
+
+    def delete(self, index):
+        del self.banks[index]
         
     @property
     def json(self):

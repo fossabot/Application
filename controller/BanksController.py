@@ -29,9 +29,12 @@ class BanksController(Controller):
         bank.addEffect(indexPatch, effect)
         return len(bank.getEffects(indexPatch)) - 1
     
-    '''
-    Isso aqui eh usado aonde?
     def update(self, data, value):
+        print("BanksController: Chamar internamente DeviceController para atualizar estado do dispositivo")
         data.clear()
         data.update(value)
-    '''
+        
+    def delete(self, bank):
+        self.banks.delete(bank.data["index"])
+
+        
