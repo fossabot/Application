@@ -16,11 +16,24 @@ class BanksController(Controller):
     Data CRUD
     ***********************************
     '''
-    def createBank(self, banks, bank):
+    def createBank(self, bank):
+        index = self.getNextBankIndex()
+
+        bank["index"] = index
+
         bank = Bank(bank)
-        banks.append(bank)
-        return len(banks) - 1
+        self.banks.append(bank)
+
+        return index
     
+    @privatemethod
+    def getNextBankIndex(self):
+        try:
+            lastBank = self.banks[len(self.banks) - 1]
+            return lastBank.data["index"] + 1
+        except IndexError as error:
+            return 0
+
     def createPatch(self, bank, patch):
         bank.addPatch(patch)
         return len(bank.patches) - 1
@@ -29,10 +42,12 @@ class BanksController(Controller):
         bank.addEffect(indexPatch, effect)
         return len(bank.getEffects(indexPatch)) - 1
     
-    def update(self, data, value):
+    def updateBank(self, bank, data):
+        index = bank.data["index"]
+        bank.json.clear()
+        bank.json.update(data)
+        bank.json["index"] = index
         print("BanksController: Chamar internamente DeviceController para atualizar estado do dispositivo")
-        data.clear()
-        data.update(value)
         
     def delete(self, bank):
         self.banks.delete(bank.data["index"])
