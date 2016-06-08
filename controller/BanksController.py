@@ -9,18 +9,34 @@ class BanksController(Controller):
     banks = []
 
     def configure(self):
-        self.banks = self.app.dao(BankDao).all
+        self.dao = self.app.dao(BankDao)
+        self.banks = self.dao.all
 
     '''
     ***********************************
     Data CRUD
     ***********************************
     '''
-    def createBank(self, banks, bank):
+    def createBank(self, bank):
+        index = self.getNextBankIndex()
+
+        bank["index"] = index
+
         bank = Bank(bank)
-        banks.append(bank)
-        return len(banks) - 1
+        self.banks.append(bank)
+        
+        self.dao.save(bank)
+
+        return index
     
+    @privatemethod
+    def getNextBankIndex(self):
+        try:
+            lastBank = self.banks[len(self.banks) - 1]
+            return lastBank.data["index"] + 1
+        except IndexError as error:
+            return 0
+
     def createPatch(self, bank, patch):
         bank.addPatch(patch)
         return len(bank.patches) - 1
@@ -29,9 +45,20 @@ class BanksController(Controller):
         bank.addEffect(indexPatch, effect)
         return len(bank.getEffects(indexPatch)) - 1
     
-    '''
-    Isso aqui eh usado aonde?
-    def update(self, data, value):
-        data.clear()
-        data.update(value)
-    '''
+    def updateBank(self, bank, data):
+        self.dao.delete(bank)
+        
+        index = bank.data["index"]
+        bank.json.clear()
+        bank.json.update(data)
+        bank.json["index"] = index
+        
+        self.dao.save(bank)
+
+        print("BanksController: Chamar internamente DeviceController para atualizar estado do dispositivo")
+        
+    def delete(self, bank):
+        self.banks.delete(bank.data["index"])
+        self.dao.delete(bank)
+
+        

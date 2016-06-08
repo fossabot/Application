@@ -33,7 +33,7 @@ class CurrentController(Controller):
     def setEffectParam(self, effectNumber, param):
         effect = self.getEffect(effectNumber)
 
-        self.deviceController.setEffectParam(effectNumber)
+        self.deviceController.setEffectParam(effectNumber, param)
         self.saveCurrent()
 
     @privatemethod

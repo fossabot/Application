@@ -5,6 +5,7 @@ class Extractor:
     def extract(self, file):
         stringPorts = self.stringPortsOf(file)
         
+        self.getName(file)
         data = {
             "ports":{}
         }
@@ -14,6 +15,12 @@ class Extractor:
             data["ports"][port["Name"]] = port
         
         return data
+
+    def getName(self, file):
+        # Um ou mais \t seguido de palavras seguido de : seguido do que vier ate o fim da linha
+        #regex = r"\t{1,}((([A-Za-z])\w+|[0-9])(\s)?)+:.+"
+        regex = r"\t{1,}((([A-Za-z])\w+|[0-9])(\s)?)+:.+"
+        print(re.search(regex, file, re.MULTILINE).groups()) #paramRegex.exec(line)
 
     def stringPortsOf(self, file):
         ports = []
@@ -103,11 +110,18 @@ class Lv2Library:
 
         for lv2Plugin in getPlugins():
             try:
-                self.plugins[lv2Plugin] = extractor.extract(getPluginInfo(lv2Plugin))
+                plugin = {
+                    'uri': lv2Plugin,
+                    'data': extractor.extract(getPluginInfo(lv2Plugin))
+                }
+
+                self.plugins[lv2Plugin] = plugin
+
             except Exception as e:
                 self.errors.append(lv2Plugin)
+            break
 
 if __name__ == "__main__":
     lib = Lv2Library()
     print(lib.plugins.keys())
-    print(lib.plugins["http://guitarix.sourceforge.net/plugins/gx_studiopre_st#studiopre_st"])
+    #print(lib.plugins["http://guitarix.sourceforge.net/plugins/gx_studiopre_st#studiopre_st"])

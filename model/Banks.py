@@ -1,3 +1,5 @@
+from architecture.privatemethod import privatemethod
+
 class Banks:
     banks = []
     
@@ -11,18 +13,36 @@ class Banks:
         return len(self.banks)
     
     def __getitem__(self, index):
-        return self.get(index)
+        return self.banks[index]
 
-    def get(self, index):
-        hasBank = len(self.banks) >= index+1
+    def __delitem__(self, index):
         try:
-            return self.banks[index]
+            del self.banks[index]
         except IndexError:
             raise IndexError("Element not found")
-    
+
+    def getById(self, index):
+        return self.banks[self.getPositionByIndex(index)]
+
+    @privatemethod
+    def getPositionByIndex(self, index):
+        id = 0
+        for bank in self.banks:
+            if bank.data["index"] == index:
+                return id
+            id += 1
+
+        raise IndexError("Element not found")
+
     def append(self, bank):
         self.banks.append(bank)
-        
+    
+    def insert(self, index, bank):
+        self.banks.insert(index, bank)
+
+    def delete(self, index):
+        del self.banks[self.getPositionByIndex(index)]
+
     @property
     def json(self):
         banks = []

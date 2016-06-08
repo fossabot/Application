@@ -17,21 +17,25 @@ class BankDao:
     def all(self):
         return self.readBanks(self.dataPath)
         
-    #@privatemethod
+    @privatemethod
     def readBanks(self, dataPath):
         banks = Banks([])
         
         for file in glob.glob(dataPath + "*.json"):
             bank = Bank(DataBank.read(file))
-            banks.append(bank)
+            banks.insert(bank.data["index"], bank)
         
         return banks
 
-    '''
-    def saveBank(self, bank):
-        url = self.dataPath + "/" + bank.name + ".json"
-        DataBank.save(url, bank)
-    '''
+    def save(self, bank):
+        DataBank.save(self.url(bank), bank.json)
+
+    def delete(self, bank):
+        DataBank.delete(self.url(bank))
+
+    @privatemethod
+    def url(self, bank):
+        return self.dataPath + "/" + bank.data["name"] + ".json"
 
     '''
     @my_attribute.setter
