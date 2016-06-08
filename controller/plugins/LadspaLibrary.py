@@ -1,0 +1,2 @@
+class LadspaLibrary:
+    plugins = {}

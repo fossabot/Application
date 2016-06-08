@@ -9,7 +9,8 @@ class BanksController(Controller):
     banks = []
 
     def configure(self):
-        self.banks = self.app.dao(BankDao).all
+        self.dao = self.app.dao(BankDao)
+        self.banks = self.dao.all
 
     '''
     ***********************************
@@ -23,6 +24,8 @@ class BanksController(Controller):
 
         bank = Bank(bank)
         self.banks.append(bank)
+        
+        self.dao.save(bank)
 
         return index
     
@@ -43,13 +46,19 @@ class BanksController(Controller):
         return len(bank.getEffects(indexPatch)) - 1
     
     def updateBank(self, bank, data):
+        self.dao.delete(bank)
+        
         index = bank.data["index"]
         bank.json.clear()
         bank.json.update(data)
         bank.json["index"] = index
+        
+        self.dao.save(bank)
+
         print("BanksController: Chamar internamente DeviceController para atualizar estado do dispositivo")
         
     def delete(self, bank):
         self.banks.delete(bank.data["index"])
+        self.dao.delete(bank)
 
         
