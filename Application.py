@@ -9,12 +9,17 @@ class Application:
 
     def __init__(self, dataPatch="data/"):
         self.dataPatch = dataPatch
-        controllers = [BanksController, CurrentController, DeviceController, PluginsController]
+        controllers = [
+            BanksController,
+            CurrentController,
+            DeviceController,
+            PluginsController
+        ]
 
         for controller in controllers:
             self.controllers[controller.__name__] = controller(self)
 
-        for controller in self.controllers.values():
+        for controller in list(self.controllers.values()):
             controller.configure()
 
     def dao(self, dao):

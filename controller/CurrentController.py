@@ -2,21 +2,31 @@ from architecture.privatemethod import privatemethod
 
 from controller.Controller import Controller
 from controller.BanksController import BanksController
-from controller.PluginsController import PluginsController
 from controller.DeviceController import DeviceController
 
 from dao.CurrentDao import CurrentDao
 
+
 class CurrentController(Controller):
-    bank = 0
-    patch = 0
+    bankNumber = 0
+    patchNumber = 0
 
     def configure(self):
         data = self.app.dao(CurrentDao).load()
-        self.bank = data["bank"]
-        self.patch = data["patch"]
-        
+        self.bankNumber = data["bank"]
+        self.patchNumber = data["patch"]
+
         self.deviceController = self.app.controller(DeviceController)
+        self.banksController = self.app.controller(BanksController)
+
+    '''
+    ************************
+    Persistance
+    ************************
+    '''
+    @privatemethod
+    def saveCurrent(self):
+        print("Necessary implments: SAVING", self.bank)
 
     '''
     ************************
@@ -24,64 +34,64 @@ class CurrentController(Controller):
     ************************
     '''
     def toggleStatusEffect(self, effectNumber):
-        effect = self.getEffect(effectNumber)
+        effect = self.getEffectOfCurrentPatch(effectNumber)
         effect["active"] = not effect["active"]
 
         self.deviceController.toggleStatusEffect(effectNumber)
         self.saveCurrent()
-    
-    def setEffectParam(self, effectNumber, param):
-        effect = self.getEffect(effectNumber)
 
+    def setEffectParam(self, effectNumber, param):
         self.deviceController.setEffectParam(effectNumber, param)
         self.saveCurrent()
 
-    @privatemethod
-    def getEffect(self, effectNumber):
+    '''
+    ************************
+    Get of Current
+    ************************
+    '''
+    def getEffectOfCurrentPatch(self, effectNumber):
         patch = self.getCurrentPatch()
         try:
             return patch["effects"][effectNumber]
         except IndexError:
             raise IndexError("Element not found")
-        
-    '''
-    ************************
-    Current Patch/Bank
-    ************************
-    '''
-    def setPatch(self, patch):
-        if self.patch == patch:
-            return
-        self.setCurrent(self.bank, patch)
 
-    def setBank(self, bank):
-        if self.bank == bank:
-            return
-        self.setCurrent(bank, 0)
-
-    @privatemethod
-    def setCurrent(self, bank, patch):
-        self.loadDevicePatch(bank, patch) #throwable. need be first
-        self.bank = bank
-        self.patch = patch
-        self.saveCurrent()
-        
-    @privatemethod
-    def saveCurrent(self):
-        print("saving:", self.bank)
-
-    @privatemethod
-    def loadDevicePatch(self, bank, patch):
-        patch = self.getPatch(bank, patch)
-        self.deviceController.setPatch(patch)
-    
-    @privatemethod
     def getCurrentPatch(self):
-        return self.getPatch(self.bank, self.patch)
-    
+        return self.getCurrentBank().getPatch(self.patchNumber)
+
+    def getCurrentBank(self):
+        return self.banksController.banks[self.bankNumber]
+
+    '''
+    ************************
+    Set Current Patch/Bank
+    ************************
+    '''
+    def setPatch(self, patchNumber):
+        if self.patchNumber == patchNumber:
+            return
+
+        self.setCurrent(self.bank, patchNumber)
+
+    def setBank(self, bankNumber):
+        if self.bankNumber == bankNumber:
+            return
+
+        self.setCurrent(bankNumber, 0)
+
     @privatemethod
-    def getPatch(self, bank, patch):
-        banksController = self.app.controller(BanksController)
-        
-        bank = banksController.banks[bank]
-        return bank.getPatch(patch)
+    def setCurrent(self, bankNumber, patchNumber):
+        self.loadDevicePatch(  # throwable. need be first
+            bankNumber,
+            patchNumber
+        )
+        self.bankNumber = bankNumber
+        self.patchNumber = patchNumber
+        self.saveCurrent()
+
+    @privatemethod
+    def loadDevicePatch(self, bankNumber, patchNumber):
+        bank = self.banksController.banks[bankNumber]
+        patch = bank.getPatch(patchNumber)
+
+        self.deviceController.loadPatch(patch)

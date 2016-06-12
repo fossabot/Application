@@ -1,2 +1,1 @@
-__author__ = 'SrMouraSilva'
-#To change this template use Tools | Templates.
+# -*- coding: utf-8 -*-

@@ -1,17 +1,18 @@
 from architecture.privatemethod import privatemethod
 
+
 class Banks:
     banks = []
-    
+
     '''
     @param banksList = List[Bank]
     '''
     def __init__(self, banksList):
         self.banks = banksList
-    
+
     def __len__(self):
         return len(self.banks)
-    
+
     def __getitem__(self, index):
         return self.banks[index]
 
@@ -26,17 +27,17 @@ class Banks:
 
     @privatemethod
     def getPositionByIndex(self, index):
-        id = 0
+        position = 0
         for bank in self.banks:
             if bank.data["index"] == index:
-                return id
-            id += 1
+                return position
+            position += 1
 
         raise IndexError("Element not found")
 
     def append(self, bank):
         self.banks.append(bank)
-    
+
     def insert(self, index, bank):
         self.banks.insert(index, bank)
 

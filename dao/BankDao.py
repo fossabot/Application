@@ -1,4 +1,3 @@
-import json
 import glob
 
 from dao.DataBank import DataBank
@@ -9,22 +8,22 @@ from model.Banks import Banks
 
 class BankDao:
     dataPath = ""
-    
+
     def __init__(self, dataPath):
         self.dataPath = dataPath + 'banks/'
-    
+
     @property
     def all(self):
         return self.readBanks(self.dataPath)
-        
+
     @privatemethod
     def readBanks(self, dataPath):
         banks = Banks([])
-        
+
         for file in glob.glob(dataPath + "*.json"):
             bank = Bank(DataBank.read(file))
             banks.insert(bank.data["index"], bank)
-        
+
         return banks
 
     def save(self, bank):
