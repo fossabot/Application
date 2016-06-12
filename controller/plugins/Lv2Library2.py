@@ -1,7 +1,8 @@
 from os import listdir
 from os.path import isfile, join
-    
-from rdfmodel.lv2 import Bundle
+
+from .rdfmodel.lv2 import Bundle
+
 
 class Lv2Library2:
     plugins = {}
@@ -31,4 +32,5 @@ class Lv2Library2:
         return plugins
 
 if __name__ == "__main__":
-    Lv2Library2()
+    lib = Lv2Library2()
+    print(lib.plugins)

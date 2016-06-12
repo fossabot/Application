@@ -1,19 +1,19 @@
-import commands
+import subprocess
 import re
 
 class Extractor:
     def extract(self, file):
         stringPorts = self.stringPortsOf(file)
-        
+
         self.getName(file)
         data = {
             "ports":{}
         }
-        
+
         for stringPort in stringPorts:
             port = self.extractJsonOf(stringPort)
             data["ports"][port["Name"]] = port
-        
+
         return data
 
     def getName(self, file):
@@ -33,7 +33,7 @@ class Extractor:
 
     def isPort(self, possiblePort):
         return "Type:" in possiblePort
-    
+
     def extractJsonOf(self, stringParam):
         params = {}
         lines = stringParam.split("\n")
@@ -77,9 +77,9 @@ class Extractor:
                     params[paramName].append(line)
 
         return params
-    
+
     def multipleLineParamValueDefault(self, param, isSubObject):
-        isTypeSubobject = param == None and isSubObject
+        isTypeSubobject = param is None and isSubObject
         isTypeList = type(param) is str
 
         if isTypeSubobject:
@@ -93,7 +93,8 @@ class Extractor:
 
 
 def execute(command):
-    return commands.getstatusoutput(command)[1]
+    #return commands.getstatusoutput(command)[1]
+    return subprocess.call(command)
 
 def getPlugins():
     return execute("lv2ls").split("\n")
@@ -104,7 +105,7 @@ def getPluginInfo(lv2Plugin):
 class Lv2Library:
     plugins = {}
     errors = []
-    
+
     def __init__(self):
         extractor = Extractor()
 
