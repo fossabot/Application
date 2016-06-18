@@ -6,7 +6,8 @@ python:
 sudo: required
 
 install:
-  - pip install coveralls
+  - sudo apt-get install guitarix
+  - pip3 install coveralls
 
 script:
   - coverage run --source=. setup.py test
