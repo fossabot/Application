@@ -4,12 +4,11 @@ from util.ModHostBinding.Host import Host
 from util.ModHostBinding.plugin.Lv2Plugin import Lv2Plugin
 
 
-'''
-Changes in the device (mod-host)
-'''
-
-
 class DeviceController(Controller):
+    '''
+    Changes in the device (mod-host)
+    '''
+
     currentPatch = {'plugins': []}
     host = None
 
@@ -36,4 +35,4 @@ class DeviceController(Controller):
         print("Toggle status effect number:", effect)
 
     def setEffectParam(self, effect, param):
-        print("Toggle status effect number:", effect)
+        print("Toggle status effect number:", effect, param)

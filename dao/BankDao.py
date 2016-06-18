@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import glob
 
 from dao.DataBank import DataBank
@@ -6,7 +7,8 @@ from architecture.privatemethod import privatemethod
 from model.Bank import Bank
 from model.Banks import Banks
 
-class BankDao:
+
+class BankDao(object):
     dataPath = ""
 
     def __init__(self, dataPath):
@@ -35,11 +37,3 @@ class BankDao:
     @privatemethod
     def url(self, bank):
         return self.dataPath + "/" + bank.data["name"] + ".json"
-
-    '''
-    @my_attribute.setter
-    def my_attribute(self, value):
-        # Do something if you want
-        self._my_attribute = value
-    '''
-

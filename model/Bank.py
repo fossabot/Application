@@ -1,17 +1,16 @@
+# -*- coding: utf-8 -*-
 from architecture.privatemethod import privatemethod
 
 
-class Bank:
+class Bank(object):
     data = {}
 
     def __init__(self, data):
         self.data = data
 
-    '''
-    ==================================
-    Property
-    ==================================
-    '''
+    # ==================================
+    # Property
+    # ==================================
 
     @property
     def json(self):
@@ -25,11 +24,9 @@ class Bank:
     def patches(self):
         return self.data["patches"]
 
-    '''
-    ==================================
-    Facade
-    ==================================
-    '''
+    # ==================================
+    # Facade
+    # ==================================
 
     def getParam(self, patch, effect, param):
         params = self.getParams(patch, effect)
@@ -55,9 +52,9 @@ class Bank:
     def addPatch(self, patch):
         self.patches.append(patch)
 
-    '''==================================
-    Private
-    =================================='''
+    # ==================================
+    # Private
+    # ==================================
 
     @privatemethod
     def get(self, collection, index):

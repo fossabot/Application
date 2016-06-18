@@ -1,7 +1,7 @@
 from architecture.privatemethod import privatemethod
 
 
-class Banks:
+class Banks(object):
     banks = []
 
     '''
