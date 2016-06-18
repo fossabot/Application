@@ -20,11 +20,11 @@ class BankDao(object):
 
     @privatemethod
     def readBanks(self, dataPath):
-        banks = Banks([])
+        banks = Banks()
 
         for file in glob.glob(dataPath + "*.json"):
             bank = Bank(DataBank.read(file))
-            banks.insert(bank.data["index"], bank)
+            banks.append(bank)
 
         return banks
 

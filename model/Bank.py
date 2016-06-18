@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from architecture.privatemethod import privatemethod
+from architecture.BankError import BankError
 
 
 class Bank(object):
@@ -7,6 +8,13 @@ class Bank(object):
 
     def __init__(self, data):
         self.data = data
+        self.validate(data)
+
+    def validate(self, data):
+        if 'patches' not in data:
+            raise BankError('invalid bank structure')
+        elif len(data['patches']) == 0:
+            raise BankError('Bank no contains any patch')
 
     # ==================================
     # Property
@@ -23,6 +31,17 @@ class Bank(object):
     @property
     def patches(self):
         return self.data["patches"]
+
+    @property
+    def index(self):
+        try:
+            return self.data["index"]
+        except:
+            return -1
+
+    @index.setter
+    def index(self, value):
+        self.data["index"] = value
 
     # ==================================
     # Facade

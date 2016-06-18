@@ -1,53 +1,49 @@
-from architecture.privatemethod import privatemethod
+# -*- coding: utf-8 -*-
 
 
 class Banks(object):
-    banks = []
+    index = 0
+    banks = {}
 
-    '''
-    @param banksList = List[Bank]
-    '''
-    def __init__(self, banksList):
-        self.banks = banksList
+    def __init__(self):
+        self.banks = {}
+
+    @property
+    def json(self):
+        banks = []
+        for bank in list(self.banks):
+            banks.append(bank.data)
+
+        return banks
+
+    @property
+    def all(self):
+        return sorted(list(self.banks), key=lambda bank: bank.index)
 
     def __len__(self):
         return len(self.banks)
 
     def __getitem__(self, index):
-        return self.banks[index]
+        try:
+            return self.banks[index]
+        except KeyError:
+            raise IndexError("Bank not found")
 
     def __delitem__(self, index):
         try:
             del self.banks[index]
         except IndexError:
-            raise IndexError("Element not found")
-
-    def getById(self, index):
-        return self.banks[self.getPositionByIndex(index)]
-
-    @privatemethod
-    def getPositionByIndex(self, index):
-        position = 0
-        for bank in self.banks:
-            if bank.data["index"] == index:
-                return position
-            position += 1
-
-        raise IndexError("Element not found")
+            raise IndexError("Bank not found")
 
     def append(self, bank):
-        self.banks.append(bank)
+        if bank.index == -1:
+            bank.index = self.index
+            self.index = bank.index + 1
 
-    def insert(self, index, bank):
-        self.banks.insert(index, bank)
+        elif bank.index >= self.index:
+            self.index = bank.index + 1
 
-    def delete(self, index):
-        del self.banks[self.getPositionByIndex(index)]
+        self.banks[bank.index] = bank
 
-    @property
-    def json(self):
-        banks = []
-        for bank in self.banks:
-            banks.append(bank.data)
-
-        return banks
+    #def insert(self, index, bank):
+    #    self.banks.insert(index, bank)

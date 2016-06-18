@@ -16,20 +16,20 @@ class DeviceController(Controller):
         self.host = Host()
 
     def loadPatch(self, patch):
-        print("Removing plugins")
+        #print("Removing plugins")
         for plugin in self.currentPatch['plugins']:
             self.host.remove(plugin)
 
         self.currentPatch = {'plugins': []}
         self.currentPatch['data'] = patch
 
-        print("Loading effects", patch["effects"])
+        #print("Loading effects", patch["effects"])
         for effect in patch['effects']:
             plugin = Lv2Plugin(effect)
             self.host.add(plugin)
             self.currentPatch['plugins'].append(plugin)
 
-        print("connecting", patch["connections"])
+        #print("connecting", patch["connections"])
 
     def toggleStatusEffect(self, effect):
         print("Toggle status effect number:", effect)

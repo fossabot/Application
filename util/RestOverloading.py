@@ -4,7 +4,7 @@ Registro = {}
 def register(className):
     def decorator(method):
         #print("Registred:", method.__name__)
-        if not className in Registro:
+        if className not in Registro:
             Registro[className] = {"methods" : {}}
 
         Registro[className]["methods"][method.__name__] = {}

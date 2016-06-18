@@ -1,5 +1,4 @@
 from dao.BankDao import BankDao
-from architecture.privatemethod import privatemethod
 
 from model.Bank import Bank
 
@@ -10,7 +9,7 @@ class BanksController(Controller):
     '''
     For get bank/patch/effect of patch/param, use self.banks
     '''
-    banks = []
+    banks = None
 
     def configure(self):
         self.dao = self.app.dao(BankDao)
@@ -24,25 +23,12 @@ class BanksController(Controller):
     # Data CRUD
     # ***********************************
     def createBank(self, bank):
-        index = self.getNextBankIndex()
+        bankModel = Bank(bank)
 
-        bank["index"] = index
+        self.banks.append(bankModel)
+        self.dao.save(bankModel)
 
-        bank = Bank(bank)
-        self.banks.append(bank)
-
-        self.dao.save(bank)
-
-        self.currentController.setBank(index)
-        return index
-
-    @privatemethod
-    def getNextBankIndex(self):
-        try:
-            lastBank = self.banks[len(self.banks) - 1]
-            return lastBank.data["index"] + 1
-        except IndexError:
-            return 0
+        return bankModel.index
 
     def updateBank(self, bank, data):
         self.dao.delete(bank)

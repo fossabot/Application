@@ -1,1 +1,5 @@
-{"index": 2, "name": "Teste"}
+{"index": 2, "name": "Teste", "patches":[{
+                "name": "Decorator, a legend",
+                "effects": [],
+                "connections": []
+            }]}

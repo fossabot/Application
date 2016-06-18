@@ -2,8 +2,11 @@
 import unittest
 
 from Application import ApplicationSingleton
+
 from controller.BanksController import BanksController
 from controller.CurrentController import CurrentController
+
+from architecture.BankError import BankError
 
 
 class BanksControllerTest(unittest.TestCase):
@@ -27,12 +30,39 @@ class BanksControllerTest(unittest.TestCase):
         currentController.setBank(0)
         currentController.setPatch(0)
 
-    def test_all_banks(self):
-        self.assertIsNotNone(self.controller.banks.all)
-        self.assertNotEqual(0, len(self.controller.banks.all))
+    def test_load_banks(self):
+        self.assertIsNotNone(self.controller.banks)
+        self.assertNotEqual(0, len(self.controller.banks))
+
+    def test_create_bank_empty_patch(self):
+        totalBanks = len(self.controller.banks)
+        bank = {
+            "name": "test_create_bank_empty_patch",
+            "patches": []
+        }
+
+        with self.assertRaises(BankError):
+            self.controller.createBank(bank)
+
+        # Bank not added
+        self.assertEqual(totalBanks, len(self.controller.banks))
 
     def test_create_bank(self):
-        self.fail("Not implemented")
+        totalBanks = len(self.controller.banks)
+        bank = {
+            "name": "test_create_bank",
+            "patches": [{
+                "name": "Decorator, a legend",
+                "effects": [],
+                "connections": []
+            }]
+        }
+
+        index = self.controller.createBank(bank)
+        self.assertLess(totalBanks, len(self.controller.banks))
+
+        del self.controller.banks[index]
+        self.assertEqual(totalBanks, len(self.controller.banks))
 
     def test_update_bank(self):
         self.fail("Not implemented")
@@ -44,4 +74,20 @@ class BanksControllerTest(unittest.TestCase):
         self.fail("Not implemented")
 
     def test_delete_bank(self):
-        self.fail("Not implemented")
+        totalBanks = len(self.controller.banks)
+        bank = {
+            "name": "test_create_bank",
+            "patches": [{
+                "name": "Decorator, a legend",
+                "effects": [],
+                "connections": []
+            }]
+        }
+
+        # Added a bank
+        index = self.controller.createBank(bank)
+        self.assertLess(totalBanks, len(self.controller.banks))
+
+        # Delete a bank
+        del self.controller.banks[index]
+        self.assertEqual(totalBanks, len(self.controller.banks))
