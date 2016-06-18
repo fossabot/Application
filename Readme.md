@@ -1,6 +1,6 @@
 # PedalPi - Application
 
-[![Build Status](https://travis-ci.org/PedalPi/Application.svg?branch=master)](https://travis-ci.org/PedalPi/Application) [![Build Status](https://travis-ci.org/PedalPi/Application.svg?branch=master)](https://travis-ci.org/PedalPi/Application)
+[![Build Status](https://travis-ci.org/PedalPi/Application.svg?branch=master)](https://travis-ci.org/PedalPi/Application) [![Coverage Status](https://coveralls.io/repos/github/PedalPi/Application/badge.svg?branch=master)](https://coveralls.io/github/PedalPi/Application?branch=master) [![Code Health](https://landscape.io/github/PedalPi/Application/master/landscape.svg?style=flat)](https://landscape.io/github/PedalPi/Application/master)
 
 ## Using
 

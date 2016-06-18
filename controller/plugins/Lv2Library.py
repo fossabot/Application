@@ -1,13 +1,16 @@
+# -*- coding: utf-8 -*-
+
 import subprocess
 import re
 
-class Extractor:
+
+class Extractor(object):
     def extract(self, file):
         stringPorts = self.stringPortsOf(file)
 
         self.getName(file)
         data = {
-            "ports":{}
+            "ports": {}
         }
 
         for stringPort in stringPorts:
@@ -96,13 +99,16 @@ def execute(command):
     #return commands.getstatusoutput(command)[1]
     return subprocess.call(command)
 
+
 def getPlugins():
     return execute("lv2ls").split("\n")
+
 
 def getPluginInfo(lv2Plugin):
     return execute("lv2info " + lv2Plugin)
 
-class Lv2Library:
+
+class Lv2Library(object):
     plugins = {}
     errors = []
 
@@ -118,7 +124,7 @@ class Lv2Library:
 
                 self.plugins[lv2Plugin] = plugin
 
-            except Exception as e:
+            except Exception:
                 self.errors.append(lv2Plugin)
             break
 

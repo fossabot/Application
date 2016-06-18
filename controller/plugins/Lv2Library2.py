@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 from os import listdir
 from os.path import isfile, join
 
 from .rdfmodel.lv2 import Bundle
 
 
-class Lv2Library2:
+class Lv2Library2(object):
     plugins = {}
     folders = ["/usr/lib/lv2/"]
 

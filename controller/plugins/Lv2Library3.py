@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 from .lilvlib.plugins import get_all_plugins
 
 
-class Lv2Library3:
+class Lv2Library3(object):
     plugins = {}
     folders = ["/usr/lib/lv2/"]
 

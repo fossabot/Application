@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from controller.Controller import Controller
 from util.ModHostBinding.Host import Host
 from util.ModHostBinding.plugin.Lv2Plugin import Lv2Plugin
@@ -14,7 +15,6 @@ class DeviceController(Controller):
 
     def configure(self):
         self.host = Host()
-        pass
 
     def loadPatch(self, patch):
         print("Removing plugins")

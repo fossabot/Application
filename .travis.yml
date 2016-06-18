@@ -10,7 +10,7 @@ install:
   - pip3 install coveralls
 
 script:
-  - coverage run --source=. setup.py test
+  - coverage run --source=application setup.py test
 
 after_success:
   - coveralls

@@ -4,7 +4,7 @@ from controller.DeviceController import DeviceController
 from controller.PluginsController import PluginsController
 
 
-class Application:
+class Application(object):
     controllers = {}
 
     def __init__(self, dataPatch="data/"):
@@ -29,7 +29,7 @@ class Application:
         return self.controllers[controller.__name__]
 
 
-class ApplicationSingleton:
+class ApplicationSingleton(object):
     instance = None
 
     @classmethod
