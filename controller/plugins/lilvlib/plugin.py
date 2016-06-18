@@ -9,7 +9,7 @@ from .port import Port
 from .plugin_author import PluginAuthor
 
 
-class Plugin:
+class Plugin(object):
     LABEL_NAME_SIZE = 16
 
     def __init__(self, world, plugin, useAbsolutePath=True):

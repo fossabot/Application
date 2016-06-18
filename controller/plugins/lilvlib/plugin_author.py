@@ -3,7 +3,7 @@ import lilv
 from .lilvlib import NS
 
 
-class PluginAuthor:
+class PluginAuthor(object):
 
     def __init__(self, world, plugin, bundleuri):
         self.ns_doap = NS(world, lilv.LILV_NS_DOAP)

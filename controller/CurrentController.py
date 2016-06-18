@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from architecture.privatemethod import privatemethod
 
 from controller.Controller import Controller
@@ -19,20 +21,16 @@ class CurrentController(Controller):
         self.deviceController = self.app.controller(DeviceController)
         self.banksController = self.app.controller(BanksController)
 
-    '''
-    ************************
-    Persistance
-    ************************
-    '''
+    # ************************
+    # Persistance
+    # ************************
     @privatemethod
     def saveCurrent(self):
         print("Necessary implements: SAVING", self.bankNumber, self.patchNumber)
 
-    '''
-    ************************
-    Effect
-    ************************
-    '''
+    # ************************
+    # Effect
+    # ************************
     def toggleStatusEffect(self, effectNumber):
         effect = self.getEffectOfCurrentPatch(effectNumber)
         effect["active"] = not effect["active"]
@@ -44,11 +42,9 @@ class CurrentController(Controller):
         self.deviceController.setEffectParam(effectNumber, param)
         self.saveCurrent()
 
-    '''
-    ************************
-    Get of Current
-    ************************
-    '''
+    # ************************
+    # Get of Current
+    # ************************
     def getEffectOfCurrentPatch(self, effectNumber):
         patch = self.getCurrentPatch()
         try:
@@ -62,11 +58,9 @@ class CurrentController(Controller):
     def getCurrentBank(self):
         return self.banksController.banks[self.bankNumber]
 
-    '''
-    ************************
-    Set Current Patch/Bank
-    ************************
-    '''
+    # ************************
+    # Set Current Patch/Bank
+    # ************************
     def setPatch(self, patchNumber):
         if self.patchNumber == patchNumber:
             return

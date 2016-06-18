@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import subprocess
 import re
 
@@ -50,13 +49,13 @@ class Extractor(object):
         for line in lines[1:]:
             paramRegexResult = re.search(paramRegex, line) #paramRegex.exec(line)
 
-            containsParamName = paramRegexResult != None
+            containsParamName = paramRegexResult is not None
             if containsParamName:
                 paramName = paramRegexResult.group(0).replace('\t\t', '').replace('\r', '')
                 paramValue = line.replace(paramRegexResult.group(0), '').replace('\r', '')
 
                 valueRegexResult = re.search(valueRegex, paramValue) #valueRegex.exec(paramValue)
-                if valueRegexResult != None:
+                if valueRegexResult is not None:
                     params[paramName] = paramValue.replace(valueRegexResult.group(0), '')
                 else:
                     params[paramName] = None

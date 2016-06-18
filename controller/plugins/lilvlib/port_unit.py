@@ -6,7 +6,7 @@ import lilv
 from .lilvlib import NS
 
 
-class PortUnit:
+class PortUnit(object):
 
     def __init__(self, world, port, portname, types):
         self.ns_rdfs = NS(world, lilv.LILV_NS_RDFS)

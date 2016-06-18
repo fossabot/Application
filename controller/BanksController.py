@@ -20,11 +20,9 @@ class BanksController(Controller):
         from controller.CurrentController import CurrentController
         self.currentController = self.app.controller(CurrentController)
 
-    '''
-    ***********************************
-    Data CRUD
-    ***********************************
-    '''
+    # ***********************************
+    # Data CRUD
+    # ***********************************
     def createBank(self, bank):
         index = self.getNextBankIndex()
 

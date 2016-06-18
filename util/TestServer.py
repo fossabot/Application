@@ -1,4 +1,7 @@
-import socket 
+# -*- coding: utf-8 -*-
+
+
+import socket
 import sys
 
 HOST = 'localhost'	# Symbolic name, meaning all available interfaces

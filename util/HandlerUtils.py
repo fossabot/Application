@@ -1,4 +1,7 @@
-class HandlerUtils:
+# -*- coding: utf-8 -*-
+
+
+class HandlerUtils(object):
     @staticmethod
     def toInt(*params):
         data = []

@@ -7,7 +7,7 @@ import lilv
 from .lilvlib import NS, is_integer
 
 
-class PortRange:
+class PortRange(object):
 
     def __init__(self, world, port, properties):
         self.ns_lv2core = NS(world, lilv.LILV_NS_LV2)

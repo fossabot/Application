@@ -1,5 +1,6 @@
 Registro = {}
 
+
 def register(className):
     def decorator(method):
         #print("Registred:", method.__name__)
@@ -21,6 +22,7 @@ def register(className):
         return call
     return decorator
 
+
 def verb(name, className):
     #print("Verb:", name)
     def decorator(method):
@@ -31,9 +33,9 @@ def verb(name, className):
         arguments = '-'.join(arguments)
 
         Registro[className]["methods"][name][arguments] = method
-        
+
         #print(" + :", method.__name__, arguments)
-        
+
         def call(self, *args, **kwargs):
             return method(self, *args, **kwargs)
         return call

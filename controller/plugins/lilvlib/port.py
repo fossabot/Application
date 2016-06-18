@@ -9,7 +9,7 @@ from .port_range import PortRange
 from math import fmod
 
 
-class Port:
+class Port(object):
     SHORT_NAME_SIZE = 16
 
     def __init__(self, world, port, index):
@@ -139,11 +139,11 @@ class Port:
             types.append("MIDI")
 
         #if "Morph" in types:
-            #morphtyp = lilv.lilv_nodes_get_first(port.get_value(ns_morph.supportsType.me))
-            #if morphtyp is not None:
-                #morphtyp = lilv.lilv_node_as_uri(morphtyp)
-                #if morphtyp:
-                    #types.append(morphtyp.rsplit("#",1)[-1].replace("Port","",1))
+        #    morphtyp = lilv.lilv_nodes_get_first(port.get_value(ns_morph.supportsType.me))
+        #    if morphtyp is not None:
+        #        #orphtyp = lilv.lilv_node_as_uri(morphtyp)
+        #        if morphtyp:
+        #            types.append(morphtyp.rsplit("#",1)[-1].replace("Port","",1))
 
         return types
 
@@ -153,7 +153,7 @@ class Port:
     def generate_designation(self):
         return (
             self.get_port_data(self.port, self.ns_lv2core.designation)
-             or [""]
+            or [""]
         )[0]
 
     def generate_properties_ranges_scalepoints_units(self, world):
