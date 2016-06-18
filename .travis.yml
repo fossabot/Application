@@ -10,7 +10,7 @@ install:
   - pip3 install coveralls
 
 script:
-  - coverage3 run --source=architecture,controller,dao,model,util setup.py test
+  - coverage3 run --source=PedalPi/Application setup.py test
 
 after_success:
   - coveralls
