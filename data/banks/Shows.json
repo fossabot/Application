@@ -6,6 +6,7 @@
             "name": "Shows",
             "effects" : [
                 {
+                    "uri": "http://guitarix.sourceforge.net/plugins/gxts9#ts9sim",
                     "name": "Distortion drive",
                     "company": "MOD",
                     "params": [
@@ -26,6 +27,7 @@
                     "active" : false
                 },
                 {
+                    "uri": "http://guitarix.sourceforge.net/plugins/gx_tremolo#_tremolo",
                     "name": "Test drive",
                     "company": "Guitarix",
                     "params": [
@@ -65,6 +67,7 @@
             "name": "Shows2",
             "effects" : [
                 {
+                    "uri": "http://guitarix.sourceforge.net/plugins/gx_tremolo#_tremolo",
                     "name": "Distortion drive",
                     "company": "MOD",
                     "params": [
@@ -85,6 +88,7 @@
                     "active" : false
                 },
                 {
+                    "uri": "http://guitarix.sourceforge.net/plugins/gxts9#ts9sim",
                     "name": "Test drive",
                     "company": "Guitarix",
                     "params": [

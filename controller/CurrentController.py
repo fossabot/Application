@@ -26,7 +26,7 @@ class CurrentController(Controller):
     '''
     @privatemethod
     def saveCurrent(self):
-        print("Necessary implments: SAVING", self.bank)
+        print("Necessary implements: SAVING", self.bankNumber, self.patchNumber)
 
     '''
     ************************
@@ -71,7 +71,7 @@ class CurrentController(Controller):
         if self.patchNumber == patchNumber:
             return
 
-        self.setCurrent(self.bank, patchNumber)
+        self.setCurrent(self.bankNumber, patchNumber)
 
     def setBank(self, bankNumber):
         if self.bankNumber == bankNumber:

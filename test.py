@@ -1,6 +1,6 @@
 import unittest
 
-from test.CurrentControllerTest import CurrentControllerTest
+from test.current_controller_test import CurrentControllerTest
 
 
 if __name__ == '__main__':

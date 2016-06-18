@@ -16,7 +16,8 @@ class BanksController(Controller):
         self.dao = self.app.dao(BankDao)
         self.banks = self.dao.all
 
-        from controller.CurrentController import CurrentController  # Cyclic dependece
+        # To fix Cyclic dependece
+        from controller.CurrentController import CurrentController
         self.currentController = self.app.controller(CurrentController)
 
     '''
@@ -55,20 +56,31 @@ class BanksController(Controller):
 
         self.dao.save(bank)
 
-        print("BanksController: Chamar internamente DeviceController para atualizar estado do dispositivo")
+        print("BanksController: Chamar internamente DeviceController \
+               para atualizar estado do dispositivo se for o atual")
 
     def deleteBank(self, bank):
         self.banks.delete(bank.data["index"])
         self.dao.delete(bank)
-        print("BanksController: Chamar internamente DeviceController para atualizar estado do dispositivo")
+        print("BanksController: Chamar internamente DeviceController para \
+              atualizar estado do dispositivo se for o atual")
 
     def createPatch(self, bank, patch):
         bank.addPatch(patch)
         print("Dao: salvar")
-        print("Current: Chamar CurrentController para atualizar estado do dispositivo")
+        print("Current: Chamar internamente CurrentController para \
+              atualizar estado do dispositivo se for o atual")
         return len(bank.patches) - 1
+
+    def updatePatch(self, bank, patchNumber, patch):
+        bank.patches[patchNumber] = patch
+        print("Current: Chamar internamente CurrentController para \
+              atualizar estado do dispositivo se for o atual")
+        print("Dao: salvar")
+        self.currentController.setPatch(patch)
 
     def addEffect(self, bank, indexPatch, effect):
         bank.addEffect(indexPatch, effect)
-        print("BanksController: Chamar internamente DeviceController para atualizar estado do dispositivo")
+        print("BanksController: Chamar internamente DeviceController\
+               para atualizar estado do dispositivo se for o atual")
         return len(bank.getEffects(indexPatch)) - 1

@@ -27,3 +27,14 @@ class Application:
 
     def controller(self, controller):
         return self.controllers[controller.__name__]
+
+
+class ApplicationSingleton:
+    instance = None
+
+    @classmethod
+    def getInstance(cls):
+        if cls.instance is None:
+            cls.instance = Application()
+
+        return cls.instance
