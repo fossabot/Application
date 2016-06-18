@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .lilvlib.plugins import get_all_plugins
+from lib.lilvlib.plugins import get_all_plugins
 
 
 class Lv2Library3(object):
