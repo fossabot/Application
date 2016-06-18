@@ -13,11 +13,11 @@ def register(className):
             key = '-'.join(sorted(kwargs.keys()))
 
             try:
-                callable = Registro[className]["methods"][method.__name__][key]
-            except KeyError as error:
-                callable = lambda *args, **kwargs: (_ for _ in ()).throw(KeyError('Method not registred: ' + key))
+                funcCallable = Registro[className]["methods"][method.__name__][key]
+            except KeyError:
+                funcCallable = lambda *args, **kwargs: (_ for _ in ()).throw(KeyError('Method not registred: ' + key))
 
-            return method(self, callable, *args, **kwargs)
+            return method(self, funcCallable, *args, **kwargs)
 
         return call
     return decorator
@@ -53,14 +53,16 @@ def get_class_that_defined_method(meth):
                 return cls
         meth = meth.__func__ # fallback to __qualname__ parsing
     if inspect.isfunction(meth):
-        cls = getattr(inspect.getmodule(meth),
-                      meth.__qualname__.split('.<locals>', 1)[0].rsplit('.', 1)[0])
+        cls = getattr(
+            inspect.getmodule(meth),
+            meth.__qualname__.split('.<locals>', 1)[0].rsplit('.', 1)[0]
+        )
         if isinstance(cls, type):
             return cls
     return None
-'''
+'#''
 
-'''
+'#''
 EXAMPLE
 #''#'
 class AlgumHandler:

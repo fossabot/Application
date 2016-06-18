@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+
 def signature(*args, **kwargs):
     def decorator(fn):
         def wrapped(*fn_args, **fn_kwargs):

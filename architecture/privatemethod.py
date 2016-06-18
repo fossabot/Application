@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import inspect
+
 
 def privatemethod(func):
     """decorator for making an instance method private"""
