@@ -2,6 +2,6 @@
 from setuptools import setup
 setup(
     name='PedalPi - Application',
-    packages=['.'],
+    packages=['controller', 'model', 'test', 'util'],
     test_suite='test',
 )
