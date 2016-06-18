@@ -4,11 +4,10 @@ from architecture.BankError import BankError
 
 
 class Bank(object):
-    data = {}
+    _data = {}
 
     def __init__(self, data):
         self.data = data
-        self.validate(data)
 
     def validate(self, data):
         if 'patches' not in data:
@@ -19,6 +18,15 @@ class Bank(object):
     # ==================================
     # Property
     # ==================================
+
+    @property
+    def data(self):
+        return self._data
+
+    @data.setter
+    def data(self, value):
+        self.validate(value)
+        self._data = value
 
     @property
     def json(self):
@@ -36,7 +44,7 @@ class Bank(object):
     def index(self):
         try:
             return self.data["index"]
-        except:
+        except KeyError:
             return -1
 
     @index.setter

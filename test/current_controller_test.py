@@ -37,7 +37,7 @@ class CurrentControllerTest(unittest.TestCase):
     def test_set_effect_param_invalid_value(self):
         self.fail("Not implemented")
 
-    def test_set_effect_endex_out_param(self):
+    def test_set_effect_index_out_param(self):
         self.fail("Not implemented")
 
     def test_get_effect_of_current_patch(self):

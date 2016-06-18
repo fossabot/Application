@@ -32,12 +32,7 @@ class BanksController(Controller):
 
     def updateBank(self, bank, data):
         self.dao.delete(bank)
-
-        index = bank.data["index"]
-        bank.json.clear()
-        bank.json.update(data)
-        bank.json["index"] = index
-
+        bank.data = data
         self.dao.save(bank)
 
         print("BanksController: Chamar internamente DeviceController \

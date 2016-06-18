@@ -65,12 +65,36 @@ class BanksControllerTest(unittest.TestCase):
         self.assertEqual(totalBanks, len(self.controller.banks))
 
     def test_update_bank(self):
-        self.fail("Not implemented")
+        bank = {
+            "name": "test_update_bank",
+            "patches": [{
+                "name": "Decorator, a legend",
+                "effects": [],
+                "connections": []
+            }]
+        }
+
+        newName = 'Single a tom or chord?'
+
+        bankChanged = dict()
+        bankChanged.update(bank)
+        bankChanged['name'] = newName
+
+        index = self.controller.createBank(bank)
+        self.controller.updateBank(self.controller.banks[index], bankChanged)
+
+        changedName = self.controller.banks[index].data['name']
+        self.assertEqual(newName, changedName)
+
+        del self.controller.banks[index]
 
     def test_create_patch(self):
         self.fail("Not implemented")
 
     def test_add_effect(self):
+        self.fail("Not implemented")
+
+    def test_add_connection(self):
         self.fail("Not implemented")
 
     def test_delete_bank(self):
