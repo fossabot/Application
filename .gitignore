@@ -1,3 +1,4 @@
 *.pyc
 PedalPi_Application.egg-info
 .coverage
+htmlcov/

@@ -13,3 +13,12 @@ jackd -P70 -p16 -t2000 -dalsa -dhw:Series -p128 -n3 -r44100 -s &
 ./mod-host
 qjackctl &
 ```
+
+## Local test
+
+```bash
+coverage3 run --source=architecture,controller,dao,model,util setup.py test
+coverage3 report
+coverage3 html
+firefox htmlcov/index.html
+```

@@ -3,6 +3,7 @@ import unittest
 
 from Application import ApplicationSingleton
 from controller.BanksController import BanksController
+from controller.CurrentController import CurrentController
 
 
 class BanksControllerTest(unittest.TestCase):
@@ -19,12 +20,16 @@ class BanksControllerTest(unittest.TestCase):
             BanksController
         )
 
-        self.controller.setBank(0)
-        self.controller.setPatch(0)
+        currentController = BanksControllerTest.application.controller(
+            CurrentController
+        )
+
+        currentController.setBank(0)
+        currentController.setPatch(0)
 
     def test_all_banks(self):
-        self.assertIsNotNone(self.banks.all)
-        self.assertNotEqual(0, len(self.banks.all))
+        self.assertIsNotNone(self.controller.banks.all)
+        self.assertNotEqual(0, len(self.controller.banks.all))
 
     def test_create_bank(self):
         self.fail("Not implemented")
