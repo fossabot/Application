@@ -17,7 +17,7 @@ qjackctl &
 ## Local test
 
 ```bash
-coverage3 run --source=architecture,controller,dao,model,util setup.py test
+coverage3 run --source=architecture,controller,dao,model setup.py test
 coverage3 report
 coverage3 html
 firefox htmlcov/index.html

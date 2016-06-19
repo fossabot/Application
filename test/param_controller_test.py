@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from architecture.EffectException import EffectException
-from architecture.privatemethod import privatemethod
-
 from Application import ApplicationSingleton
 
+from controller.CurrentController import CurrentController
+from controller.EffectController import EffectController
 from controller.ParamController import ParamController
 from controller.PluginsController import PluginsController
-from controller.CurrentController import CurrentController
 
 
 class ParamControllerTest(unittest.TestCase):
@@ -25,6 +23,10 @@ class ParamControllerTest(unittest.TestCase):
             ParamController
         )
 
+        self.effectController = ParamControllerTest.application.controller(
+            EffectController
+        )
+
         self.pluginsController = ParamControllerTest.application.controller(
             PluginsController
         )
@@ -39,58 +41,30 @@ class ParamControllerTest(unittest.TestCase):
         self.currentBank = self.currentController.getCurrentBank()
         self.currentPatch = self.currentController.getCurrentPatch()
 
-    @privatemethod
-    def any_plugin_uri(self):
-        return list(self.pluginsController.plugins.keys())[0]
+    def test_update_value(self):
+        uri = 'http://guitarix.sourceforge.net/plugins/gx_reverb_stereo#_reverb_stereo'
 
-    def test_create_effect(self):
-        totalEffects = self.total_effects_current_patch()
-        effectIndex = self.controller.createEffect(
+        effectIndex = self.effectController.createEffect(
             self.currentBank,
             self.currentPatch,
-            self.any_plugin_uri()
+            uri
         )
 
-        # Index is last effect + 1
-        self.assertEqual(totalEffects, effectIndex)
+        plugin = self.pluginsController.plugins[uri]
+        param = plugin['ports']['control']['output'][0]
 
-        self.assertLess(totalEffects, self.total_effects_current_patch())
+        newValue = (param['maximum'] + param['minimum']) / 2
+        self.controller.updateValue(
+            self.currentBank,
+            self.currentPatch,
+            param,
+            newValue
+        )
+
+        self.assertIsEqual(param['value'], newValue)
 
         self.controller.deleteEffect(
             self.currentBank,
             self.currentPatch,
-            5000
+            effectIndex
         )
-
-    def test_create_undefined_effect(self):
-        with self.assertRaises(EffectException):
-            self.controller.createEffect(
-                self.currentBank,
-                self.currentPatch,
-                'http://undefined.plugin.uri'
-            )
-
-    def test_delete_effect(self):
-        effectIndex = self.controller.createEffect(
-            self.currentBank,
-            self.currentPatch,
-            self.any_plugin_uri()
-        )
-        totalEffects = self.total_effects_current_patch()
-
-        self.controller.deleteEffect(
-            self.currentBank,
-            self.currentPatch,
-            5000
-        )
-        self.controller.deletePatch(self.currentBank, effectIndex)
-
-        self.assertEqual(totalEffects - 1, self.total_effects_current_patch())
-
-    def test_delete_out_range_effect(self):
-        with self.assertRaises(IndexError):
-            self.controller.deleteEffect(
-                self.currentBank,
-                self.currentPatch,
-                5000
-            )

@@ -43,4 +43,6 @@ class EffectController(Controller):
         self.dao.save(bank)
 
         if self.currentController.isCurrent(bank, patch):
-            self.currentController.nextPatch()
+            self.deviceController.loadPatch(
+                self.currentController.getCurrentPatch()
+            )

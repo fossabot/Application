@@ -32,7 +32,7 @@ class Banks(object):
     def __delitem__(self, index):
         try:
             del self.banks[index]
-        except IndexError:
+        except KeyError:
             raise IndexError("Bank not found")
 
     def append(self, bank):

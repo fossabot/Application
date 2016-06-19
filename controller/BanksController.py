@@ -30,13 +30,17 @@ class BanksController(Controller):
     def updateBank(self, bank, data):
         self.dao.delete(bank)
         bank.data = data
-        self.dao.save(bank)
 
-        print("BanksController: Chamar internamente DeviceController \
-               para atualizar estado do dispositivo se for o atual")
+        self.dao.save(bank)
+        if bank == self.currentController.getCurrentBank():
+            self.deviceController.loadPatch(
+                self.currentController.getCurrentPatch()
+            )
 
     def deleteBank(self, bank):
         self.banks.delete(bank.data["index"])
         self.dao.delete(bank)
-        print("BanksController: Chamar internamente DeviceController para \
-              atualizar estado do dispositivo se for o atual")
+        if bank == self.currentController.getCurrentBank():
+            self.deviceController.loadPatch(
+                self.currentController.getCurrentPatch()
+            )

@@ -63,7 +63,7 @@ class EffectControllerTest(unittest.TestCase):
         self.controller.deleteEffect(
             self.currentBank,
             self.currentPatch,
-            5000
+            effectIndex
         )
 
     def test_create_undefined_effect(self):
@@ -85,9 +85,8 @@ class EffectControllerTest(unittest.TestCase):
         self.controller.deleteEffect(
             self.currentBank,
             self.currentPatch,
-            5000
+            effectIndex
         )
-        self.controller.deletePatch(self.currentBank, effectIndex)
 
         self.assertEqual(totalEffects - 1, self.total_effects_current_patch())
 
@@ -95,6 +94,6 @@ class EffectControllerTest(unittest.TestCase):
         with self.assertRaises(IndexError):
             self.controller.deleteEffect(
                 self.currentBank,
-                self.currentPatch,
+                #self.currentPatch,
                 5000
             )
