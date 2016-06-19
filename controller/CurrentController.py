@@ -45,6 +45,13 @@ class CurrentController(Controller):
     # ************************
     # Get of Current
     # ************************
+    def isCurrent(self, bank, patch):
+        return bank.index == self.bankNumber \
+           and self.getCurrentPatch() == patch
+
+    # ************************
+    # Get of Current
+    # ************************
     def getEffectOfCurrentPatch(self, effectNumber):
         patch = self.getCurrentPatch()
         try:
@@ -61,11 +68,23 @@ class CurrentController(Controller):
     # ************************
     # Set Current Patch/Bank
     # ************************
+    def beforePatch(self):
+        raise Exception("Not implemented")
+
+    def nextPatch(self):
+        raise Exception("Not implemented")
+
     def setPatch(self, patchNumber):
         if self.patchNumber == patchNumber:
             return
 
         self.setCurrent(self.bankNumber, patchNumber)
+
+    def beforeBank(self):
+        raise Exception("Not implemented")
+
+    def nextBank(self):
+        raise Exception("Not implemented")
 
     def setBank(self, bankNumber):
         if self.bankNumber == bankNumber:

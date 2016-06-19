@@ -55,26 +55,25 @@ class Bank(object):
     # Facade
     # ==================================
 
-    def getParam(self, patch, effect, param):
-        params = self.getParams(patch, effect)
-        return self.get(params, param)
+    def getParam(self, patchIndex, effectIndex, paramIndex):
+        params = self.getParams(patchIndex, effectIndex)
+        return self.get(params, paramIndex)
 
-    def getParams(self, patch, effect):
-        return self.getEffect(patch, effect)["params"]
+    def getParams(self, patchIndex, effectIndex):
+        return self.getEffect(patchIndex, effectIndex)["params"]
 
     def addEffect(self, patch, effect):
-        patch = self.getPatch(patch)
         patch["effects"].append(effect)
 
-    def getEffect(self, patch, effect):
-        effects = self.getEffects(patch)
-        return self.get(effects, effect)
+    def getEffect(self, patchIndex, effectIndex):
+        effects = self.getEffects(patchIndex)
+        return self.get(effects, effectIndex)
 
-    def getEffects(self, patch):
-        return self.getPatch(patch)["effects"]
+    def getEffects(self, patchIndex):
+        return self.getPatch(patchIndex)["effects"]
 
-    def getPatch(self, patch):
-        return self.get(self.patches, patch)
+    def getPatch(self, patchIndex):
+        return self.get(self.patches, patchIndex)
 
     def addPatch(self, patch):
         self.patches.append(patch)

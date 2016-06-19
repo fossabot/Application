@@ -1,6 +1,9 @@
 from controller.BanksController import BanksController
 from controller.CurrentController import CurrentController
 from controller.DeviceController import DeviceController
+from controller.EffectController import EffectController
+from controller.ParamController import ParamController
+from controller.PatchController import PatchController
 from controller.PluginsController import PluginsController
 
 
@@ -13,6 +16,9 @@ class Application(object):
             BanksController,
             CurrentController,
             DeviceController,
+            EffectController,
+            ParamController,
+            PatchController,
             PluginsController
         ]
 

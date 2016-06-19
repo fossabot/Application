@@ -88,15 +88,6 @@ class BanksControllerTest(unittest.TestCase):
 
         del self.controller.banks[index]
 
-    def test_create_patch(self):
-        self.fail("Not implemented")
-
-    def test_add_effect(self):
-        self.fail("Not implemented")
-
-    def test_add_connection(self):
-        self.fail("Not implemented")
-
     def test_delete_bank(self):
         totalBanks = len(self.controller.banks)
         bank = {

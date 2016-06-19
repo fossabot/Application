@@ -19,9 +19,6 @@ class BanksController(Controller):
         from controller.CurrentController import CurrentController
         self.currentController = self.app.controller(CurrentController)
 
-    # ***********************************
-    # Data CRUD
-    # ***********************************
     def createBank(self, bank):
         bankModel = Bank(bank)
 
@@ -43,23 +40,3 @@ class BanksController(Controller):
         self.dao.delete(bank)
         print("BanksController: Chamar internamente DeviceController para \
               atualizar estado do dispositivo se for o atual")
-
-    def createPatch(self, bank, patch):
-        bank.addPatch(patch)
-        print("Dao: salvar")
-        print("Current: Chamar internamente CurrentController para \
-              atualizar estado do dispositivo se for o atual")
-        return len(bank.patches) - 1
-
-    def updatePatch(self, bank, patchNumber, patch):
-        bank.patches[patchNumber] = patch
-        print("Current: Chamar internamente CurrentController para \
-              atualizar estado do dispositivo se for o atual")
-        print("Dao: salvar")
-        self.currentController.setPatch(patch)
-
-    def addEffect(self, bank, indexPatch, effect):
-        bank.addEffect(indexPatch, effect)
-        print("BanksController: Chamar internamente DeviceController\
-               para atualizar estado do dispositivo se for o atual")
-        return len(bank.getEffects(indexPatch)) - 1
