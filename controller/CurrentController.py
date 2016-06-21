@@ -69,10 +69,18 @@ class CurrentController(Controller):
     # Set Current Patch/Bank
     # ************************
     def beforePatch(self):
-        raise Exception("Not implemented")
+        before = self.patchNumber - 1
+        if before == -1:
+            before = len(self.getCurrentBank().patches) - 1
+        
+        self.setPatch(self.patchNumber)
 
     def nextPatch(self):
-        raise Exception("Not implemented")
+        next = self.patchNumber+1
+        if next == len(self.getCurrentBank().patches):
+            next = 0
+        
+        self.setPatch(next)
 
     def setPatch(self, patchNumber):
         if self.patchNumber == patchNumber:
@@ -81,10 +89,28 @@ class CurrentController(Controller):
         self.setCurrent(self.bankNumber, patchNumber)
 
     def beforeBank(self):
-        raise Exception("Not implemented")
+        banks = self.banksController.banks.all
+        position = banks.index(self.getCurrentBank())
+        
+        before = position - 1
+        if before == -1:
+            before = len(banks) - 1
+
+        beforeBankIndex = banks[before].index
+        
+        self.setBank(beforeBankIndex)
 
     def nextBank(self):
-        raise Exception("Not implemented")
+        banks = self.banksController.banks.all
+        position = banks.index(self.getCurrentBank())
+        
+        next = position + 1
+        if next == len(banks):
+            next = 0
+
+        nextBankIndex = banks[next].index
+
+        self.setBank(nextBankIndex)
 
     def setBank(self, bankNumber):
         if self.bankNumber == bankNumber:
