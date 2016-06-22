@@ -94,6 +94,6 @@ class EffectControllerTest(unittest.TestCase):
         with self.assertRaises(IndexError):
             self.controller.deleteEffect(
                 self.currentBank,
-                #self.currentPatch,
+                self.currentPatch,
                 5000
             )
