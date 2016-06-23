@@ -1,0 +1,3 @@
+[submodule "lib/ModHostBinding"]
+	path = lib/ModHostBinding
+	url = https://github.com/PedalPi/PythonModHostBinding.git
