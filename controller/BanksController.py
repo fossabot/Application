@@ -38,7 +38,7 @@ class BanksController(Controller):
             )
 
     def deleteBank(self, bank):
-        self.banks.delete(bank.data["index"])
+        del self.banks[bank.index]
         self.dao.delete(bank)
         if bank == self.currentController.getCurrentBank():
             self.deviceController.loadPatch(
