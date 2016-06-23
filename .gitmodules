@@ -1,3 +1,6 @@
 [submodule "lib/ModHostBinding"]
 	path = lib/ModHostBinding
 	url = https://github.com/PedalPi/PythonModHostBinding.git
+[submodule "lib/rdfmodel"]
+	path = lib/rdfmodel
+	url = https://github.com/PedalPi/python-rdfmodel.git
