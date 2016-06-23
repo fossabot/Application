@@ -15,6 +15,8 @@ install:
 script:
   - python3 test.py
   - coverage3 run --source=architecture,controller,dao,model setup.py test
+  - coveralls
+  - bash <(curl -s https://codecov.io/bash)
 
 after_success:
   - coveralls
