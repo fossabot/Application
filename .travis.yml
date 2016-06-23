@@ -14,7 +14,7 @@ install:
 
 script:
   - python3 test.py
-  - coverage3 run --source=PedalPi/Application setup.py test
+  - coverage3 run --source=architecture,controller,dao,model setup.py test
 
 after_success:
   - coveralls
