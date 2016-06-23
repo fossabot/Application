@@ -5,6 +5,9 @@ python:
 
 sudo: required
 
+before_install:
+  - git submodule update --init --recursive
+
 install:
   - sudo apt-get install guitarix
   - pip3 install coveralls
