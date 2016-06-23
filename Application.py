@@ -10,7 +10,7 @@ from controller.PluginsController import PluginsController
 class Application(object):
     controllers = {}
 
-    def __init__(self, dataPatch="data/"):
+    def __init__(self, test=False, dataPatch="data/"):
         self.dataPatch = dataPatch
         controllers = [
             BanksController,
@@ -21,6 +21,10 @@ class Application(object):
             PatchController,
             PluginsController
         ]
+        if test:
+            from unittest.mock import Mock 
+            controllers.remove(DeviceController)
+            self.controllers[DeviceController.__name__] = Mock(spec=DeviceController)
 
         for controller in controllers:
             self.controllers[controller.__name__] = controller(self)
@@ -41,6 +45,6 @@ class ApplicationSingleton(object):
     @classmethod
     def getInstance(cls):
         if cls.instance is None:
-            cls.instance = Application()
+            cls.instance = Application(test=True)
 
         return cls.instance
