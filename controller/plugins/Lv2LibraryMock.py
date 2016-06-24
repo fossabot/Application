@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-from lib.lilvlib.plugins import get_all_plugins
+import os
+from dao.DataBank import DataBank
 
 
 class Lv2Library(object):
     plugins = {}
-    folders = ["/usr/lib/lv2/"]
 
     def __init__(self):
-        for plugin in get_all_plugins():
-            del plugin['errors']
-            del plugin['warnings']
+        data = DataBank().read(os.path.dirname(__file__) + '/plugins.json')
+
+        for plugin in data:
             self.plugins[plugin['uri']] = plugin
+
 
 if __name__ == "__main__":
     lib = Lv2Library()

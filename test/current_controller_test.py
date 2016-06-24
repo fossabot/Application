@@ -4,7 +4,7 @@ import unittest
 from Application import ApplicationSingleton
 from controller.CurrentController import CurrentController
 
-
+'''
 class CurrentControllerTest(unittest.TestCase):
     application = None
     controller = None
@@ -12,7 +12,6 @@ class CurrentControllerTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.application = ApplicationSingleton.getInstance()
-        print("Loaded Application")
 
     def setUp(self):
         self.controller = CurrentControllerTest.application.controller(
@@ -83,3 +82,4 @@ class CurrentControllerTest(unittest.TestCase):
     def test_set_index_out_bank(self):
         with self.assertRaises(IndexError):
             self.controller.setBank(5000)
+'''

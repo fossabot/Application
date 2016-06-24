@@ -16,7 +16,6 @@ class ParamControllerTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.application = ApplicationSingleton.getInstance()
-        print("Loaded Application")
 
     def setUp(self):
         self.controller = ParamControllerTest.application.controller(
@@ -50,10 +49,11 @@ class ParamControllerTest(unittest.TestCase):
             uri
         )
 
-        plugin = self.pluginsController.plugins[uri]
-        param = plugin['ports']['control']['output'][0]
+        effect = self.currentPatch['effects'][effectIndex]
+        param = effect['ports']['control']['input'][0]
 
-        newValue = (param['maximum'] + param['minimum']) / 2
+        ranges = param['ranges']
+        newValue = (ranges['maximum'] + ranges['minimum']) / 2
         self.controller.updateValue(
             self.currentBank,
             self.currentPatch,
@@ -61,9 +61,9 @@ class ParamControllerTest(unittest.TestCase):
             newValue
         )
 
-        self.assertIsEqual(param['value'], newValue)
+        self.assertEqual(param['value'], newValue)
 
-        self.controller.deleteEffect(
+        self.effectController.deleteEffect(
             self.currentBank,
             self.currentPatch,
             effectIndex

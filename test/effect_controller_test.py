@@ -18,7 +18,6 @@ class EffectControllerTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.application = ApplicationSingleton.getInstance()
-        print("Loaded Application")
 
     def setUp(self):
         self.controller = EffectControllerTest.application.controller(

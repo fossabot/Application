@@ -1,7 +1,7 @@
 import unittest
 
 from Application import ApplicationSingleton
-from controller.PluginsController import PluginsController
+from controller.PluginsController import PluginsController, PluginTecnology
 from controller.CurrentController import CurrentController
 
 
@@ -12,7 +12,6 @@ class PluginsControllerTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.application = ApplicationSingleton.getInstance()
-        print("Loaded Application")
 
     def setUp(self):
         self.controller = PluginsControllerTest.application.controller(
@@ -31,14 +30,14 @@ class PluginsControllerTest(unittest.TestCase):
 
     def test_get_plugin_by_techonology(self):
         self.assertIsInstance(
-            self.controller.getBy(PluginTechology.LV2),
-            list
+            self.controller.getBy(PluginTecnology.LV2),
+            dict
         )
         self.assertIsInstance(
-            self.controller.getBy(PluginTechology.LADSPA),
-            list
+            self.controller.getBy(PluginTecnology.LADSPA),
+            dict
         )
         self.assertIsInstance(
-            self.controller.getBy(PluginTechology.VST),
-            list
+            self.controller.getBy(PluginTecnology.VST),
+            dict
         )

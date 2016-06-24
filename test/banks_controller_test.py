@@ -16,7 +16,6 @@ class BanksControllerTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.application = ApplicationSingleton.getInstance()
-        print("Loaded Application")
 
     def setUp(self):
         self.controller = BanksControllerTest.application.controller(

@@ -14,14 +14,13 @@ class PatchControllerTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.application = ApplicationSingleton.getInstance()
-        print("Loaded Application")
 
     def setUp(self):
-        self.controller = BanksControllerTest.application.controller(
+        self.controller = PatchControllerTest.application.controller(
             PatchController
         )
 
-        self.currentController = BanksControllerTest.application.controller(
+        self.currentController = PatchControllerTest.application.controller(
             CurrentController
         )
 
