@@ -104,13 +104,13 @@ class CurrentController(Controller):
         banks = self.banksController.banks.all
         position = banks.index(self.getCurrentBank())
         
-        next = position + 1
-        if next == len(banks):
-            next = 0
+        nextBankIndex = position + 1
+        if nextBankIndex == len(banks):
+            nextBankIndex = 0
 
-        nextBankIndex = banks[next].index
+        nextBank = banks[nextBankIndex].index
 
-        self.setBank(nextBankIndex)
+        self.setBank(nextBank)
 
     def setBank(self, bankNumber):
         if self.bankNumber == bankNumber:
