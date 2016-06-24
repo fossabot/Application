@@ -72,15 +72,15 @@ class CurrentController(Controller):
         before = self.patchNumber - 1
         if before == -1:
             before = len(self.getCurrentBank().patches) - 1
-        
+
         self.setPatch(self.patchNumber)
 
     def nextPatch(self):
-        next = self.patchNumber+1
-        if next == len(self.getCurrentBank().patches):
-            next = 0
-        
-        self.setPatch(next)
+        nextPatchNumber = self.patchNumber+1
+        if nextPatchNumber == len(self.getCurrentBank().patches):
+            nextPatchNumber = 0
+
+        self.setPatch(nextPatchNumber)
 
     def setPatch(self, patchNumber):
         if self.patchNumber == patchNumber:

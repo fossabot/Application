@@ -7,7 +7,7 @@ from controller.PatchController import PatchController
 from controller.CurrentController import CurrentController
 
 
-class BanksControllerTest(unittest.TestCase):
+class PatchControllerTest(unittest.TestCase):
     application = None
     controller = None
 
