@@ -18,7 +18,7 @@ class Banks(object):
 
     @property
     def all(self):
-        return sorted(list(self.banks), key=lambda bank: bank.index)
+        return sorted(list(self.banks.values()), key=lambda bank: bank.index)
 
     def __len__(self):
         return len(self.banks)

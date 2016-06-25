@@ -38,8 +38,12 @@ class CurrentController(Controller):
         self.deviceController.toggleStatusEffect(effectNumber)
         self.saveCurrent()
 
-    def setEffectParam(self, effectNumber, param):
-        self.deviceController.setEffectParam(effectNumber, param)
+    def setEffectParam(self, effectIndex, paramIndex, value):
+        effects = self.getCurrentPatch()['effects']
+        param = effects[effectIndex]['ports']['control']['input'][paramIndex]
+        param['value'] = value
+
+        self.deviceController.setEffectParam(effectIndex, param)
         self.saveCurrent()
 
     # ************************
@@ -68,14 +72,14 @@ class CurrentController(Controller):
     # ************************
     # Set Current Patch/Bank
     # ************************
-    def beforePatch(self):
-        before = self.patchNumber - 1
-        if before == -1:
-            before = len(self.getCurrentBank().patches) - 1
+    def toBeforePatch(self):
+        beforePatchNumber = self.patchNumber - 1
+        if beforePatchNumber == -1:
+            beforePatchNumber = len(self.getCurrentBank().patches) - 1
 
-        self.setPatch(self.patchNumber)
+        self.setPatch(beforePatchNumber)
 
-    def nextPatch(self):
+    def toNextPatch(self):
         nextPatchNumber = self.patchNumber+1
         if nextPatchNumber == len(self.getCurrentBank().patches):
             nextPatchNumber = 0
@@ -88,7 +92,7 @@ class CurrentController(Controller):
 
         self.setCurrent(self.bankNumber, patchNumber)
 
-    def beforeBank(self):
+    def toBeforeBank(self):
         banks = self.banksController.banks.all
         position = banks.index(self.getCurrentBank())
         
@@ -100,7 +104,7 @@ class CurrentController(Controller):
         
         self.setBank(beforeBankIndex)
 
-    def nextBank(self):
+    def toNextBank(self):
         banks = self.banksController.banks.all
         position = banks.index(self.getCurrentBank())
         

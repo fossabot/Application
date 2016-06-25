@@ -37,8 +37,4 @@ class PluginsController(Controller):
         '''
         @param tecnology PluginTecnology
         '''
-        try:
-            return self.tecnology[tecnology]
-        except Exception as e:
-            print(str(e))
-            raise e
+        return self.tecnology[tecnology]

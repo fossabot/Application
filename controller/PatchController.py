@@ -32,9 +32,10 @@ class PatchController(Controller):
 
     def deletePatch(self, bank, patchNumber):
         patch = bank.patches[patchNumber]
+
+        if self.currentController.isCurrent(bank, patch):
+            self.currentController.toNextPatch()
+
         del bank.patches[patchNumber]
 
         self.dao.save(bank)
-
-        if self.currentController.isCurrent(bank, patch):
-            self.currehtController.nextPatch()

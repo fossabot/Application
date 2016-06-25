@@ -3,6 +3,7 @@ from dao.BankDao import BankDao
 from model.Bank import Bank
 
 from controller.Controller import Controller
+from controller.DeviceController import DeviceController
 
 
 class BanksController(Controller):
@@ -18,6 +19,7 @@ class BanksController(Controller):
         # To fix Cyclic dependece
         from controller.CurrentController import CurrentController
         self.currentController = self.app.controller(CurrentController)
+        self.deviceController = self.app.controller(DeviceController)
 
     def createBank(self, bank):
         bankModel = Bank(bank)
@@ -38,9 +40,8 @@ class BanksController(Controller):
             )
 
     def deleteBank(self, bank):
+        if bank == self.currentController.getCurrentBank():
+            self.currentController.toNextBank()
+
         del self.banks[bank.index]
         self.dao.delete(bank)
-        if bank == self.currentController.getCurrentBank():
-            self.deviceController.loadPatch(
-                self.currentController.getCurrentPatch()
-            )

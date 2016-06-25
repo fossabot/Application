@@ -31,8 +31,8 @@ class DeviceController(Controller):
 
         #print("connecting", patch["connections"])
 
-    def toggleStatusEffect(self, effect):
-        print("Toggle status effect number:", effect)
+    def toggleStatusEffect(self, effectIndex):
+        print("Toggle status effect number:", effectIndex)
 
-    def setEffectParam(self, effect, param):
-        print("Toggle status effect number:", effect, param)
+    def setEffectParam(self, effectIndex, param):
+        print("Toggle status effect number:", effectIndex, param)

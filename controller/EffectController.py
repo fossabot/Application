@@ -45,7 +45,7 @@ class EffectController(Controller):
         effect['author'] = plugin['author']
         
         effect['ports'] = dict(plugin['ports'])
-        effect['activity'] = True
+        effect['status'] = True
         
         return effect
 

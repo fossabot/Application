@@ -11,8 +11,3 @@ class Lv2Library(object):
 
         for plugin in data:
             self.plugins[plugin['uri']] = plugin
-
-
-if __name__ == "__main__":
-    lib = Lv2Library()
-    print(lib.plugins)

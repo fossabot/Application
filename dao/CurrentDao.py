@@ -12,6 +12,13 @@ class CurrentDao(object):
     def load(self):
         return self.readFile()
 
+    def save(self, data):
+        DataBank.save(self.url(), data)
+
     @privatemethod
     def readFile(self):
-        return DataBank.read(self.dataPath + "current.json")
+        return DataBank.read(self.url())
+
+    @privatemethod
+    def url(self):
+        return self.dataPath + "current.json"
