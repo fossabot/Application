@@ -31,7 +31,7 @@ class BanksController(Controller):
 
     def updateBank(self, bank, data):
         self.dao.delete(bank)
-        bank.data = data
+        bank.data = dict(data)
 
         self.dao.save(bank)
         if bank == self.currentController.getCurrentBank():

@@ -23,7 +23,7 @@ class PatchController(Controller):
         return len(bank.patches) - 1
 
     def updatePatch(self, bank, patchNumber, newPatchData):
-        bank.patches[patchNumber] = newPatchData
+        bank.patches[patchNumber] = dict(newPatchData)
 
         self.dao.save(bank)
 
