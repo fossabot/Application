@@ -7,7 +7,7 @@ class Bank(object):
     _data = {}
 
     def __init__(self, data):
-        self.data = data
+        self._data = data
 
     def validate(self, data):
         if 'patches' not in data:
@@ -60,7 +60,7 @@ class Bank(object):
         return self.get(params, paramIndex)
 
     def getParams(self, patchIndex, effectIndex):
-        return self.getEffect(patchIndex, effectIndex)["params"]
+        return self.getEffect(patchIndex, effectIndex)['ports']['control']['input']
 
     def addEffect(self, patch, effect):
         patch["effects"].append(effect)
