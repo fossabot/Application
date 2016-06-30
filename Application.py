@@ -2,6 +2,7 @@ from controller.BanksController import BanksController
 from controller.CurrentController import CurrentController
 from controller.DeviceController import DeviceController
 from controller.EffectController import EffectController
+from controller.NotificationController import NotificationController
 from controller.ParamController import ParamController
 from controller.PatchController import PatchController
 from controller.PluginsController import PluginsController
@@ -19,7 +20,8 @@ class Application(object):
             EffectController,
             ParamController,
             PatchController,
-            PluginsController
+            PluginsController,
+            NotificationController
         ]
         if test:
             from unittest.mock import Mock 
