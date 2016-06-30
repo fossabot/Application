@@ -18,10 +18,10 @@ class Application(object):
             CurrentController,
             DeviceController,
             EffectController,
+            NotificationController,
             ParamController,
             PatchController,
-            PluginsController,
-            NotificationController
+            PluginsController
         ]
         if test:
             from unittest.mock import Mock 

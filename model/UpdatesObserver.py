@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 
 
 class UpdatesObserver(metaclass=ABCMeta):
@@ -13,7 +13,7 @@ class UpdatesObserver(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def onBankUpdate(self, bank, effect):
+    def onBankUpdate(self, bankIndex):
         pass
 
     @abstractmethod
