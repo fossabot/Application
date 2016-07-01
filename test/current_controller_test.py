@@ -30,10 +30,10 @@ class CurrentControllerTest(unittest.TestCase):
         effects = self.controller.getCurrentPatch()['effects']
         for index in range(len(effects)):
             effect = effects[index]
-            actived = effect['active']
+            actived = effect['status']
 
             self.controller.toggleStatusEffect(index)
-            self.assertEqual(not actived, effect['active'])
+            self.assertEqual(not actived, effect['status'])
 
             # Changing to original state
             self.controller.toggleStatusEffect(index)

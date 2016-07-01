@@ -35,7 +35,7 @@ class CurrentController(Controller):
     # ************************
     def toggleStatusEffect(self, effectNumber):
         effect = self.getEffectOfCurrentPatch(effectNumber)
-        effect["active"] = not effect["active"]
+        effect["status"] = not effect["status"]
 
         self.deviceController.toggleStatusEffect(effectNumber)
         self.saveCurrent()

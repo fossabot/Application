@@ -8,6 +8,7 @@ class Bank(object):
 
     def __init__(self, data):
         self._data = data
+        self.validate(data)
 
     def validate(self, data):
         if 'patches' not in data:
