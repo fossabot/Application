@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 from abc import ABCMeta, abstractmethod
+from enum import Enum
+
+
+class UpdateType(Enum):
+    CREATED = 0
+    UPDATED = 1
+    DELETED = 2
 
 
 class UpdatesObserver(metaclass=ABCMeta):
@@ -9,13 +16,13 @@ class UpdatesObserver(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def onBankUpdate(self, bankIndex):
+    def onBankUpdate(self, bankIndex, updateType):
         pass
 
     @abstractmethod
-    def onPatchUpdate(self, bankIndex, patchIndex):
+    def onPatchUpdate(self, bankIndex, patchIndex, updateType):
         pass
 
     @abstractmethod
-    def onParamValueChange(self, bankIndex, patchIndex, effectIndex, paramIndex):
+    def onParamValueChange(self, bankIndex, patchIndex, effectIndex, paramIndex, updateType):
         pass
