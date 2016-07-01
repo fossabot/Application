@@ -5,11 +5,7 @@ from abc import ABCMeta, abstractmethod
 class UpdatesObserver(metaclass=ABCMeta):
 
     @abstractmethod
-    def onCurrentBankChange(self, bankIndex):
-        pass
-
-    @abstractmethod
-    def onCurrentPatchChange(self, patchIndex):
+    def onCurrentPatchChange(self, bankIndex, patchIndex):
         pass
 
     @abstractmethod
@@ -17,9 +13,9 @@ class UpdatesObserver(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def onPatchUpdate(self, bankIndex, patch):
+    def onPatchUpdate(self, bankIndex, patchIndex):
         pass
 
     @abstractmethod
-    def onParamValueChange(self, bankIndex, patchIndex, effect, param):
+    def onParamValueChange(self, bankIndex, patchIndex, effectIndex, paramIndex):
         pass

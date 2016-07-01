@@ -9,6 +9,9 @@ class NotificationController(Controller):
     """
     observers = []
 
+    def configure(self):
+        pass
+
     def register(self, observer):
         self.observers.append(observer)
 
@@ -18,22 +21,18 @@ class NotificationController(Controller):
     ########################
     # Notify methods
     ########################
-    def notifyCurrentBankChange(self, bankIndex):
+    def notifyCurrentPatchChange(self, bankIndex, patchIndex):
         for observer in self.observers:
-            observer.onCurrentBankChange(bankIndex)
-
-    def notifyCurrentPatchChange(self, patchIndex):
-        for observer in self.observers:
-            observer.onCurrentPatchChange(patchIndex)
+            observer.onCurrentPatchChange(bankIndex, patchIndex)
 
     def notifyBankUpdate(self, bankIndex):
         for observer in self.observers:
             observer.onBankUpdate(bankIndex)
 
-    def notifyPatchUpdate(self, bankIndex, patch):
+    def notifyPatchUpdate(self, bankIndex, patchIndex):
         for observer in self.observers:
-            observer.onPatchUpdate(bankIndex, patch)
+            observer.onPatchUpdate(bankIndex, patchIndex)
 
-    def notifyParamValueChange(self, bankIndex, patchIndex, effect, param):
+    def notifyParamValueChange(self, bankIndex, patchIndex, effectIndex, param):
         for observer in self.observers:
-            observer.onParamValueChange(bankIndex, patchIndex, effect, param)
+            observer.onParamValueChange(bankIndex, patchIndex, effectIndex, param)

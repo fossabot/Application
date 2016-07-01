@@ -5,6 +5,7 @@ from architecture.privatemethod import privatemethod
 from controller.Controller import Controller
 from controller.BanksController import BanksController
 from controller.DeviceController import DeviceController
+from controller.NotificationController import NotificationController
 
 from dao.CurrentDao import CurrentDao
 
@@ -20,6 +21,7 @@ class CurrentController(Controller):
 
         self.deviceController = self.app.controller(DeviceController)
         self.banksController = self.app.controller(BanksController)
+        self.notificationController = self.app.controller(NotificationController)
 
     # ************************
     # Persistance
@@ -40,11 +42,19 @@ class CurrentController(Controller):
 
     def setEffectParam(self, effectIndex, paramIndex, value):
         effects = self.getCurrentPatch()['effects']
-        param = effects[effectIndex]['ports']['control']['input'][paramIndex]
+        effect = effects[effectIndex]
+        param = effect['ports']['control']['input'][paramIndex]
         param['value'] = value
 
         self.deviceController.setEffectParam(effectIndex, param)
         self.saveCurrent()
+
+        self.notificationController.notifyParamValueChange(
+            self.bankNumber,
+            self.patchNumber,
+            effectIndex,
+            paramIndex
+        )
 
     # ************************
     # Get of Current
@@ -95,19 +105,19 @@ class CurrentController(Controller):
     def toBeforeBank(self):
         banks = self.banksController.banks.all
         position = banks.index(self.getCurrentBank())
-        
+
         before = position - 1
         if before == -1:
             before = len(banks) - 1
 
         beforeBankIndex = banks[before].index
-        
+
         self.setBank(beforeBankIndex)
 
     def toNextBank(self):
         banks = self.banksController.banks.all
         position = banks.index(self.getCurrentBank())
-        
+
         nextBankIndex = position + 1
         if nextBankIndex == len(banks):
             nextBankIndex = 0
@@ -131,6 +141,11 @@ class CurrentController(Controller):
         self.bankNumber = bankNumber
         self.patchNumber = patchNumber
         self.saveCurrent()
+
+        self.notificationController.notifyCurrentPatchChange(
+            self.bankNumber,
+            self.patchNumber
+        )
 
     @privatemethod
     def loadDevicePatch(self, bankNumber, patchNumber):
