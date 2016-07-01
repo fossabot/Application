@@ -3,10 +3,10 @@ from controller.Controller import Controller
 
 
 class NotificationController(Controller):
-"""
-Notification observer notifies changes to 
-UpdatesObservers registred
-"""
+    """
+    Notification observer notifies changes to 
+    UpdatesObservers registred
+    """
     observers = []
 
     def register(self, observer):
