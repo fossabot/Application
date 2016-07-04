@@ -12,6 +12,7 @@ class ParamController(Controller):
         self.dao = self.app.dao(BankDao)
         self.currentController = self.app.controller(CurrentController)
         self.deviceController = self.app.controller(DeviceController)
+        self.notificationController = self.app.controller(NotificationController)
 
     def updateValue(self, bank, patch, param, newValue):
         param['value'] = newValue
@@ -22,3 +23,10 @@ class ParamController(Controller):
             self.deviceController.loadPatch(
                 self.currentController.getCurrentPatch()
             )
+
+        self.notificationController.notifyParamValueChange(
+            bank['index'],
+            bank.patches.index(patch),
+            effectIndex,
+            paramIndex
+        )

@@ -33,12 +33,18 @@ class CurrentController(Controller):
     # ************************
     # Effect
     # ************************
-    def toggleStatusEffect(self, effectNumber):
-        effect = self.getEffectOfCurrentPatch(effectNumber)
+    def toggleStatusEffect(self, effectIndex):
+        effect = self.getEffectOfCurrentPatch(effectIndex)
         effect["status"] = not effect["status"]
 
-        self.deviceController.toggleStatusEffect(effectNumber)
+        self.deviceController.toggleStatusEffect(effectIndex)
         self.saveCurrent()
+
+        self.notificationController.notifyEffectStatusToggled(
+            self.bankNumber,
+            self.patchNumber,
+            effectIndex
+        )
 
     def setEffectParam(self, effectIndex, paramIndex, value):
         effects = self.getCurrentPatch()['effects']

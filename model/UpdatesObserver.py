@@ -24,5 +24,9 @@ class UpdatesObserver(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def onEffectStatusToggled(self, bankIndex, patchIndex, effectIndex):
+        pass
+
+    @abstractmethod
     def onParamValueChange(self, bankIndex, patchIndex, effectIndex, paramIndex, updateType):
         pass

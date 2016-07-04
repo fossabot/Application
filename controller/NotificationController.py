@@ -33,6 +33,10 @@ class NotificationController(Controller):
         for observer in self.observers:
             observer.onPatchUpdate(bankIndex, patchIndex)
 
+    def notifyEffectStatusToggled(self, bankIndex, patchIndex, effectIndex):
+        for observer in self.observers:
+            observer.onEffectStatusToggled(bankIndex, patchIndex)
+
     def notifyParamValueChange(self, bankIndex, patchIndex, effectIndex, param):
         for observer in self.observers:
             observer.onParamValueChange(bankIndex, patchIndex, effectIndex, param)
