@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from architecture.privatemethod import privatemethod
+
 from Application import ApplicationSingleton
 
 from controller.CurrentController import CurrentController
@@ -18,21 +20,10 @@ class ParamControllerTest(unittest.TestCase):
         cls.application = ApplicationSingleton.getInstance()
 
     def setUp(self):
-        self.controller = ParamControllerTest.application.controller(
-            ParamController
-        )
-
-        self.effectController = ParamControllerTest.application.controller(
-            EffectController
-        )
-
-        self.pluginsController = ParamControllerTest.application.controller(
-            PluginsController
-        )
-
-        self.currentController = ParamControllerTest.application.controller(
-            CurrentController
-        )
+        self.controller = self.get_controller(ParamController)
+        self.effectController = self.get_controller(EffectController)
+        self.pluginsController = self.get_controller(PluginsController)
+        self.currentController = self.get_controller(CurrentController)
 
         self.currentController.setBank(0)
         self.currentController.setPatch(0)
@@ -40,31 +31,22 @@ class ParamControllerTest(unittest.TestCase):
         self.currentBank = self.currentController.currentBank
         self.currentPatch = self.currentController.currentPatch
 
+    @privatemethod
+    def get_controller(self, controller):
+        return ParamControllerTest.application.controller(controller)
+
     def test_update_value(self):
         uri = 'http://guitarix.sourceforge.net/plugins/gx_reverb_stereo#_reverb_stereo'
 
-        effectIndex = self.effectController.createEffect(
-            self.currentBank,
-            self.currentPatch,
-            uri
-        )
+        effectIndex = self.effectController.createEffect(self.currentPatch, uri)
 
-        effect = self.currentPatch['effects'][effectIndex]
-        param = effect['ports']['control']['input'][0]
+        effect = self.currentPatch.effects[effectIndex]
+        param = effect.params[0]
 
         ranges = param['ranges']
         newValue = (ranges['maximum'] + ranges['minimum']) / 2
-        self.controller.updateValue(
-            self.currentBank,
-            self.currentPatch,
-            param,
-            newValue
-        )
+        self.controller.updateValue(effect, param, newValue)
 
         self.assertEqual(param['value'], newValue)
 
-        self.effectController.deleteEffect(
-            self.currentBank,
-            self.currentPatch,
-            effectIndex
-        )
+        self.effectController.deleteEffect(effect)

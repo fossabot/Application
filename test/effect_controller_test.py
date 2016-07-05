@@ -20,23 +20,19 @@ class EffectControllerTest(unittest.TestCase):
         cls.application = ApplicationSingleton.getInstance()
 
     def setUp(self):
-        self.controller = EffectControllerTest.application.controller(
-            EffectController
-        )
-
-        self.pluginsController = EffectControllerTest.application.controller(
-            PluginsController
-        )
-
-        self.currentController = EffectControllerTest.application.controller(
-            CurrentController
-        )
+        self.controller = self.get_controller(EffectController)
+        self.pluginsController = self.get_controller(PluginsController)
+        self.currentController = self.get_controller(CurrentController)
 
         self.currentController.setBank(0)
         self.currentController.setPatch(0)
 
         self.currentBank = self.currentController.currentBank
         self.currentPatch = self.currentController.currentPatch
+
+    @privatemethod
+    def get_controller(self, controller):
+        return EffectControllerTest.application.controller(controller)
 
     @privatemethod
     def total_effects_current_patch(self):
@@ -46,53 +42,41 @@ class EffectControllerTest(unittest.TestCase):
     def any_plugin_uri(self):
         return list(self.pluginsController.plugins.keys())[0]
 
+    @privatemethod
+    def create_effect(self, uri=None):
+        if uri is None:
+            uri = self.any_plugin_uri()
+        
+        patch = self.currentPatch
+        return self.controller.createEffect(patch, uri)
+
     def test_create_effect(self):
         totalEffects = self.total_effects_current_patch()
-        effectIndex = self.controller.createEffect(
-            self.currentBank,
-            self.currentPatch,
-            self.any_plugin_uri()
-        )
+
+        effectIndex = self.create_effect()
+        effect = self.currentPatch.effects[effectIndex]
 
         # Index is last effect + 1
         self.assertEqual(totalEffects, effectIndex)
 
         self.assertLess(totalEffects, self.total_effects_current_patch())
 
-        self.controller.deleteEffect(
-            self.currentBank,
-            self.currentPatch,
-            effectIndex
-        )
+        self.controller.deleteEffect(effect)
 
     def test_create_undefined_effect(self):
         with self.assertRaises(EffectException):
-            self.controller.createEffect(
-                self.currentBank,
-                self.currentPatch,
-                'http://undefined.plugin.uri'
-            )
+            self.create_effect('http://undefined.plugin.uri')
 
     def test_delete_effect(self):
-        effectIndex = self.controller.createEffect(
-            self.currentBank,
-            self.currentPatch,
-            self.any_plugin_uri()
-        )
+        effectIndex = self.create_effect()
+        effect = self.currentPatch.effects[effectIndex]
+
         totalEffects = self.total_effects_current_patch()
 
-        self.controller.deleteEffect(
-            self.currentBank,
-            self.currentPatch,
-            effectIndex
-        )
+        self.controller.deleteEffect(effect)
 
         self.assertEqual(totalEffects - 1, self.total_effects_current_patch())
 
-    def test_delete_out_range_effect(self):
-        with self.assertRaises(IndexError):
-            self.controller.deleteEffect(
-                self.currentBank,
-                self.currentPatch,
-                5000
-            )
+    def test_delete_undefined_effect(self):
+        #FIXME - Implement this
+        pass

@@ -47,11 +47,20 @@ class EffectController(Controller):
         effect['name'] = plugin['name']
         effect['label'] = plugin['label']
         effect['author'] = plugin['author']
-        
+
         effect['ports'] = dict(plugin['ports'])
         effect['status'] = True
 
+        effect = self.preparePorts(effect)
+
         return Effect(effect)
+
+    @privatemethod
+    def preparePorts(self, effect):
+        for param in effect['ports']['control']['input']:
+            param['value'] = param['ranges']['default']
+        
+        return effect
 
     def deleteEffect(self, effect):
         patch = effect.patch

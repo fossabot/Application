@@ -67,6 +67,7 @@ class CurrentControllerTest(unittest.TestCase):
         effect = self.controller.currentPatch.effects[effectIndex]
 
         param = effect.params[paramIndex]
+
         originalValue = param['value']
         newValue = originalValue+1
 

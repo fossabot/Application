@@ -3,12 +3,21 @@ from model.Effect import Effect
 
 
 class Patch(object):
-    json = None
+    __json = None
     bank = None
 
     def __init__(self, json, bank=None):
         self.bank = bank
-        self.json = json
+        self.__json = json
+
+    @property
+    def json(self):
+        return self.__json
+    
+    @json.setter
+    def json(self, value):
+        self.__json.clear()
+        self.__json.update(value)
 
     def __getitem__(self, key):
         return self.json[key]
