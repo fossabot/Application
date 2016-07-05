@@ -14,6 +14,10 @@ class CurrentController(Controller):
     bankNumber = 0
     patchNumber = 0
 
+    deviceController = None
+    banksController = None
+    notificationController = None
+
     def configure(self):
         data = self.app.dao(CurrentDao).load()
         self.bankNumber = data["bank"]
@@ -47,7 +51,7 @@ class CurrentController(Controller):
     # ************************
     def toggleStatusEffect(self, effectIndex):
         effect = self.currentPatch.effects[effectIndex]
-        effect["status"] = not effect["status"]
+        effect.json["status"] = not effect["status"]
 
         self.deviceController.toggleStatusEffect(effectIndex)
         self.saveCurrent()

@@ -5,6 +5,7 @@ from Application import ApplicationSingleton
 
 from controller.PatchController import PatchController
 from controller.CurrentController import CurrentController
+from model.Patch import Patch
 
 
 class PatchControllerTest(unittest.TestCase):
@@ -38,73 +39,56 @@ class PatchControllerTest(unittest.TestCase):
 
         totalPatches = len(self.currentBank.patches)
         patchIndex = self.controller.createPatch(self.currentBank, patch)
+        patch = self.currentController.currentBank.patches[patchIndex]
 
         # Index is last patch + 1
         self.assertEqual(totalPatches, patchIndex)
 
         self.assertLess(totalPatches, len(self.currentBank.patches))
 
-        self.controller.deletePatch(self.currentBank, patchIndex)
+        self.controller.deletePatch(patch)
 
     def test_update_patch(self):
         newName = 'test_update_patch 2'
-        patch = {
+        patchJson = {
             'name': 'test_update_patch',
             'effects': [],
             'connections': []
         }
-        patchIndex = self.controller.createPatch(self.currentBank, patch)
+
+        patchIndex = self.controller.createPatch(self.currentBank, patchJson)
 
         newPatchData = dict(self.currentController.currentPatch.json)
         newPatchData['name'] = newName
 
-        self.controller.updatePatch(
-            self.currentBank,
-            patchIndex,
-            newPatchData
-        )
+        patch = self.currentBank.patches[patchIndex]
+        self.controller.updatePatch(patch, newPatchData)
 
-        self.assertEqual(self.currentBank.patches[patchIndex]['name'], newName)
+        self.assertEqual(patch['name'], newName)
 
-        self.controller.deletePatch(self.currentBank, patchIndex)
+        self.controller.deletePatch(patch)
 
     def test_update_current_patch(self):
         newName = 'test_update_current_patch 2'
-        patch = {
+        patchJson = {
             'name': 'test_update_current_patch',
             'effects': [],
             'connections': []
         }
-        patchIndex = self.controller.createPatch(self.currentBank, patch)
+
+        patchIndex = self.controller.createPatch(self.currentBank, patchJson)
         self.currentController.setPatch(patchIndex)
 
         newPatchData = dict(self.currentController.currentPatch.json)
         newPatchData['name'] = newName
 
-        self.controller.updatePatch(
-            self.currentBank,
-            patchIndex,
-            newPatchData
-        )
+        patch = self.currentBank.patches[patchIndex]
+        self.controller.updatePatch(patch, newPatchData)
 
         self.assertEqual(self.currentBank.patches[patchIndex]['name'], newName)
-        
+
         self.currentController.setPatch(0) #  Delete current patch is tested in another test
-        self.controller.deletePatch(self.currentBank, patchIndex)
-
-    def test_update_out_range_patch(self):
-        newPatchData = {
-            'name': 'test_update_out_range_patch',
-            'effects': [],
-            'connections': []
-        }
-
-        with self.assertRaises(IndexError):
-            self.controller.updatePatch(
-                self.currentBank,
-                5000,
-                newPatchData
-            )
+        self.controller.deletePatch(patch)
 
     def test_delete_patch(self):
         patch = {
@@ -114,15 +98,16 @@ class PatchControllerTest(unittest.TestCase):
         }
 
         patchIndex = self.controller.createPatch(self.currentBank, patch)
+        patch = self.currentBank.patches[patchIndex]
 
         totalPatches = len(self.currentBank.patches)
-        self.controller.deletePatch(self.currentBank, patchIndex)
+        self.controller.deletePatch(patch)
 
         self.assertEqual(totalPatches - 1, len(self.currentBank.patches))
 
-    def test_delete_out_range_patch(self):
-        with self.assertRaises(IndexError):
-            self.controller.deletePatch(self.currentBank, 5000)
+    def test_update_deleted_patch(self):
+        #FIXME - Implement
+        pass
 
     def test_delete_current_patch(self):
         patch = {
@@ -136,7 +121,7 @@ class PatchControllerTest(unittest.TestCase):
         self.currentController.setPatch(patchIndex)
 
         totalPatches = len(self.currentBank.patches)
-        self.controller.deletePatch(self.currentBank, patchIndex)
+        self.controller.deletePatch(self.currentController.currentPatch)
 
         self.assertEqual(totalPatches-1, len(self.currentBank.patches))
 

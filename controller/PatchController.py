@@ -5,37 +5,43 @@ from controller.Controller import Controller
 from controller.CurrentController import CurrentController
 from controller.DeviceController import DeviceController
 
+from model.Patch import Patch
+
 
 class PatchController(Controller):
+    dao = None
+    currentController = None
+    deviceController = None
 
     def configure(self):
         self.dao = self.app.dao(BankDao)
         self.currentController = self.app.controller(CurrentController)
         self.deviceController = self.app.controller(DeviceController)
 
-    def createPatch(self, bank, patch):
-        '''
+    def createPatch(self, bank, patchJson):
+        """
         @return patch index
-        '''
-        bank.addPatch(patch)
+        """
+        bank.addPatch(Patch(patchJson))
         self.dao.save(bank)
 
         return len(bank.patches) - 1
 
-    def updatePatch(self, bank, patchNumber, newPatchData):
-        bank.patches[patchNumber] = dict(newPatchData)
+    def updatePatch(self, patch, newPatchData):
+        patch.json = dict(newPatchData) #FIXME Referecen problem
 
-        self.dao.save(bank)
+        self.dao.save(patch.bank)
 
-        if self.currentController.isCurrent(bank, newPatchData):
-            self.deviceController.loadPatch(newPatchData)
+        if self.currentController.isCurrentPatch(patch):
+            self.deviceController.loadPatch(patch)
 
-    def deletePatch(self, bank, patchNumber):
-        patch = bank.patches[patchNumber]
+    def deletePatch(self, patch):
+        bank = patch.bank
+        patchNumber = bank.indexOfPatch(patch)
 
-        if self.currentController.isCurrent(bank, patch):
+        if self.currentController.isCurrentPatch(patch):
             self.currentController.toNextPatch()
 
-        del bank.patches[patchNumber]
+        del bank['patches'][patchNumber]
 
         self.dao.save(bank)

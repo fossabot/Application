@@ -28,7 +28,7 @@ class Bank(object):
         return self._data
 
     @json.setter
-    def setJson(self, value):
+    def json(self, value):
         self._data = value
         #FIXME - Add validation
 
@@ -36,8 +36,8 @@ class Bank(object):
     def patches(self):
         returned = []
 
-        for patchJson in self["patches"]:
-            returned.append(Patch(self, patchJson))
+        for patchJson in self['patches']:
+            returned.append(Patch(patchJson, self))
 
         return returned
 
@@ -56,5 +56,8 @@ class Bank(object):
     # Methods
     # ==================================
     def addPatch(self, patch):
-        self["patches"].append(patch.json)
+        self['patches'].append(patch.json)
         patch.bank = self
+
+    def indexOfPatch(self, patch):
+        return self['patches'].index(patch.json)
