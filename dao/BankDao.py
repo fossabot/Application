@@ -36,4 +36,4 @@ class BankDao(object):
 
     @privatemethod
     def url(self, bank):
-        return self.dataPath + bank.data["name"] + ".json"
+        return self.dataPath + bank["name"] + ".json"

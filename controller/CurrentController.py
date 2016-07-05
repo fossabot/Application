@@ -24,6 +24,18 @@ class CurrentController(Controller):
         self.notificationController = self.app.controller(NotificationController)
 
     # ************************
+    # Property
+    # ************************
+
+    @property
+    def currentPatch(self):
+        return self.currentBank.patches[self.patchNumber]
+
+    @property
+    def currentBank(self):
+        return self.banksController.banks[self.bankNumber]
+
+    # ************************
     # Persistance
     # ************************
     @privatemethod
@@ -34,7 +46,7 @@ class CurrentController(Controller):
     # Effect
     # ************************
     def toggleStatusEffect(self, effectIndex):
-        effect = self.getEffectOfCurrentPatch(effectIndex)
+        effect = self.currentPatch.effects[effectIndex]
         effect["status"] = not effect["status"]
 
         self.deviceController.toggleStatusEffect(effectIndex)
@@ -47,9 +59,9 @@ class CurrentController(Controller):
         )
 
     def setEffectParam(self, effectIndex, paramIndex, value):
-        effects = self.getCurrentPatch()['effects']
+        effects = self.currentPatch.effects
         effect = effects[effectIndex]
-        param = effect['ports']['control']['input'][paramIndex]
+        param = effect.params[paramIndex]
         param['value'] = value
 
         self.deviceController.setEffectParam(effectIndex, param)
@@ -65,25 +77,11 @@ class CurrentController(Controller):
     # ************************
     # Get of Current
     # ************************
-    def isCurrent(self, bank, patch):
-        return bank.index == self.bankNumber \
-           and self.getCurrentPatch() == patch
+    def isCurrentBank(self, bank):
+        return bank.index == self.bankNumber
 
-    # ************************
-    # Get of Current
-    # ************************
-    def getEffectOfCurrentPatch(self, effectNumber):
-        patch = self.getCurrentPatch()
-        try:
-            return patch["effects"][effectNumber]
-        except IndexError:
-            raise IndexError("Element not found")
-
-    def getCurrentPatch(self):
-        return self.getCurrentBank().getPatch(self.patchNumber)
-
-    def getCurrentBank(self):
-        return self.banksController.banks[self.bankNumber]
+    def isCurrentPatch(self, patch):
+        return self.isCurrentBank(patch.bank) and self.currentPatch == patch
 
     # ************************
     # Set Current Patch/Bank
@@ -91,13 +89,13 @@ class CurrentController(Controller):
     def toBeforePatch(self):
         beforePatchNumber = self.patchNumber - 1
         if beforePatchNumber == -1:
-            beforePatchNumber = len(self.getCurrentBank().patches) - 1
+            beforePatchNumber = len(self.currentBank.patches) - 1
 
         self.setPatch(beforePatchNumber)
 
     def toNextPatch(self):
-        nextPatchNumber = self.patchNumber+1
-        if nextPatchNumber == len(self.getCurrentBank().patches):
+        nextPatchNumber = self.patchNumber + 1
+        if nextPatchNumber == len(self.currentBank.patches):
             nextPatchNumber = 0
 
         self.setPatch(nextPatchNumber)
@@ -110,7 +108,7 @@ class CurrentController(Controller):
 
     def toBeforeBank(self):
         banks = self.banksController.banks.all
-        position = banks.index(self.getCurrentBank())
+        position = banks.index(self.currentBank)
 
         before = position - 1
         if before == -1:
@@ -122,7 +120,7 @@ class CurrentController(Controller):
 
     def toNextBank(self):
         banks = self.banksController.banks.all
-        position = banks.index(self.getCurrentBank())
+        position = banks.index(self.currentBank)
 
         nextBankIndex = position + 1
         if nextBankIndex == len(banks):
@@ -156,6 +154,6 @@ class CurrentController(Controller):
     @privatemethod
     def loadDevicePatch(self, bankNumber, patchNumber):
         bank = self.banksController.banks[bankNumber]
-        patch = bank.getPatch(patchNumber)
+        patch = bank.patches[patchNumber]
 
         self.deviceController.loadPatch(patch)

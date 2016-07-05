@@ -4,6 +4,7 @@ from dao.BankDao import BankDao
 from controller.Controller import Controller
 from controller.CurrentController import CurrentController
 from controller.DeviceController import DeviceController
+from controller.NotificationController import NotificationController
 
 
 class ParamController(Controller):

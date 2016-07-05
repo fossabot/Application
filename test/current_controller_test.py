@@ -26,8 +26,27 @@ class CurrentControllerTest(unittest.TestCase):
         self.controller.setBank(0)
         self.controller.setPatch(0)
 
+    def test_current_patch(self):
+        currentBank = self.controller.currentBank
+        currentPatch = self.controller.currentPatch
+
+        self.assertIsNotNone(currentPatch)
+        self.assertEqual(
+            currentBank.patches[0],
+            currentPatch
+        )
+
+    def test_current_bank(self):
+        currentBank = self.controller.currentBank
+        self.assertIsNotNone(self.controller.currentBank)
+        self.assertEqual(
+            self.banksController.banks.all[0],
+            currentBank
+        )
+
     def test_toggle_status_effects(self):
-        effects = self.controller.getCurrentPatch()['effects']
+        effects = self.controller.currentPatch.effects
+
         for index in range(len(effects)):
             effect = effects[index]
             actived = effect['status']
@@ -45,9 +64,9 @@ class CurrentControllerTest(unittest.TestCase):
     def test_set_effect_param(self):
         effectIndex = 0
         paramIndex = 0
-        effect = self.controller.getCurrentPatch()['effects'][effectIndex]
+        effect = self.controller.currentPatch.effects[effectIndex]
 
-        param = effect['ports']['control']['input'][paramIndex]
+        param = effect.params[paramIndex]
         originalValue = param['value']
         newValue = originalValue+1
 
@@ -63,6 +82,7 @@ class CurrentControllerTest(unittest.TestCase):
     def test_set_effect_param_invalid_value_max(self):
         self.fail("Not implemented")
     '''
+
     def test_set_param_of_index_out_effect(self):
         with self.assertRaises(IndexError):
             self.controller.setEffectParam(5000, 0, 0)
@@ -71,65 +91,43 @@ class CurrentControllerTest(unittest.TestCase):
         with self.assertRaises(IndexError):
             self.controller.setEffectParam(0, 5000, 0)
 
-    def test_is_current(self):
-        currentBank = self.controller.getCurrentBank()
-        currentPatch = self.controller.getCurrentPatch()
+    def test_is_current_patch(self):
+        currentPatch = self.controller.currentPatch
 
         anotherBank = self.banksController.banks.all[-1]
         anotherPatch = anotherBank.patches[0]
 
-        self.assertTrue(self.controller.isCurrent(currentBank, currentPatch))
+        self.assertTrue(self.controller.isCurrentPatch(currentPatch))
+        self.assertFalse(self.controller.isCurrentPatch(anotherPatch))
 
-        self.assertFalse(self.controller.isCurrent(anotherBank, currentPatch))
-        self.assertFalse(self.controller.isCurrent(currentBank, anotherPatch))
+    def test_is_current_bank(self):
+        currentBank = self.controller.currentBank
+        anotherBank = self.banksController.banks.all[-1]
 
-    def test_get_effect_of_current_patch(self):
-        for index in range(len(self.controller.getCurrentPatch()['effects'])):
-            self.assertIsNotNone(self.controller.getEffectOfCurrentPatch(index))
-
-    def test_get_index_out_effect_of_current_patch(self):
-        with self.assertRaises(IndexError):
-            self.controller.getEffectOfCurrentPatch(5000)
-
-    def test_get_current_patch(self):
-        currentBank = self.controller.getCurrentBank()
-        currentPatch = self.controller.getCurrentPatch()
-
-        self.assertIsNotNone(currentPatch)
-        self.assertEqual(
-            currentBank.patches[0],
-            currentPatch
-        )
-
-    def test_get_current_bank(self):
-        currentBank = self.controller.getCurrentBank()
-        self.assertIsNotNone(self.controller.getCurrentBank())
-        self.assertEqual(
-            self.banksController.banks.all[0],
-            currentBank
-        )
+        self.assertTrue(self.controller.isCurrentBank(currentBank))
+        self.assertFalse(self.controller.isCurrentBank(anotherBank))
 
     def test_to_before_patch(self):
-        totalEffects = len(self.controller.getCurrentBank().patches)
-        for idEffect in reversed(range(totalEffects)):
+        totalPatches = len(self.controller.currentBank.patches)
+        for idPatch in reversed(range(totalPatches)):
             self.controller.toBeforePatch()
-            self.assertEqual(idEffect, self.controller.patchNumber)
-        
+            self.assertEqual(idPatch, self.controller.patchNumber)
+
     def test_next_patch(self):
-        totalEffects = len(self.controller.getCurrentBank().patches)
-        for idEffect in range(totalEffects):
-            self.assertEqual(idEffect, self.controller.patchNumber)
+        totalPatches = len(self.controller.currentBank.patches)
+        for idPatch in range(totalPatches):
+            self.assertEqual(idPatch, self.controller.patchNumber)
             self.controller.toNextPatch()
 
         self.assertEqual(0, self.controller.patchNumber)
 
     def test_set_patch(self):
-        firstPatch = self.controller.getCurrentPatch()
+        firstPatch = self.controller.currentPatch
 
         self.controller.setPatch(1)
         self.assertEqual(1, self.controller.patchNumber)
 
-        self.assertNotEqual(firstPatch, self.controller.getCurrentPatch())
+        self.assertNotEqual(firstPatch, self.controller.currentPatch)
 
     def test_set_index_out_patch(self):
         with self.assertRaises(IndexError):
@@ -139,23 +137,23 @@ class CurrentControllerTest(unittest.TestCase):
         banks = self.banksController.banks.all
         for bank in reversed(banks):
             self.controller.toBeforeBank()
-            self.assertEqual(bank, self.controller.getCurrentBank())
-        
+            self.assertEqual(bank, self.controller.currentBank)
+
     def test_next_bank(self):
         banks = self.banksController.banks.all
         for bank in banks:
-            self.assertEqual(bank, self.controller.getCurrentBank())
+            self.assertEqual(bank, self.controller.currentBank)
             self.controller.toNextBank()
 
-        self.assertEqual(banks[0], self.controller.getCurrentBank())
+        self.assertEqual(banks[0], self.controller.currentBank)
 
     def test_set_bank(self):
-        firstBank = self.controller.getCurrentBank()
+        firstBank = self.controller.currentBank
 
         self.controller.setBank(1)
         self.assertEqual(1, self.controller.bankNumber)
 
-        self.assertNotEqual(firstBank, self.controller.getCurrentBank())
+        self.assertNotEqual(firstBank, self.controller.currentBank)
 
     def test_setting_bank_patch_will_be_first(self):
         self.controller.setBank(1)

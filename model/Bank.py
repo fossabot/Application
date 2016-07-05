@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-from architecture.privatemethod import privatemethod
 from architecture.BankError import BankError
+from model.Patch import Patch
 
 
 class Bank(object):
     _data = {}
 
-    def __init__(self, data):
-        self._data = data
-        self.validate(data)
+    def __init__(self, json):
+        self._data = json
+        self.validate(json)
 
+    #FIXME - Json Schema
     def validate(self, data):
         if 'patches' not in data:
             raise BankError('invalid bank structure')
@@ -19,73 +20,41 @@ class Bank(object):
     # ==================================
     # Property
     # ==================================
-
-    @property
-    def data(self):
-        return self._data
-
-    @data.setter
-    def data(self, value):
-        self.validate(value)
-        self._data = value
+    def __getitem__(self, key):
+        return self.json[key]
 
     @property
     def json(self):
-        return self.data
+        return self._data
 
     @json.setter
     def setJson(self, value):
-        self.data = value
+        self._data = value
+        #FIXME - Add validation
 
     @property
     def patches(self):
-        return self.data["patches"]
+        returned = []
+
+        for patchJson in self["patches"]:
+            returned.append(Patch(self, patchJson))
+
+        return returned
 
     @property
     def index(self):
         try:
-            return self.data["index"]
+            return self["index"]
         except KeyError:
             return -1
 
     @index.setter
     def index(self, value):
-        self.data["index"] = value
+        self.json["index"] = value
 
     # ==================================
-    # Facade
+    # Methods
     # ==================================
-
-    def getParam(self, patchIndex, effectIndex, paramIndex):
-        params = self.getParams(patchIndex, effectIndex)
-        return self.get(params, paramIndex)
-
-    def getParams(self, patchIndex, effectIndex):
-        return self.getEffect(patchIndex, effectIndex)['ports']['control']['input']
-
-    def addEffect(self, patch, effect):
-        patch["effects"].append(effect)
-
-    def getEffect(self, patchIndex, effectIndex):
-        effects = self.getEffects(patchIndex)
-        return self.get(effects, effectIndex)
-
-    def getEffects(self, patchIndex):
-        return self.getPatch(patchIndex)["effects"]
-
-    def getPatch(self, patchIndex):
-        return self.get(self.patches, patchIndex)
-
     def addPatch(self, patch):
-        self.patches.append(patch)
-
-    # ==================================
-    # Private
-    # ==================================
-
-    @privatemethod
-    def get(self, collection, index):
-        try:
-            return collection[index]
-        except IndexError:
-            raise IndexError("Element not found")
+        self["patches"].append(patch.json)
+        patch.bank = self

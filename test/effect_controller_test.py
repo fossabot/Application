@@ -35,8 +35,8 @@ class EffectControllerTest(unittest.TestCase):
         self.currentController.setBank(0)
         self.currentController.setPatch(0)
 
-        self.currentBank = self.currentController.getCurrentBank()
-        self.currentPatch = self.currentController.getCurrentPatch()
+        self.currentBank = self.currentController.currentBank
+        self.currentPatch = self.currentController.currentPatch
 
     @privatemethod
     def total_effects_current_patch(self):

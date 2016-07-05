@@ -34,13 +34,13 @@ class BanksController(Controller):
         bank.data = dict(data)
 
         self.dao.save(bank)
-        if bank == self.currentController.getCurrentBank():
+        if bank == self.currentController.currentBank:
             self.deviceController.loadPatch(
-                self.currentController.getCurrentPatch()
+                self.currentController.currentPatch
             )
 
     def deleteBank(self, bank):
-        if bank == self.currentController.getCurrentBank():
+        if bank == self.currentController.currentBank:
             self.currentController.toNextBank()
 
         del self.banks[bank.index]

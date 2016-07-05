@@ -27,7 +27,7 @@ class PatchControllerTest(unittest.TestCase):
         self.currentController.setBank(0)
         self.currentController.setPatch(0)
 
-        self.currentBank = self.currentController.getCurrentBank()
+        self.currentBank = self.currentController.currentBank
 
     def test_create_patch(self):
         patch = {
@@ -55,7 +55,7 @@ class PatchControllerTest(unittest.TestCase):
         }
         patchIndex = self.controller.createPatch(self.currentBank, patch)
 
-        newPatchData = dict(self.currentController.getCurrentPatch())
+        newPatchData = dict(self.currentController.currentPatch.json)
         newPatchData['name'] = newName
 
         self.controller.updatePatch(
@@ -78,7 +78,7 @@ class PatchControllerTest(unittest.TestCase):
         patchIndex = self.controller.createPatch(self.currentBank, patch)
         self.currentController.setPatch(patchIndex)
 
-        newPatchData = dict(self.currentController.getCurrentPatch())
+        newPatchData = dict(self.currentController.currentPatch.json)
         newPatchData['name'] = newName
 
         self.controller.updatePatch(

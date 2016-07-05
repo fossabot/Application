@@ -88,19 +88,19 @@ class BanksControllerTest(unittest.TestCase):
         self.controller.deleteBank(self.controller.banks[index])
 
     def test_update_current_bank(self):
-        currentBankData = dict(self.currentController.getCurrentBank().data)
+        currentBankData = dict(self.currentController.currentBank.json)
 
         originalName = currentBankData['name']
         newName = "test_update_current_bank"
         currentBankData['name'] = newName
 
         self.controller.updateBank(
-            self.currentController.getCurrentBank(),
+            self.currentController.currentBank,
             currentBankData
         )
-        
+
         self.assertEqual(
-            self.currentController.getCurrentBank().data['name'],
+            self.currentController.currentBank.data['name'],
             newName
         )
 
@@ -108,7 +108,7 @@ class BanksControllerTest(unittest.TestCase):
 
         # Restoring name
         self.controller.updateBank(
-            self.currentController.getCurrentBank(),
+            self.currentController.currentBank,
             currentBankData
         )
 

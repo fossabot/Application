@@ -37,8 +37,8 @@ class ParamControllerTest(unittest.TestCase):
         self.currentController.setBank(0)
         self.currentController.setPatch(0)
 
-        self.currentBank = self.currentController.getCurrentBank()
-        self.currentPatch = self.currentController.getCurrentPatch()
+        self.currentBank = self.currentController.currentBank
+        self.currentPatch = self.currentController.currentPatch
 
     def test_update_value(self):
         uri = 'http://guitarix.sourceforge.net/plugins/gx_reverb_stereo#_reverb_stereo'
