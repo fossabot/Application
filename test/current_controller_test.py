@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from architecture.privatemethod import privatemethod
+
 from Application import ApplicationSingleton
 from controller.CurrentController import CurrentController
 from controller.BanksController import BanksController
@@ -15,16 +17,15 @@ class CurrentControllerTest(unittest.TestCase):
         cls.application = ApplicationSingleton.getInstance()
 
     def setUp(self):
-        self.controller = CurrentControllerTest.application.controller(
-            CurrentController
-        )
-
-        self.banksController = CurrentControllerTest.application.controller(
-            BanksController
-        )
+        self.controller = self.get_controller(CurrentController)
+        self.banksController = self.get_controller(BanksController)
 
         self.controller.setBank(0)
         self.controller.setPatch(0)
+
+    @privatemethod
+    def get_controller(self, controller):
+        return CurrentControllerTest.application.controller(controller)
 
     def test_current_patch(self):
         currentBank = self.controller.currentBank

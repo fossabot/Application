@@ -4,10 +4,10 @@ from model.Patch import Patch
 
 
 class Bank(object):
-    _data = {}
+    __json = {}
 
     def __init__(self, json):
-        self._data = json
+        self.__json = json
         self.validate(json)
 
     #FIXME - Json Schema
@@ -23,23 +23,21 @@ class Bank(object):
     def __getitem__(self, key):
         return self.json[key]
 
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) \
+           and self.json == other.json
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     @property
     def json(self):
-        return self._data
+        return self.__json
 
     @json.setter
     def json(self, value):
-        self._data = value
+        self.__json = dict(value)
         #FIXME - Add validation
-
-    @property
-    def patches(self):
-        returned = []
-
-        for patchJson in self['patches']:
-            returned.append(Patch(patchJson, self))
-
-        return returned
 
     @property
     def index(self):
@@ -51,6 +49,15 @@ class Bank(object):
     @index.setter
     def index(self, value):
         self.json["index"] = value
+
+    @property
+    def patches(self):
+        returned = []
+
+        for patchJson in self['patches']:
+            returned.append(Patch(patchJson, self))
+
+        return returned
 
     # ==================================
     # Methods

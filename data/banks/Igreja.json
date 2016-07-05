@@ -1,1 +1,498 @@
-{"index": 0, "patches": [{"connections": [{"out": "system:capture_1", "in": "effect_1:bass_l"}, {"out": "effect_1:out1", "in": "effect_2:input"}, {"out": "effect_2:out", "in": "system:playback_1"}], "effects": [{"uri": "http://guitarix.sourceforge.net/plugins/gx_reverb_stereo#_reverb_stereo", "ports": {"audio": {"input": [{"ranges": {}, "index": 7, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "In", "shortName": "In", "symbol": "in", "scalePoints": []}, {"ranges": {}, "index": 8, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "In1", "shortName": "In1", "symbol": "in1", "scalePoints": []}], "output": [{"ranges": {}, "index": 5, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "Out", "shortName": "Out", "symbol": "out", "scalePoints": []}, {"ranges": {}, "index": 6, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "Out1", "shortName": "Out1", "symbol": "out1", "scalePoints": []}]}, "control": {"input": [{"units": {}, "index": 0, "ranges": {"default": 50, "minimum": 0, "maximum": 100}, "properties": [], "value": 50, "designation": "", "rangeSteps": null, "name": "Dry/Wet", "scalePoints": [], "symbol": "dry_wet", "shortName": "Dry/Wet"}, {"ranges": {"default": 0.20000000298023224, "minimum": 0.20000000298023224, "maximum": 5}, "index": 1, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "LFO", "shortName": "LFO", "symbol": "lfo", "scalePoints": []}, {"ranges": {"default": 0.5, "minimum": 0, "maximum": 1}, "index": 2, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "Roomsize", "shortName": "Roomsize", "symbol": "roomsize", "scalePoints": []}, {"ranges": {"default": 0.20000000298023224, "minimum": 0, "maximum": 1}, "index": 3, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "Damp", "shortName": "Damp", "symbol": "damp", "scalePoints": []}, {"ranges": {"default": 0, "minimum": 0, "maximum": 1}, "index": 4, "units": {}, "properties": ["enumeration", "integer"], "designation": "", "rangeSteps": null, "name": "Mode", "shortName": "Mode", "symbol": "mode", "scalePoints": [{"label": "linear", "value": 0}, {"label": "pingpong", "value": 1}]}], "output": []}, "midi": {"input": [], "output": []}}, "status": true, "label": "GxReverb-Stereo", "author": {"homepage": "", "email": "brummer@web.de", "name": "Guitarix team"}, "name": "GxReverb-Stereo"}, {"uri": "http://guitarix.sourceforge.net/plugins/gxtubedelay#tubedelay", "ports": {"audio": {"input": [{"ranges": {}, "index": 5, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "in", "shortName": "in", "symbol": "in", "scalePoints": []}], "output": [{"ranges": {}, "index": 4, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "Out", "shortName": "Out", "symbol": "out", "scalePoints": []}]}, "control": {"input": [{"ranges": {"default": -40, "minimum": -40, "maximum": 16}, "index": 0, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "gain", "shortName": "gain", "symbol": "fslider0_", "scalePoints": []}, {"ranges": {"default": 0, "minimum": 0, "maximum": 10}, "index": 1, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "feedback", "shortName": "feedback", "symbol": "fslider1_", "scalePoints": []}, {"ranges": {"default": 0.10000000149011612, "minimum": 0.10000000149011612, "maximum": 5000}, "index": 2, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "delay", "shortName": "delay", "symbol": "fslider2_", "scalePoints": []}, {"ranges": {"default": -60, "minimum": -60, "maximum": 0}, "index": 3, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "level", "shortName": "level", "symbol": "fslider3_", "scalePoints": []}], "output": []}, "midi": {"input": [], "output": []}}, "status": true, "label": "GxTubeDelay", "author": {"homepage": "", "email": "brummer@web.de", "name": "Guitarix"}, "name": "GxTubeDelay"}], "name": "Shows"}, {"connections": [{"out": "system:capture_1", "in": "effect_1:bass_l"}, {"out": "effect_1:out1", "in": "effect_2:input"}, {"out": "effect_2:out", "in": "system:playback_1"}], "effects": [{"uri": "http://guitarix.sourceforge.net/plugins/gx_reverb_stereo#_reverb_stereo", "ports": {"audio": {"input": [{"ranges": {}, "index": 7, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "In", "shortName": "In", "symbol": "in", "scalePoints": []}, {"ranges": {}, "index": 8, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "In1", "shortName": "In1", "symbol": "in1", "scalePoints": []}], "output": [{"ranges": {}, "index": 5, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "Out", "shortName": "Out", "symbol": "out", "scalePoints": []}, {"ranges": {}, "index": 6, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "Out1", "shortName": "Out1", "symbol": "out1", "scalePoints": []}]}, "control": {"input": [{"units": {}, "index": 0, "ranges": {"default": 50, "minimum": 0, "maximum": 100}, "properties": [], "value": 50, "designation": "", "rangeSteps": null, "name": "Dry/Wet", "scalePoints": [], "symbol": "dry_wet", "shortName": "Dry/Wet"}, {"ranges": {"default": 0.20000000298023224, "minimum": 0.20000000298023224, "maximum": 5}, "index": 1, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "LFO", "shortName": "LFO", "symbol": "lfo", "scalePoints": []}, {"ranges": {"default": 0.5, "minimum": 0, "maximum": 1}, "index": 2, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "Roomsize", "shortName": "Roomsize", "symbol": "roomsize", "scalePoints": []}, {"ranges": {"default": 0.20000000298023224, "minimum": 0, "maximum": 1}, "index": 3, "units": {}, "properties": [], "designation": "", "rangeSteps": null, "name": "Damp", "shortName": "Damp", "symbol": "damp", "scalePoints": []}, {"ranges": {"default": 0, "minimum": 0, "maximum": 1}, "index": 4, "units": {}, "properties": ["enumeration", "integer"], "designation": "", "rangeSteps": null, "name": "Mode", "shortName": "Mode", "symbol": "mode", "scalePoints": [{"label": "linear", "value": 0}, {"label": "pingpong", "value": 1}]}], "output": []}, "midi": {"input": [], "output": []}}, "status": true, "label": "GxReverb-Stereo", "author": {"homepage": "", "email": "brummer@web.de", "name": "Guitarix team"}, "name": "GxReverb-Stereo"}], "name": "Shows 2"}], "name": "Igreja"}
+{
+  "index": 0,
+  "patches": [
+    {
+      "connections": [
+        {
+          "out": "system:capture_1",
+          "in": "effect_1:bass_l"
+        },
+        {
+          "out": "effect_1:out1",
+          "in": "effect_2:input"
+        },
+        {
+          "out": "effect_2:out",
+          "in": "system:playback_1"
+        }
+      ],
+      "effects": [
+        {
+          "uri": "http://guitarix.sourceforge.net/plugins/gx_reverb_stereo#_reverb_stereo",
+          "ports": {
+            "audio": {
+              "input": [
+                {
+                  "ranges": {},
+                  "index": 7,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "In",
+                  "shortName": "In",
+                  "symbol": "in",
+                  "scalePoints": []
+                },
+                {
+                  "ranges": {},
+                  "index": 8,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "In1",
+                  "shortName": "In1",
+                  "symbol": "in1",
+                  "scalePoints": []
+                }
+              ],
+              "output": [
+                {
+                  "ranges": {},
+                  "index": 5,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "Out",
+                  "shortName": "Out",
+                  "symbol": "out",
+                  "scalePoints": []
+                },
+                {
+                  "ranges": {},
+                  "index": 6,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "Out1",
+                  "shortName": "Out1",
+                  "symbol": "out1",
+                  "scalePoints": []
+                }
+              ]
+            },
+            "control": {
+              "input": [
+                {
+                  "units": {},
+                  "index": 0,
+                  "ranges": {
+                    "default": 50,
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "properties": [],
+                  "value": 50,
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "Dry/Wet",
+                  "scalePoints": [],
+                  "symbol": "dry_wet",
+                  "shortName": "Dry/Wet"
+                },
+                {
+                  "ranges": {
+                    "default": 0.20000000298023224,
+                    "minimum": 0.20000000298023224,
+                    "maximum": 5
+                  },
+                  "index": 1,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "LFO",
+                  "shortName": "LFO",
+                  "symbol": "lfo",
+                  "scalePoints": []
+                },
+                {
+                  "ranges": {
+                    "default": 0.5,
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "index": 2,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "Roomsize",
+                  "shortName": "Roomsize",
+                  "symbol": "roomsize",
+                  "scalePoints": []
+                },
+                {
+                  "ranges": {
+                    "default": 0.20000000298023224,
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "index": 3,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "Damp",
+                  "shortName": "Damp",
+                  "symbol": "damp",
+                  "scalePoints": []
+                },
+                {
+                  "ranges": {
+                    "default": 0,
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "index": 4,
+                  "units": {},
+                  "properties": [
+                    "enumeration",
+                    "integer"
+                  ],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "Mode",
+                  "shortName": "Mode",
+                  "symbol": "mode",
+                  "scalePoints": [
+                    {
+                      "label": "linear",
+                      "value": 0
+                    },
+                    {
+                      "label": "pingpong",
+                      "value": 1
+                    }
+                  ]
+                }
+              ],
+              "output": []
+            },
+            "midi": {
+              "input": [],
+              "output": []
+            }
+          },
+          "status": true,
+          "label": "GxReverb-Stereo",
+          "author": {
+            "homepage": "",
+            "email": "brummer@web.de",
+            "name": "Guitarix team"
+          },
+          "name": "GxReverb-Stereo"
+        },
+        {
+          "uri": "http://guitarix.sourceforge.net/plugins/gxtubedelay#tubedelay",
+          "ports": {
+            "audio": {
+              "input": [
+                {
+                  "ranges": {},
+                  "index": 5,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "in",
+                  "shortName": "in",
+                  "symbol": "in",
+                  "scalePoints": []
+                }
+              ],
+              "output": [
+                {
+                  "ranges": {},
+                  "index": 4,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "Out",
+                  "shortName": "Out",
+                  "symbol": "out",
+                  "scalePoints": []
+                }
+              ]
+            },
+            "control": {
+              "input": [
+                {
+                  "ranges": {
+                    "default": -40,
+                    "minimum": -40,
+                    "maximum": 16
+                  },
+                  "index": 0,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "gain",
+                  "shortName": "gain",
+                  "symbol": "fslider0_",
+                  "scalePoints": []
+                },
+                {
+                  "ranges": {
+                    "default": 0,
+                    "minimum": 0,
+                    "maximum": 10
+                  },
+                  "index": 1,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "feedback",
+                  "shortName": "feedback",
+                  "symbol": "fslider1_",
+                  "scalePoints": []
+                },
+                {
+                  "ranges": {
+                    "default": 0.10000000149011612,
+                    "minimum": 0.10000000149011612,
+                    "maximum": 5000
+                  },
+                  "index": 2,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "delay",
+                  "shortName": "delay",
+                  "symbol": "fslider2_",
+                  "scalePoints": []
+                },
+                {
+                  "ranges": {
+                    "default": -60,
+                    "minimum": -60,
+                    "maximum": 0
+                  },
+                  "index": 3,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "level",
+                  "shortName": "level",
+                  "symbol": "fslider3_",
+                  "scalePoints": []
+                }
+              ],
+              "output": []
+            },
+            "midi": {
+              "input": [],
+              "output": []
+            }
+          },
+          "status": true,
+          "label": "GxTubeDelay",
+          "author": {
+            "homepage": "",
+            "email": "brummer@web.de",
+            "name": "Guitarix"
+          },
+          "name": "GxTubeDelay"
+        }
+      ],
+      "name": "Shows"
+    },
+    {
+      "connections": [
+        {
+          "out": "system:capture_1",
+          "in": "effect_1:bass_l"
+        },
+        {
+          "out": "effect_1:out1",
+          "in": "effect_2:input"
+        },
+        {
+          "out": "effect_2:out",
+          "in": "system:playback_1"
+        }
+      ],
+      "effects": [
+        {
+          "uri": "http://guitarix.sourceforge.net/plugins/gx_reverb_stereo#_reverb_stereo",
+          "ports": {
+            "audio": {
+              "input": [
+                {
+                  "ranges": {},
+                  "index": 7,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "In",
+                  "shortName": "In",
+                  "symbol": "in",
+                  "scalePoints": []
+                },
+                {
+                  "ranges": {},
+                  "index": 8,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "In1",
+                  "shortName": "In1",
+                  "symbol": "in1",
+                  "scalePoints": []
+                }
+              ],
+              "output": [
+                {
+                  "ranges": {},
+                  "index": 5,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "Out",
+                  "shortName": "Out",
+                  "symbol": "out",
+                  "scalePoints": []
+                },
+                {
+                  "ranges": {},
+                  "index": 6,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "Out1",
+                  "shortName": "Out1",
+                  "symbol": "out1",
+                  "scalePoints": []
+                }
+              ]
+            },
+            "control": {
+              "input": [
+                {
+                  "units": {},
+                  "index": 0,
+                  "ranges": {
+                    "default": 50,
+                    "minimum": 0,
+                    "maximum": 100
+                  },
+                  "properties": [],
+                  "value": 50,
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "Dry/Wet",
+                  "scalePoints": [],
+                  "symbol": "dry_wet",
+                  "shortName": "Dry/Wet"
+                },
+                {
+                  "ranges": {
+                    "default": 0.20000000298023224,
+                    "minimum": 0.20000000298023224,
+                    "maximum": 5
+                  },
+                  "index": 1,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "LFO",
+                  "shortName": "LFO",
+                  "symbol": "lfo",
+                  "scalePoints": []
+                },
+                {
+                  "ranges": {
+                    "default": 0.5,
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "index": 2,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "Roomsize",
+                  "shortName": "Roomsize",
+                  "symbol": "roomsize",
+                  "scalePoints": []
+                },
+                {
+                  "ranges": {
+                    "default": 0.20000000298023224,
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "index": 3,
+                  "units": {},
+                  "properties": [],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "Damp",
+                  "shortName": "Damp",
+                  "symbol": "damp",
+                  "scalePoints": []
+                },
+                {
+                  "ranges": {
+                    "default": 0,
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "index": 4,
+                  "units": {},
+                  "properties": [
+                    "enumeration",
+                    "integer"
+                  ],
+                  "designation": "",
+                  "rangeSteps": null,
+                  "name": "Mode",
+                  "shortName": "Mode",
+                  "symbol": "mode",
+                  "scalePoints": [
+                    {
+                      "label": "linear",
+                      "value": 0
+                    },
+                    {
+                      "label": "pingpong",
+                      "value": 1
+                    }
+                  ]
+                }
+              ],
+              "output": []
+            },
+            "midi": {
+              "input": [],
+              "output": []
+            }
+          },
+          "status": true,
+          "label": "GxReverb-Stereo",
+          "author": {
+            "homepage": "",
+            "email": "brummer@web.de",
+            "name": "Guitarix team"
+          },
+          "name": "GxReverb-Stereo"
+        }
+      ],
+      "name": "Shows 2"
+    }
+  ],
+  "name": "Igreja"
+}

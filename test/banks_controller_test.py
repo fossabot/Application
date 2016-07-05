@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from architecture.BankError import BankError
+from architecture.privatemethod import privatemethod
+
 from Application import ApplicationSingleton
 
 from controller.BanksController import BanksController
 from controller.CurrentController import CurrentController
-
-from architecture.BankError import BankError
 
 
 class BanksControllerTest(unittest.TestCase):
@@ -18,16 +19,26 @@ class BanksControllerTest(unittest.TestCase):
         cls.application = ApplicationSingleton.getInstance()
 
     def setUp(self):
-        self.controller = BanksControllerTest.application.controller(
-            BanksController
-        )
-
-        self.currentController = BanksControllerTest.application.controller(
-            CurrentController
-        )
+        self.controller = self.get_controller(BanksController)
+        self.currentController = self.get_controller(CurrentController)
 
         self.currentController.setBank(0)
         self.currentController.setPatch(0)
+
+    @privatemethod
+    def get_controller(self, controller):
+        return BanksControllerTest.application.controller(controller)
+
+    @privatemethod
+    def generate_bank(self, name):
+        return {
+            "name": name,
+            "patches": [{
+                "name": "Decorator, a legend",
+                "effects": [],
+                "connections": []
+            }]
+        }
 
     def test_load_banks(self):
         self.assertIsNotNone(self.controller.banks)
@@ -48,14 +59,7 @@ class BanksControllerTest(unittest.TestCase):
 
     def test_create_bank(self):
         totalBanks = len(self.controller.banks)
-        bank = {
-            "name": "test_create_bank",
-            "patches": [{
-                "name": "Decorator, a legend",
-                "effects": [],
-                "connections": []
-            }]
-        }
+        bank = self.generate_bank("test_create_bank")
 
         index = self.controller.createBank(bank)
         self.assertLess(totalBanks, len(self.controller.banks))
@@ -64,28 +68,21 @@ class BanksControllerTest(unittest.TestCase):
         self.assertEqual(totalBanks, len(self.controller.banks))
 
     def test_update_bank(self):
-        bank = {
-            "name": "test_update_bank",
-            "patches": [{
-                "name": "Decorator, a legend",
-                "effects": [],
-                "connections": []
-            }]
-        }
-
-        index = self.controller.createBank(bank)
+        bankJson = self.generate_bank("test_update_bank")
+        index = self.controller.createBank(bankJson)
         
         newName = 'Single a tom or chord?'
 
-        bankChanged = dict(self.controller.banks[index].json)
-        bankChanged['name'] = newName
+        bank = self.controller.banks[index]
+        bankChangedJson = dict(bank.json)
+        bankChangedJson['name'] = newName
 
-        self.controller.updateBank(self.controller.banks[index], bankChanged)
+        self.controller.updateBank(bank, bankChangedJson)
 
-        changedName = self.controller.banks[index].data['name']
+        changedName = bank['name']
         self.assertEqual(newName, changedName)
 
-        self.controller.deleteBank(self.controller.banks[index])
+        self.controller.deleteBank(bank)
 
     def test_update_current_bank(self):
         currentBankData = dict(self.currentController.currentBank.json)
@@ -94,34 +91,20 @@ class BanksControllerTest(unittest.TestCase):
         newName = "test_update_current_bank"
         currentBankData['name'] = newName
 
-        self.controller.updateBank(
-            self.currentController.currentBank,
-            currentBankData
-        )
+        currentBank = self.currentController.currentBank
 
-        self.assertEqual(
-            self.currentController.currentBank.data['name'],
-            newName
-        )
+        self.controller.updateBank(currentBank, currentBankData)
+
+        self.assertEqual(currentBank['name'], newName)
 
         currentBankData['name'] = originalName
 
         # Restoring name
-        self.controller.updateBank(
-            self.currentController.currentBank,
-            currentBankData
-        )
+        self.controller.updateBank(currentBank, currentBankData)
 
     def test_delete_bank(self):
         totalBanks = len(self.controller.banks)
-        bank = {
-            "name": "test_delete_bank",
-            "patches": [{
-                "name": "Decorator, a legend",
-                "effects": [],
-                "connections": []
-            }]
-        }
+        bank = self.generate_bank("test_delete_bank")
 
         # Added a bank
         index = self.controller.createBank(bank)
@@ -132,14 +115,7 @@ class BanksControllerTest(unittest.TestCase):
         self.assertEqual(totalBanks, len(self.controller.banks))
 
     def test_delete_current_bank(self):
-        bank = {
-            "name": "test_delete_current_bank",
-            "patches": [{
-                "name": "Decorator, a legend",
-                "effects": [],
-                "connections": []
-            }]
-        }
+        bank = self.generate_bank("test_delete_current_bank")
 
         index = self.controller.createBank(bank)
 

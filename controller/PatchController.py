@@ -28,7 +28,7 @@ class PatchController(Controller):
         return len(bank.patches) - 1
 
     def updatePatch(self, patch, newPatchData):
-        patch.json = dict(newPatchData) #FIXME Referecen problem
+        patch.json = newPatchData
 
         self.dao.save(patch.bank)
 

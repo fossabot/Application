@@ -5,7 +5,9 @@ from architecture.privatemethod import privatemethod
 from controller.Controller import Controller
 from controller.BanksController import BanksController
 from controller.DeviceController import DeviceController
+from controller.EffectController import EffectController
 from controller.NotificationController import NotificationController
+from controller.ParamController import ParamController
 
 from dao.CurrentDao import CurrentDao
 
@@ -25,7 +27,9 @@ class CurrentController(Controller):
 
         self.deviceController = self.app.controller(DeviceController)
         self.banksController = self.app.controller(BanksController)
+        self.effectController = self.app.controller(EffectController)
         self.notificationController = self.app.controller(NotificationController)
+        self.paramController = self.app.controller(ParamController)
 
     # ************************
     # Property
@@ -51,32 +55,13 @@ class CurrentController(Controller):
     # ************************
     def toggleStatusEffect(self, effectIndex):
         effect = self.currentPatch.effects[effectIndex]
-        effect.json["status"] = not effect["status"]
+        self.effectController.toggleStatus(effect)
 
-        self.deviceController.toggleStatusEffect(effectIndex)
-        self.saveCurrent()
-
-        self.notificationController.notifyEffectStatusToggled(
-            self.bankNumber,
-            self.patchNumber,
-            effectIndex
-        )
-
-    def setEffectParam(self, effectIndex, paramIndex, value):
-        effects = self.currentPatch.effects
-        effect = effects[effectIndex]
+    def setEffectParam(self, effectIndex, paramIndex, newValue):
+        effect = self.currentPatch.effects[effectIndex]
         param = effect.params[paramIndex]
-        param['value'] = value
 
-        self.deviceController.setEffectParam(effectIndex, param)
-        self.saveCurrent()
-
-        self.notificationController.notifyParamValueChange(
-            self.bankNumber,
-            self.patchNumber,
-            effectIndex,
-            paramIndex
-        )
+        self.paramController.updateValue(param, newValue)
 
     # ************************
     # Get of Current
@@ -150,10 +135,7 @@ class CurrentController(Controller):
         self.patchNumber = patchNumber
         self.saveCurrent()
 
-        self.notificationController.notifyCurrentPatchChange(
-            self.bankNumber,
-            self.patchNumber
-        )
+        self.notificationController.notifyCurrentPatchChange(self.currentPatch)
 
     @privatemethod
     def loadDevicePatch(self, bankNumber, patchNumber):

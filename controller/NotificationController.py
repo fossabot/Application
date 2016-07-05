@@ -21,22 +21,26 @@ class NotificationController(Controller):
     ########################
     # Notify methods
     ########################
-    def notifyCurrentPatchChange(self, bankIndex, patchIndex):
+    def notifyCurrentPatchChange(self, patch):
         for observer in self.observers:
-            observer.onCurrentPatchChange(bankIndex, patchIndex)
+            observer.onCurrentPatchChange(patch)
 
-    def notifyBankUpdate(self, bankIndex):
+    def notifyBankUpdate(self, bank, updateType):
         for observer in self.observers:
-            observer.onBankUpdate(bankIndex)
+            observer.onBankUpdate(bank, updateType)
 
-    def notifyPatchUpdate(self, bankIndex, patchIndex):
+    def notifyPatchUpdated(self, patch, updateType):
         for observer in self.observers:
-            observer.onPatchUpdate(bankIndex, patchIndex)
+            observer.onPatchUpdated(bankIndex, patchIndex)
+            
+    def notifyEffectUpdated(self, effect, updateType):
+        for observer in self.observers:
+            observer.notifyEffectUpdated(effect, updateType)
 
-    def notifyEffectStatusToggled(self, bankIndex, patchIndex, effectIndex):
+    def notifyEffectStatusToggled(self, effect):
         for observer in self.observers:
-            observer.onEffectStatusToggled(bankIndex, patchIndex)
+            observer.onEffectStatusToggled(effect)
 
-    def notifyParamValueChange(self, bankIndex, patchIndex, effectIndex, param):
+    def notifyParamValueChange(self, param):
         for observer in self.observers:
-            observer.onParamValueChange(bankIndex, patchIndex, effectIndex, param)
+            observer.onParamValueChange(param)

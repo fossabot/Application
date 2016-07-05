@@ -45,7 +45,7 @@ class ParamControllerTest(unittest.TestCase):
 
         ranges = param['ranges']
         newValue = (ranges['maximum'] + ranges['minimum']) / 2
-        self.controller.updateValue(effect, param, newValue)
+        self.controller.updateValue(param, newValue)
 
         self.assertEqual(param['value'], newValue)
 

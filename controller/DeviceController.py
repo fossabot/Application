@@ -34,5 +34,5 @@ class DeviceController(Controller):
     def toggleStatusEffect(self, effectIndex):
         print("Toggle status effect number:", effectIndex)
 
-    def setEffectParam(self, effectIndex, param):
-        print("Toggle status effect number:", effectIndex, param)
+    def updateParamValue(self, param):
+        print("Param updated", param['name'], param.value)

@@ -12,21 +12,25 @@ class UpdateType(Enum):
 class UpdatesObserver(metaclass=ABCMeta):
 
     @abstractmethod
-    def onCurrentPatchChange(self, bankIndex, patchIndex):
+    def onCurrentPatchChange(self, patch):
         pass
 
     @abstractmethod
-    def onBankUpdate(self, bankIndex, updateType):
+    def onBankUpdate(self, bank, updateType):
         pass
 
     @abstractmethod
-    def onPatchUpdate(self, bankIndex, patchIndex, updateType):
+    def onPatchUpdated(self, patch, updateType):
         pass
 
     @abstractmethod
-    def onEffectStatusToggled(self, bankIndex, patchIndex, effectIndex):
+    def onEffectUpdated(self, effect, updateType):
         pass
 
     @abstractmethod
-    def onParamValueChange(self, bankIndex, patchIndex, effectIndex, paramIndex, updateType):
+    def onEffectStatusToggled(self, effect):
+        pass
+
+    @abstractmethod
+    def onParamValueChange(self, param):
         pass

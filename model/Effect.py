@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from model.Param import Param
 
 
 class Effect(object):
@@ -25,9 +26,21 @@ class Effect(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    @property
-    def params(self):
-        return self.json["ports"]["control"]["input"]
-
     def __getitem__(self, key):
         return self.json[key]
+
+    @property
+    def params(self):
+        returned = []
+
+        for param in self["ports"]["control"]["input"]:
+            returned.append(Param(param, self))
+
+        return returned
+
+    @property
+    def status(self):
+        return self['status']
+
+    def indexOfParam(self, param):
+        self.params.index(param)

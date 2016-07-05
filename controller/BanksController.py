@@ -1,15 +1,16 @@
+from architecture.privatemethod import privatemethod
+
 from dao.BankDao import BankDao
 
 from model.Bank import Bank
+from model.UpdatesObserver import UpdateType
 
 from controller.Controller import Controller
 from controller.DeviceController import DeviceController
+from controller.NotificationController import NotificationController
 
 
 class BanksController(Controller):
-    '''
-    For get bank/patch/effect of patch/param, use self.banks
-    '''
     banks = None
 
     def configure(self):
@@ -20,24 +21,30 @@ class BanksController(Controller):
         from controller.CurrentController import CurrentController
         self.currentController = self.app.controller(CurrentController)
         self.deviceController = self.app.controller(DeviceController)
+        self.notificationController = self.app.controller(NotificationController)
 
     def createBank(self, bank):
+        """
+        @return bank index
+        """
         bankModel = Bank(bank)
 
         self.banks.append(bankModel)
         self.dao.save(bankModel)
+        self.notifyChange(bank, UpdateType.CREATED)
 
         return bankModel.index
 
     def updateBank(self, bank, data):
         self.dao.delete(bank)
-        bank.data = dict(data)
+        bank.json = data
 
         self.dao.save(bank)
-        if bank == self.currentController.currentBank:
-            self.deviceController.loadPatch(
-                self.currentController.currentPatch
-            )
+        if self.currentController.isCurrentBank(bank):
+            currentPatch = self.currentController.currentPatch
+            self.deviceController.loadPatch(currentPatch)
+
+        self.notifyChange(bank, UpdateType.UPDATED)
 
     def deleteBank(self, bank):
         if bank == self.currentController.currentBank:
@@ -45,3 +52,9 @@ class BanksController(Controller):
 
         del self.banks[bank.index]
         self.dao.delete(bank)
+
+        self.notifyChange(bank, UpdateType.DELETED)
+
+    @privatemethod
+    def notifyChange(self, bank, updateType):
+        self.notificationController.notifyBankUpdate(bank, updateType)
