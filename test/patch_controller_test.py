@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from architecture.privatemethod import privatemethod
+
 from Application import ApplicationSingleton
 
 from controller.PatchController import PatchController
 from controller.CurrentController import CurrentController
+
 from model.Patch import Patch
 
 
@@ -30,15 +33,19 @@ class PatchControllerTest(unittest.TestCase):
 
         self.currentBank = self.currentController.currentBank
 
-    def test_create_patch(self):
-        patch = {
-            'name': 'test_create_patch',
+    @privatemethod
+    def generate_patch(self, name):
+        return {
+            'name': name,
             'effects': [],
             'connections': []
         }
 
+    def test_create_patch(self):
+        json = self.generate_patch('test_create_patch')
+
         totalPatches = len(self.currentBank.patches)
-        patchIndex = self.controller.createPatch(self.currentBank, patch)
+        patchIndex = self.controller.createPatch(self.currentBank, json)
         patch = self.currentController.currentBank.patches[patchIndex]
 
         # Index is last patch + 1
@@ -50,18 +57,14 @@ class PatchControllerTest(unittest.TestCase):
 
     def test_update_patch(self):
         newName = 'test_update_patch 2'
-        patchJson = {
-            'name': 'test_update_patch',
-            'effects': [],
-            'connections': []
-        }
+        json = self.generate_patch('test_update_patch')
 
-        patchIndex = self.controller.createPatch(self.currentBank, patchJson)
+        patchIndex = self.controller.createPatch(self.currentBank, json)
+        patch = self.currentBank.patches[patchIndex]
 
         newPatchData = dict(self.currentController.currentPatch.json)
         newPatchData['name'] = newName
 
-        patch = self.currentBank.patches[patchIndex]
         self.controller.updatePatch(patch, newPatchData)
 
         self.assertEqual(patch['name'], newName)
@@ -70,34 +73,27 @@ class PatchControllerTest(unittest.TestCase):
 
     def test_update_current_patch(self):
         newName = 'test_update_current_patch 2'
-        patchJson = {
-            'name': 'test_update_current_patch',
-            'effects': [],
-            'connections': []
-        }
+        json = self.generate_patch('test_update_current_patch')
 
-        patchIndex = self.controller.createPatch(self.currentBank, patchJson)
+        patchIndex = self.controller.createPatch(self.currentBank, json)
+        patch = self.currentBank.patches[patchIndex]
+
         self.currentController.setPatch(patchIndex)
 
         newPatchData = dict(self.currentController.currentPatch.json)
         newPatchData['name'] = newName
 
-        patch = self.currentBank.patches[patchIndex]
         self.controller.updatePatch(patch, newPatchData)
 
-        self.assertEqual(self.currentBank.patches[patchIndex]['name'], newName)
+        self.assertEqual(patch['name'], newName)
 
-        self.currentController.setPatch(0) #  Delete current patch is tested in another test
+        self.currentController.setPatch(0)  # Delete current patch is tested in another test
         self.controller.deletePatch(patch)
 
     def test_delete_patch(self):
-        patch = {
-            'name': 'test_delete_patch',
-            'effects': [],
-            'connections': []
-        }
+        json = self.generate_patch('test_delete_patch')
 
-        patchIndex = self.controller.createPatch(self.currentBank, patch)
+        patchIndex = self.controller.createPatch(self.currentBank, json)
         patch = self.currentBank.patches[patchIndex]
 
         totalPatches = len(self.currentBank.patches)
@@ -110,13 +106,9 @@ class PatchControllerTest(unittest.TestCase):
         pass
 
     def test_delete_current_patch(self):
-        patch = {
-            'name': 'test_delete_current_patch',
-            'effects': [],
-            'connections': []
-        }
+        json = self.generate_patch('test_delete_current_patch')
 
-        patchIndex = self.controller.createPatch(self.currentBank, patch)
+        patchIndex = self.controller.createPatch(self.currentBank, json)
 
         self.currentController.setPatch(patchIndex)
 
@@ -125,7 +117,5 @@ class PatchControllerTest(unittest.TestCase):
 
         self.assertEqual(totalPatches-1, len(self.currentBank.patches))
 
-        self.assertNotEqual(
-            patchIndex,
-            self.currentController.patchNumber
-        )
+        currentPatchNumber = self.currentController.patchNumber
+        self.assertNotEqual(patchIndex, currentPatchNumber)

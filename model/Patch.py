@@ -8,7 +8,7 @@ class Patch(object):
 
     def __init__(self, json, bank=None):
         self.bank = bank
-        self.__json = json
+        self.__json = json  # Reference is important, don't use dict(json)
 
     @property
     def json(self):
@@ -16,6 +16,10 @@ class Patch(object):
     
     @json.setter
     def json(self, value):
+        """
+        Set the json updates the values of the original reference
+        (passed in constructor) for reflects changes in your bank structure
+        """
         self.__json.clear()
         self.__json.update(value)
 
