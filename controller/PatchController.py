@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
+from architecture.privatemethod import privatemethod
+
 from dao.BankDao import BankDao
 
 from controller.Controller import Controller
 from controller.CurrentController import CurrentController
 from controller.DeviceController import DeviceController
+from controller.NotificationController import NotificationController
 
 from model.Patch import Patch
+from model.UpdatesObserver import UpdateType
 
 
 class PatchController(Controller):
@@ -17,13 +21,17 @@ class PatchController(Controller):
         self.dao = self.app.dao(BankDao)
         self.currentController = self.app.controller(CurrentController)
         self.deviceController = self.app.controller(DeviceController)
+        self.notificationController = self.app.controller(NotificationController)
 
     def createPatch(self, bank, patchJson):
         """
         @return patch index
         """
-        bank.addPatch(Patch(patchJson))
+        patch = Patch(patchJson)
+        bank.addPatch(patch)
         self.dao.save(bank)
+
+        self.notifyChange(patch, UpdateType.CREATED)
 
         return len(bank.patches) - 1
 
@@ -35,6 +43,8 @@ class PatchController(Controller):
         if self.currentController.isCurrentPatch(patch):
             self.deviceController.loadPatch(patch)
 
+        self.notifyChange(patch, UpdateType.UPDATED)
+
     def deletePatch(self, patch):
         bank = patch.bank
         patchNumber = bank.indexOfPatch(patch)
@@ -44,4 +54,10 @@ class PatchController(Controller):
 
         del bank['patches'][patchNumber]
 
+        self.notifyChange(patch, UpdateType.DELETED)
+
         self.dao.save(bank)
+
+    @privatemethod
+    def notifyChange(self, patch, updateType):
+        self.notificationController.notifyPatchUpdated(patch, updateType)

@@ -31,7 +31,7 @@ class NotificationController(Controller):
 
     def notifyPatchUpdated(self, patch, updateType):
         for observer in self.observers:
-            observer.onPatchUpdated(bankIndex, patchIndex)
+            observer.onPatchUpdated(patch, updateType)
             
     def notifyEffectUpdated(self, effect, updateType):
         for observer in self.observers:

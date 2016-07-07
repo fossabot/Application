@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from architecture.privatemethod import privatemethod
 
 from dao.BankDao import BankDao
