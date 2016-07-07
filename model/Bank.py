@@ -7,8 +7,8 @@ class Bank(object):
     __json = {}
 
     def __init__(self, json):
-        self.__json = json
         self.validate(json)
+        self.json = json
 
     #FIXME - Json Schema
     def validate(self, data):
