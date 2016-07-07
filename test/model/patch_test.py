@@ -34,7 +34,6 @@ class PatchTest(unittest.TestCase):
     def test_set_json(self):
         """
         Show Patch.json (setter) for details of this test
-        :return:
         """
         json = self.generate_patch('generic-patch')
         json2 = self.generate_patch('generic-patch-2')
@@ -46,10 +45,6 @@ class PatchTest(unittest.TestCase):
         self.assertEqual(json2, patch.json)
 
     def test__getitem__(self):
-        """
-        Show Patch.json (setter) for details of this test
-        :return:
-        """
         json = self.generate_patch('generic-patch')
 
         patch = Patch(json)

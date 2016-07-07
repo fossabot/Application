@@ -13,9 +13,13 @@ class Effect(object):
     @property
     def json(self):
         return self.__json
-    
+
     @json.setter
     def json(self, value):
+        """
+        Set the json updates the values of the original reference
+        (passed in constructor) for reflects changes in bank structure (of your patch)
+        """
         self.__json.clear()
         self.__json.update(value)
 
@@ -43,4 +47,4 @@ class Effect(object):
         return self['status']
 
     def indexOfParam(self, param):
-        self.params.index(param)
+        return self["ports"]["control"]["input"].index(param.json)
