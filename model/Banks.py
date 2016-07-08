@@ -12,7 +12,7 @@ class Banks(object):
     def json(self):
         banks = []
         for bank in list(self.banks.keys()):
-            banks.append(self.banks[bank].data)
+            banks.append(self.banks[bank].json)
 
         return banks
 
