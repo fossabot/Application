@@ -34,6 +34,10 @@ class Effect(object):
         return self.json[key]
 
     @property
+    def index(self):
+        return self.patch.indexOfEffect(self)
+
+    @property
     def params(self):
         returned = []
 

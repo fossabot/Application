@@ -136,5 +136,5 @@ class EffectTest(unittest.TestCase):
 
         index = 0
         for param in effect.params:
-            self.assertEqual(index, effect.indexOfParam(param))
+            self.assertEqual(index, param.index)
             index += 1

@@ -30,3 +30,7 @@ class Param(object):
     @value.setter
     def value(self, value):
         self.__json["value"] = value
+
+    @property
+    def index(self):
+        return self.effect.indexOfParam(self)

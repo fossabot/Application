@@ -47,12 +47,11 @@ class PatchController(Controller):
 
     def deletePatch(self, patch):
         bank = patch.bank
-        patchNumber = bank.indexOfPatch(patch)
 
         if self.currentController.isCurrentPatch(patch):
             self.currentController.toNextPatch()
 
-        del bank['patches'][patchNumber]
+        del bank['patches'][patch.index]
 
         self.notifyChange(patch, UpdateType.DELETED)
 

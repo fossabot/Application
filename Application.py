@@ -11,8 +11,9 @@ from controller.PluginsController import PluginsController
 class Application(object):
     controllers = {}
 
-    def __init__(self, test=False, dataPatch="data/"):
+    def __init__(self, dataPatch="data/", test=False):
         self.dataPatch = dataPatch
+
         controllers = [
             BanksController,
             CurrentController,

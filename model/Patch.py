@@ -43,6 +43,10 @@ class Patch(object):
 
         return returned
 
+    @property
+    def index(self):
+        return self.bank.indexOfPatch(self)
+
     def addEffect(self, effect):
         self["effects"].append(effect.json)
         effect.patch = self

@@ -103,7 +103,7 @@ class PatchTest(unittest.TestCase):
 
         index = 0
         for effect in patch.effects:
-            self.assertEqual(index, patch.indexOfEffect(effect))
+            self.assertEqual(index, effect.index)
             index += 1
 
     @privatemethod

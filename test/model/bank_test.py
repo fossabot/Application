@@ -131,5 +131,5 @@ class BankTest(unittest.TestCase):
 
         index = 0
         for patch in bank.patches:
-            self.assertEqual(index, bank.indexOfPatch(patch))
+            self.assertEqual(index, patch.index)
             index += 1

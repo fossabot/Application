@@ -72,8 +72,7 @@ class EffectController(Controller):
     def deleteEffect(self, effect):
         patch = effect.patch
 
-        effectIndex = effect.patch.indexOfEffect(effect)
-        del patch['effects'][effectIndex]
+        del patch['effects'][effect.index]
 
         self.update(patch)
         self.notifyChange(effect, UpdateType.DELETED)
