@@ -13,6 +13,7 @@ from dao.CurrentDao import CurrentDao
 
 
 class CurrentController(Controller):
+    dao = None
     bankNumber = 0
     patchNumber = 0
 
@@ -21,7 +22,8 @@ class CurrentController(Controller):
     notificationController = None
 
     def configure(self):
-        data = self.app.dao(CurrentDao).load()
+        self.dao = self.app.dao(CurrentDao)
+        data = self.dao.load()
         self.bankNumber = data["bank"]
         self.patchNumber = data["patch"]
 
@@ -48,7 +50,7 @@ class CurrentController(Controller):
     # ************************
     @privatemethod
     def saveCurrent(self):
-        print("Necessary implements: SAVING", self.bankNumber, self.patchNumber)
+        self.dao.save(self.bankNumber, self.patchNumber)
 
     # ************************
     # Effect

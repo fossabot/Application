@@ -16,6 +16,7 @@ class PatchController(Controller):
     dao = None
     currentController = None
     deviceController = None
+    notificationController = None
 
     def configure(self):
         self.dao = self.app.dao(BankDao)
