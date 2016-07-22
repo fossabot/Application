@@ -4,7 +4,7 @@ from controller.Controller import Controller
 
 class NotificationController(Controller):
     """
-    Notification observer notifies changes to 
+    Notification observer notifies changes to
     UpdatesObservers registred
     """
     observers = []
@@ -35,7 +35,7 @@ class NotificationController(Controller):
             
     def notifyEffectUpdated(self, effect, updateType):
         for observer in self.observers:
-            observer.notifyEffectUpdated(effect, updateType)
+            observer.onEffectUpdated(effect, updateType)
 
     def notifyEffectStatusToggled(self, effect):
         for observer in self.observers:

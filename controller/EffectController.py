@@ -66,16 +66,16 @@ class EffectController(Controller):
     def preparePorts(self, effect):
         for param in effect['ports']['control']['input']:
             param['value'] = param['ranges']['default']
-        
+
         return effect
 
     def deleteEffect(self, effect):
         patch = effect.patch
 
+        self.notifyChange(effect, UpdateType.DELETED)
         del patch['effects'][effect.index]
 
         self.update(patch)
-        self.notifyChange(effect, UpdateType.DELETED)
 
     def toggleStatus(self, effect):
         effect.json["status"] = not effect.status

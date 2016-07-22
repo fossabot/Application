@@ -26,13 +26,14 @@ class BanksController(Controller):
 
     def createBank(self, bank):
         """
+        :param bank dict
         @return bank index
         """
         bankModel = Bank(bank)
 
         self.banks.append(bankModel)
         self.dao.save(bankModel)
-        self.notifyChange(bank, UpdateType.CREATED)
+        self.notifyChange(bankModel, UpdateType.CREATED)
 
         return bankModel.index
 

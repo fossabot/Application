@@ -52,9 +52,8 @@ class PatchController(Controller):
         if self.currentController.isCurrentPatch(patch):
             self.currentController.toNextPatch()
 
-        del bank['patches'][patch.index]
-
         self.notifyChange(patch, UpdateType.DELETED)
+        del bank['patches'][patch.index]
 
         self.dao.save(bank)
 
