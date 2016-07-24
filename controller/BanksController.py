@@ -57,6 +57,15 @@ class BanksController(Controller):
 
         self.notifyChange(bank, UpdateType.DELETED)
 
+    def swapBanks(self, bankA, bankB):
+        bankA.index, bankB.index = bankB.index, bankA.index
+        self.dao.save(bankA)
+        self.dao.save(bankB)
+
+    def swapPatches(self, patchA, patchB):
+        patchA.bank.swapPatches(patchA, patchB)
+        self.dao.save(patchA.bank)
+
     @privatemethod
     def notifyChange(self, bank, updateType):
         self.notificationController.notifyBankUpdate(bank, updateType)

@@ -11,8 +11,8 @@ class Banks(object):
     @property
     def json(self):
         banks = []
-        for bank in list(self.banks.keys()):
-            banks.append(self.banks[bank].json)
+        for bank in self.all:
+            banks.append(bank.json)
 
         return banks
 
@@ -44,6 +44,3 @@ class Banks(object):
             self.index = bank.index + 1
 
         self.banks[bank.index] = bank
-
-    #def insert(self, index, bank):
-    #    self.banks.insert(index, bank)
