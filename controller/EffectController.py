@@ -19,6 +19,7 @@ class EffectController(Controller):
     currentController = None
     deviceController = None
     pluginsController = None
+    notificationController = None
 
     def configure(self):
         from controller.CurrentController import CurrentController

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from model.Effect import Effect
+from architecture.EffectException import EffectException
 
 
 class Patch(object):
@@ -53,3 +54,14 @@ class Patch(object):
 
     def indexOfEffect(self, effect):
         return self["effects"].index(effect.json)
+
+    def swapEffects(self, effectA, effectB):
+        if effectA.patch != effectB.patch:
+            raise EffectException("effectA and effectB aren't of same patch")
+
+        indexA = effectA.index
+        indexB = effectB.index
+
+        effects = self.json['effects']
+
+        effects[indexA], effects[indexB] = effects[indexB], effects[indexA]

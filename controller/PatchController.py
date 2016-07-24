@@ -57,6 +57,10 @@ class PatchController(Controller):
 
         self.dao.save(bank)
 
+    def swapEffects(self, effectA, effectB):
+        effectA.patch.swapEffects(effectA, effectB)
+        self.dao.save(effectA.patch.bank)
+
     @privatemethod
     def notifyChange(self, patch, updateType):
         self.notificationController.notifyPatchUpdated(patch, updateType)
