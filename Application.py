@@ -11,29 +11,37 @@ from controller.PluginsController import PluginsController
 class Application(object):
     controllers = {}
 
-    def __init__(self, dataPatch="data/", test=False):
-        self.dataPatch = dataPatch
+    def __init__(self, data_patch="data/", address="localhost", test=False):
+        self.dataPatch = data_patch
 
         controllers = [
             BanksController,
             CurrentController,
-            DeviceController,
             EffectController,
             NotificationController,
             ParamController,
             PatchController,
             PluginsController
         ]
-        if test:
-            from unittest.mock import Mock 
-            controllers.remove(DeviceController)
-            self.controllers[DeviceController.__name__] = Mock(spec=DeviceController)
+
+        self.controllers[DeviceController.__name__] = self.init_device_controller(address, test)
 
         for controller in controllers:
             self.controllers[controller.__name__] = controller(self)
 
         for controller in list(self.controllers.values()):
             controller.configure()
+
+    def init_device_controller(self, address, test):
+        if test:
+            from unittest.mock import Mock
+            return Mock(spec=DeviceController)
+
+        else:
+            device_controller = DeviceController(self)
+            device_controller.address = address
+
+            return device_controller
 
     def dao(self, dao):
         return dao(self.dataPatch)

@@ -19,7 +19,9 @@ class CurrentController(Controller):
 
     deviceController = None
     banksController = None
+    effectController = None
     notificationController = None
+    paramController = None
 
     def configure(self):
         self.dao = self.app.dao(CurrentDao)
