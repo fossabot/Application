@@ -15,15 +15,15 @@ class ParamController(Controller):
         self.deviceController = self.app.controller(DeviceController)
         self.notificationController = self.app.controller(NotificationController)
 
-    def updateValue(self, param, newValue):
+    def updateValue(self, param, new_value, token=None):
         patch = param.effect.patch
         bank = patch.bank
 
-        param.value = newValue
+        param.value = new_value
 
         self.dao.save(bank)
 
         if self.currentController.isCurrentPatch(patch):
             self.deviceController.updateParamValue(param)
 
-        self.notificationController.notifyParamValueChange(param)
+        self.notificationController.notifyParamValueChange(param, token)

@@ -5,7 +5,7 @@ from controller.Controller import Controller
 class NotificationController(Controller):
     """
     Notification observer notifies changes to
-    UpdatesObservers registred
+    UpdatesObservers registered
     """
     observers = []
 
@@ -21,26 +21,26 @@ class NotificationController(Controller):
     ########################
     # Notify methods
     ########################
-    def notifyCurrentPatchChange(self, patch):
+    def notifyCurrentPatchChange(self, patch, token=None):
         for observer in self.observers:
-            observer.onCurrentPatchChange(patch)
+            observer.onCurrentPatchChange(patch, token)
 
-    def notifyBankUpdate(self, bank, updateType):
+    def notifyBankUpdate(self, bank, update_type, token=None):
         for observer in self.observers:
-            observer.onBankUpdate(bank, updateType)
+            observer.onBankUpdate(bank, update_type, token)
 
-    def notifyPatchUpdated(self, patch, updateType):
+    def notifyPatchUpdated(self, patch, update_type, token=None):
         for observer in self.observers:
-            observer.onPatchUpdated(patch, updateType)
+            observer.onPatchUpdated(patch, update_type, token)
             
-    def notifyEffectUpdated(self, effect, updateType):
+    def notifyEffectUpdated(self, effect, update_type, token=None):
         for observer in self.observers:
-            observer.onEffectUpdated(effect, updateType)
+            observer.onEffectUpdated(effect, update_type, token)
 
-    def notifyEffectStatusToggled(self, effect):
+    def notifyEffectStatusToggled(self, effect, token=None):
         for observer in self.observers:
-            observer.onEffectStatusToggled(effect)
+            observer.onEffectStatusToggled(effect, token)
 
-    def notifyParamValueChange(self, param):
+    def notifyParamValueChange(self, param, token=None):
         for observer in self.observers:
-            observer.onParamValueChange(param)
+            observer.onParamValueChange(param, token)

@@ -57,9 +57,9 @@ class CurrentController(Controller):
     # ************************
     # Effect
     # ************************
-    def toggleStatusEffect(self, effectIndex):
+    def toggleStatusEffect(self, effectIndex, token=None):
         effect = self.currentPatch.effects[effectIndex]
-        self.effectController.toggleStatus(effect)
+        self.effectController.toggleStatus(effect, token)
 
     def setEffectParam(self, effectIndex, paramIndex, newValue):
         effect = self.currentPatch.effects[effectIndex]
@@ -93,11 +93,11 @@ class CurrentController(Controller):
 
         self.setPatch(nextPatchNumber)
 
-    def setPatch(self, patchNumber):
-        if self.patchNumber == patchNumber:
+    def setPatch(self, patch_number, token=None):
+        if self.patchNumber == patch_number:
             return
 
-        self.setCurrent(self.bankNumber, patchNumber)
+        self.setCurrent(self.bankNumber, patch_number, token=token)
 
     def toBeforeBank(self):
         banks = self.banksController.banks.all
@@ -123,14 +123,14 @@ class CurrentController(Controller):
 
         self.setBank(nextBank)
 
-    def setBank(self, bankNumber):
+    def setBank(self, bankNumber, token=None, notify=True):
         if self.bankNumber == bankNumber:
             return
 
-        self.setCurrent(bankNumber, 0)
+        self.setCurrent(bankNumber, 0, token, notify)
 
     @privatemethod
-    def setCurrent(self, bankNumber, patchNumber):
+    def setCurrent(self, bankNumber, patchNumber, token=None, notify=True):
         self.loadDevicePatch(  # throwable. need be first
             bankNumber,
             patchNumber
@@ -139,7 +139,8 @@ class CurrentController(Controller):
         self.patchNumber = patchNumber
         self.saveCurrent()
 
-        self.notificationController.notifyCurrentPatchChange(self.currentPatch)
+        if notify:
+            self.notificationController.notifyCurrentPatchChange(self.currentPatch, token)
 
     @privatemethod
     def loadDevicePatch(self, bankNumber, patchNumber):

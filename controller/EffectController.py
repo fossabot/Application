@@ -78,12 +78,12 @@ class EffectController(Controller):
 
         self.update(patch)
 
-    def toggleStatus(self, effect):
+    def toggleStatus(self, effect, token=None):
         effect.json["status"] = not effect.status
         patch = effect.patch
 
         self.update(patch)
-        self.notificationController.notifyEffectStatusToggled(effect)
+        self.notificationController.notifyEffectStatusToggled(effect, token)
 
     @privatemethod
     def update(self, patch):

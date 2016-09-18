@@ -24,7 +24,7 @@ class PatchController(Controller):
         self.deviceController = self.app.controller(DeviceController)
         self.notificationController = self.app.controller(NotificationController)
 
-    def createPatch(self, bank, patchJson):
+    def createPatch(self, bank, patchJson, token=None):
         """
         @return patch index
         """
@@ -32,11 +32,11 @@ class PatchController(Controller):
         bank.addPatch(patch)
         self.dao.save(bank)
 
-        self.notifyChange(patch, UpdateType.CREATED)
+        self.notifyChange(patch, UpdateType.CREATED, token)
 
         return len(bank.patches) - 1
 
-    def updatePatch(self, patch, newPatchData):
+    def updatePatch(self, patch, newPatchData, token=None):
         patch.json = newPatchData
 
         self.dao.save(patch.bank)
@@ -44,15 +44,15 @@ class PatchController(Controller):
         if self.currentController.isCurrentPatch(patch):
             self.deviceController.loadPatch(patch)
 
-        self.notifyChange(patch, UpdateType.UPDATED)
+        self.notifyChange(patch, UpdateType.UPDATED, token)
 
-    def deletePatch(self, patch):
+    def deletePatch(self, patch, token=None):
         bank = patch.bank
 
         if self.currentController.isCurrentPatch(patch):
             self.currentController.toNextPatch()
 
-        self.notifyChange(patch, UpdateType.DELETED)
+        self.notifyChange(patch, UpdateType.DELETED, token)
         del bank['patches'][patch.index]
 
         self.dao.save(bank)
@@ -62,5 +62,5 @@ class PatchController(Controller):
         self.dao.save(effectA.patch.bank)
 
     @privatemethod
-    def notifyChange(self, patch, updateType):
-        self.notificationController.notifyPatchUpdated(patch, updateType)
+    def notifyChange(self, patch, updateType, token=None):
+        self.notificationController.notifyPatchUpdated(patch, updateType, token)
