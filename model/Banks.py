@@ -44,3 +44,9 @@ class Banks(object):
             self.index = bank.index + 1
 
         self.banks[bank.index] = bank
+
+    def swap(self, bankA, bankB):
+        bankA.index, bankB.index = bankB.index, bankA.index
+
+        self.banks[bankA.index] = bankA
+        self.banks[bankB.index] = bankB
