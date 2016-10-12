@@ -2,8 +2,6 @@
 import unittest
 from unittest.mock import Mock
 
-from architecture.privatemethod import privatemethod
-
 from Application import ApplicationSingleton
 
 from controller.NotificationController import NotificationController
@@ -22,11 +20,10 @@ class NotificationControllerTest(unittest.TestCase):
         cls.application = ApplicationSingleton.getInstance()
 
     def setUp(self):
-        self.controller = self.get_controller(NotificationController)
-        self.currentController = self.get_controller(CurrentController)
+        self.controller = self._get_controller(NotificationController)
+        self.currentController = self._get_controller(CurrentController)
 
-    @privatemethod
-    def get_controller(self, controller):
+    def _get_controller(self, controller):
         return NotificationControllerTest.application.controller(controller)
 
     def test_notify_current_patch_change(self):
@@ -34,8 +31,10 @@ class NotificationControllerTest(unittest.TestCase):
         self.controller.register(observer)
 
         self.currentController.toNextPatch()
+        self.assertTrue(observer.onCurrentPatchChange.called, "Method onCurrentPatchChange called")
 
-        observer.onCurrentPatchChange.assert_called_with(self.currentController.currentPatch)
+        observer.onCurrentPatchChange.reset_mock()
+        self.currentController.toBeforePatch()
+        observer.onCurrentPatchChange.assert_called_once_with(self.currentController.currentPatch, None)
 
         self.controller.unregister(observer)
-        self.currentController.toBeforePatch()

@@ -18,6 +18,10 @@ class BankTest(unittest.TestCase):
                 "name": "Decorator, a legend",
                 "effects": [],
                 "connections": []
+            }, {
+                "name": "Decorator 2, the otherside",
+                "effects": [],
+                "connections": []
             }]
         }
 
@@ -133,3 +137,22 @@ class BankTest(unittest.TestCase):
         for patch in bank.patches:
             self.assertEqual(index, patch.index)
             index += 1
+
+    def test_swap(self):
+        json = self.generate_bank('generic-bank')
+        bank = Bank(json)
+
+        patches = bank.patches
+
+        bank.swapPatches(patches[0], patches[1])
+        self.assertEqual(bank.patches, [patches[1], patches[0]])
+
+    def test_wrong_swap(self):
+        jsonA = self.generate_bank('generic-bank-a')
+        jsonB = self.generate_bank('generic-bank-b')
+
+        bankA = Bank(jsonA)
+        bankB = Bank(jsonB)
+
+        with self.assertRaises(BankError):
+            bankA.swapPatches(bankA.patches[0], bankB.patches[1])

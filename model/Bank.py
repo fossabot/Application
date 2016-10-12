@@ -70,8 +70,8 @@ class Bank(object):
         return self['patches'].index(patch.json)
 
     def swapPatches(self, patchA, patchB):
-        if patchA.bank != patchB.bank:
-            raise BankError("patchA and patchB aren't of same bank")
+        if patchA.bank != self or patchB.bank != self:
+            raise BankError("patchA or patchB aren't of this bank")
 
         indexA = patchA.index
         indexB = patchB.index

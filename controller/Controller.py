@@ -8,4 +8,4 @@ class Controller(metaclass=ABCMeta):
 
     @abstractmethod
     def configure(self):
-        ...
+        pass

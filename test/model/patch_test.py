@@ -2,6 +2,7 @@
 import unittest
 
 from architecture.privatemethod import privatemethod
+from architecture.PatchError import PatchError
 
 from model.Patch import Patch
 from model.Effect import Effect
@@ -156,3 +157,32 @@ class PatchTest(unittest.TestCase):
                 }
             }
         }
+
+    def test_swap(self):
+        json = self.generate_patch('generic-patch')
+        effect1 = Effect(self.generate_effect('Generic-EffectGxReverb-Stereo1'))
+        effect2 = Effect(self.generate_effect('Generic-EffectGxReverb-Stereo2'))
+
+        patch = Patch(json)
+
+        patch.addEffect(effect1)
+        patch.addEffect(effect2)
+
+        self.assertEqual(patch.effects, [effect1, effect2])
+        patch.swapEffects(effect1, effect2)
+        self.assertEqual(patch.effects, [effect2, effect1])
+
+    def test_wrong_swap(self):
+        json1 = self.generate_patch('generic-patch')
+        json2 = self.generate_patch('generic-patch2')
+
+        patch1 = Patch(json1)
+        patch1.addEffect(Effect(self.generate_effect('Generic-EffectGxReverb-Stereo1')))
+        patch1.addEffect(Effect(self.generate_effect('Generic-EffectGxReverb-Stereo2')))
+
+        patch2 = Patch(json2)
+        patch2.addEffect(Effect(self.generate_effect('Generic-EffectGxReverb-Stereo1')))
+        patch2.addEffect(Effect(self.generate_effect('Generic-EffectGxReverb-Stereo2')))
+
+        with self.assertRaises(PatchError):
+            patch1.swapEffects(patch1.effects[0], patch2.effects[1])

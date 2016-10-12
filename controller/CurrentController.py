@@ -93,11 +93,11 @@ class CurrentController(Controller):
 
         self.setPatch(nextPatchNumber)
 
-    def setPatch(self, patch_number, token=None):
-        if self.patchNumber == patch_number:
+    def setPatch(self, patchNumber, token=None):
+        if self.patchNumber == patchNumber:
             return
 
-        self.setCurrent(self.bankNumber, patch_number, token=token)
+        self.setCurrent(self.bankNumber, patchNumber, token=token)
 
     def toBeforeBank(self):
         banks = self.banksController.banks.all

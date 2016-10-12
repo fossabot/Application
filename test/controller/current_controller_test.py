@@ -11,6 +11,7 @@ from controller.BanksController import BanksController
 class CurrentControllerTest(unittest.TestCase):
     application = None
     controller = None
+    banksController = None
 
     @classmethod
     def setUpClass(cls):

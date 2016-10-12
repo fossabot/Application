@@ -139,3 +139,16 @@ class BanksTest(unittest.TestCase):
         # no index specified explicit
         banks.append(self.generate_bank("Bank 3", -1))
         self.assertEqual(3, len(banks))
+
+    def test_swap(self):
+        bank1 = self.generate_bank("Bank 1", 1)
+        bank2 = self.generate_bank("Bank 2", 2)
+
+        banks = Banks()
+
+        banks.append(bank1)
+        banks.append(bank2)
+
+        self.assertEqual(banks.all, [bank1, bank2])
+        banks.swap(bank1, bank2)
+        self.assertEqual(banks.all, [bank2, bank1])
