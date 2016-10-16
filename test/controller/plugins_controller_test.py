@@ -3,7 +3,7 @@ import unittest
 from architecture.privatemethod import privatemethod
 
 from Application import ApplicationSingleton
-from controller.PluginsController import PluginsController, PluginTecnology
+from controller.PluginsController import PluginsController, PluginTechnology
 from controller.CurrentController import CurrentController
 
 
@@ -31,14 +31,14 @@ class PluginsControllerTest(unittest.TestCase):
 
     def test_get_plugin_by_techonology(self):
         self.assertIsInstance(
-            self.controller.getBy(PluginTecnology.LV2),
+            self.controller.getBy(PluginTechnology.LV2),
             dict
         )
         self.assertIsInstance(
-            self.controller.getBy(PluginTecnology.LADSPA),
+            self.controller.getBy(PluginTechnology.LADSPA),
             dict
         )
         self.assertIsInstance(
-            self.controller.getBy(PluginTecnology.VST),
+            self.controller.getBy(PluginTechnology.VST),
             dict
         )
