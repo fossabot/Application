@@ -79,19 +79,19 @@ class CurrentController(Controller):
     # ************************
     # Set Current Patch/Bank
     # ************************
-    def toBeforePatch(self):
+    def toBeforePatch(self, token=None):
         beforePatchNumber = self.patchNumber - 1
         if beforePatchNumber == -1:
             beforePatchNumber = len(self.currentBank.patches) - 1
 
-        self.setPatch(beforePatchNumber)
+        self.setPatch(beforePatchNumber, token)
 
-    def toNextPatch(self):
+    def toNextPatch(self, token=None):
         nextPatchNumber = self.patchNumber + 1
         if nextPatchNumber == len(self.currentBank.patches):
             nextPatchNumber = 0
 
-        self.setPatch(nextPatchNumber)
+        self.setPatch(nextPatchNumber, token)
 
     def setPatch(self, patchNumber, token=None):
         if self.patchNumber == patchNumber:

@@ -10,7 +10,7 @@ from controller.Controller import Controller
 from enum import Enum
 
 
-class PluginTecnology(Enum):
+class PluginTechnology(Enum):
     LV2 = 'lv2'
     LADSPA = 'ladspa'
     VST = 'vst'
@@ -19,22 +19,22 @@ class PluginTecnology(Enum):
 class PluginsController(Controller):
     plugins = {}
     tecnology = {
-        PluginTecnology.LV2: {},
-        PluginTecnology.LADSPA: {},
-        PluginTecnology.VST: {}
+        PluginTechnology.LV2: {},
+        PluginTechnology.LADSPA: {},
+        PluginTechnology.VST: {}
     }
 
     def configure(self):
         self.plugins = dict()
         
         self.plugins.update(Lv2Library().plugins)
-        self.tecnology[PluginTecnology.LV2] = Lv2Library().plugins
+        self.tecnology[PluginTechnology.LV2] = Lv2Library().plugins
 
         self.plugins.update(LadspaLibrary().plugins)
-        self.tecnology[PluginTecnology.LADSPA] = LadspaLibrary().plugins
+        self.tecnology[PluginTechnology.LADSPA] = LadspaLibrary().plugins
 
-    def getBy(self, tecnology):
-        '''
-        @param tecnology PluginTecnology
-        '''
-        return self.tecnology[tecnology]
+    def getBy(self, technology):
+        """
+        @param PluginTechnology technology:
+        """
+        return self.tecnology[technology]
