@@ -1,9 +1,9 @@
 PedalPi - Application - Controllers
-=================================================
+===================================
 
 
 Controller
----------------
+----------
 
 .. autoclass:: controller.Controller.Controller
    :members:
@@ -27,7 +27,7 @@ DeviceController
    :members:
 
 EffectController
------------------
+----------------
 
 .. autoclass:: controller.EffectController.EffectController
    :members:

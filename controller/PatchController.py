@@ -87,12 +87,13 @@ class PatchController(Controller):
 
     def swapEffects(self, effectA, effectB):
         """
-        Deprecated
+        .. deprecated::
+            Don't use
 
         Swap position index effectA to effectB
         """
         effectA.patch.swapEffects(effectA, effectB)
         self.dao.save(effectA.patch.bank)
 
-    def _notify_change(self, patch, updateType, token=None):
-        self.notificationController.notifyPatchUpdated(patch, updateType, token)
+    def _notify_change(self, patch, update_type, token=None):
+        self.notificationController.notifyPatchUpdated(patch, update_type, token)

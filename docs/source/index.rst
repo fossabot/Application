@@ -1,5 +1,5 @@
 PedalPi - Application
-=================================================
+=====================
 
 API for pythonic management with LV2 audio plugins using `mod-host`_.
 
@@ -11,9 +11,10 @@ Contents:
    :maxdepth: 2
 
    controllers
+   models
 
-Class
-------------------
+Application
+-----------
 
 .. autoclass:: Application.Application
   :members:

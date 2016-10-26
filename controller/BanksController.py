@@ -86,7 +86,8 @@ class BanksController(Controller):
 
     def swapBanks(self, bankA, bankB, token=None):
         """
-        Deprecated
+        .. deprecated:: ever
+            Don't use
 
         Swap bankA index to bankB index
         """
@@ -100,7 +101,8 @@ class BanksController(Controller):
 
     def swapPatches(self, patchA, patchB):
         """
-        Deprecated
+        .. deprecated::
+            Don't use
 
         Swap patchA order to patchB order
         """
