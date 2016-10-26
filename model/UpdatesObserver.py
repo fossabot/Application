@@ -11,6 +11,17 @@ class UpdateType(Enum):
 
 class UpdatesObserver(metaclass=ABCMeta):
 
+    def __init__(self):
+        self._token = None
+
+    @property
+    def token(self):
+        return self._token
+
+    @token.setter
+    def token(self, token):
+        self._token = token
+
     @abstractmethod
     def onCurrentPatchChange(self, patch, token=None):
         pass
