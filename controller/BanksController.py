@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from architecture.privatemethod import privatemethod
-
 from dao.BankDao import BankDao
 
 from model.Bank import Bank
@@ -39,21 +37,21 @@ class BanksController(Controller):
 
         self.banks.append(bankModel)
         self.dao.save(bankModel)
-        self.notifyChange(bankModel, UpdateType.CREATED, token)
+        self._notify_change(bankModel, UpdateType.CREATED, token)
 
         return bankModel.index
 
     def updateBank(self, bank, data, token=None):
         """
-        Update a :class:`Bank` object based in data parsed.
+        Updates a :class:`Bank` object based in data parsed.
 
         .. note::
             If you're changing a bank that has a current patch,
-            the patch should be fully charged. So, prefer the use of other
-            Controllers for simple changes.
+            the patch should be fully charged and loaded. So, prefer the use
+            of other Controllers methods for simple changes.
 
         :param Bank bank: Bank to be updated
-        :param dict data: New data bank
+        :param dict data: New bank data
         :param string token: Request token identifier
         :return int: bank index
         """
@@ -65,17 +63,17 @@ class BanksController(Controller):
             currentPatch = self.currentController.currentPatch
             self.deviceController.loadPatch(currentPatch)
 
-        self.notifyChange(bank, UpdateType.UPDATED, token)
+        self._notify_change(bank, UpdateType.UPDATED, token)
 
     def deleteBank(self, bank, token=None):
         """
-        Remove the :class:`Bank` object parameter.
+        Remove the informed :class:`Bank`.
 
         .. note::
             If the Bank contains deleted contains the current patch,
             another patch will be loaded and it will be the new current patch.
 
-        :param Bank bank: Bank to be updated
+        :param Bank bank: Bank to be removed
         :param string token: Request token identifier
         """
         if bank == self.currentController.currentBank:
@@ -84,7 +82,7 @@ class BanksController(Controller):
         del self.banks[bank.index]
         self.dao.delete(bank)
 
-        self.notifyChange(bank, UpdateType.DELETED, token)
+        self._notify_change(bank, UpdateType.DELETED, token)
 
     def swapBanks(self, bankA, bankB, token=None):
         """
@@ -97,8 +95,8 @@ class BanksController(Controller):
         self.dao.save(bankA)
         self.dao.save(bankB)
 
-        self.notifyChange(bankA, UpdateType.UPDATED, token)
-        self.notifyChange(bankB, UpdateType.UPDATED, token)
+        self._notify_change(bankA, UpdateType.UPDATED, token)
+        self._notify_change(bankB, UpdateType.UPDATED, token)
 
     def swapPatches(self, patchA, patchB):
         """
@@ -109,6 +107,5 @@ class BanksController(Controller):
         patchA.bank.swapPatches(patchA, patchB)
         self.dao.save(patchA.bank)
 
-    @privatemethod
-    def notifyChange(self, bank, update_type, token=None):
+    def _notify_change(self, bank, update_type, token=None):
         self.notificationController.notifyBankUpdate(bank, update_type, token)

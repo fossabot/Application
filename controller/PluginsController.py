@@ -11,6 +11,9 @@ from enum import Enum
 
 
 class PluginTechnology(Enum):
+    """
+    Enumeration for informs audio plugins technology
+    """
     LV2 = 'lv2'
     LADSPA = 'ladspa'
     VST = 'vst'
@@ -18,7 +21,8 @@ class PluginTechnology(Enum):
 
 class PluginsController(Controller):
     plugins = {}
-    tecnology = {
+    
+    technology = {
         PluginTechnology.LV2: {},
         PluginTechnology.LADSPA: {},
         PluginTechnology.VST: {}
@@ -26,15 +30,17 @@ class PluginsController(Controller):
 
     def configure(self):
         self.plugins = dict()
-        
+
         self.plugins.update(Lv2Library().plugins)
-        self.tecnology[PluginTechnology.LV2] = Lv2Library().plugins
+        self.technology[PluginTechnology.LV2] = Lv2Library().plugins
 
         self.plugins.update(LadspaLibrary().plugins)
-        self.tecnology[PluginTechnology.LADSPA] = LadspaLibrary().plugins
+        self.technology[PluginTechnology.LADSPA] = LadspaLibrary().plugins
 
     def getBy(self, technology):
         """
-        @param PluginTechnology technology:
+        Get the plugins registred in PedalPi by technology
+
+        :param PluginTechnology technology: PluginTechnology identifier
         """
-        return self.tecnology[technology]
+        return self.technology[technology]

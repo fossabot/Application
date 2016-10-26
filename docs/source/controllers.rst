@@ -55,3 +55,6 @@ PluginsController
 
 .. autoclass:: controller.PluginsController.PluginsController
    :members:
+
+.. autoclass:: controller.PluginsController.PluginTechnology
+   :members:
