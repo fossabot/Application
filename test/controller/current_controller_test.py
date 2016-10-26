@@ -3,19 +3,16 @@ import unittest
 
 from architecture.privatemethod import privatemethod
 
-from Application import ApplicationSingleton
 from controller.CurrentController import CurrentController
 from controller.BanksController import BanksController
 
+from test.controller.controller_test import ControllerTest
 
-class CurrentControllerTest(unittest.TestCase):
+
+class CurrentControllerTest(ControllerTest):
     application = None
     controller = None
     banksController = None
-
-    @classmethod
-    def setUpClass(cls):
-        cls.application = ApplicationSingleton.getInstance()
 
     def setUp(self):
         self.controller = self.get_controller(CurrentController)

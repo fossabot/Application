@@ -2,18 +2,14 @@ import unittest
 
 from architecture.privatemethod import privatemethod
 
-from Application import ApplicationSingleton
 from controller.PluginsController import PluginsController, PluginTechnology
 from controller.CurrentController import CurrentController
 
+from test.controller.controller_test import ControllerTest
 
-class PluginsControllerTest(unittest.TestCase):
-    application = None
+
+class PluginsControllerTest(ControllerTest):
     controller = None
-
-    @classmethod
-    def setUpClass(cls):
-        cls.application = ApplicationSingleton.getInstance()
 
     def setUp(self):
         self.controller = self.get_controller(PluginsController)

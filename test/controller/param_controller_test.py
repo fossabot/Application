@@ -3,21 +3,16 @@ import unittest
 
 from architecture.privatemethod import privatemethod
 
-from Application import ApplicationSingleton
-
 from controller.CurrentController import CurrentController
 from controller.EffectController import EffectController
 from controller.ParamController import ParamController
 from controller.PluginsController import PluginsController
 
+from test.controller.controller_test import ControllerTest
 
-class ParamControllerTest(unittest.TestCase):
-    application = None
+
+class ParamControllerTest(ControllerTest):
     controller = None
-
-    @classmethod
-    def setUpClass(cls):
-        cls.application = ApplicationSingleton.getInstance()
 
     def setUp(self):
         self.controller = self.get_controller(ParamController)

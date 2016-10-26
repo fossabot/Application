@@ -3,21 +3,16 @@ import unittest
 
 from architecture.privatemethod import privatemethod
 
-from Application import ApplicationSingleton
-
 from controller.PatchController import PatchController
 from controller.CurrentController import CurrentController
 
 from model.Patch import Patch
 
+from test.controller.controller_test import ControllerTest
 
-class PatchControllerTest(unittest.TestCase):
-    application = None
+
+class PatchControllerTest(ControllerTest):
     controller = None
-
-    @classmethod
-    def setUpClass(cls):
-        cls.application = ApplicationSingleton.getInstance()
 
     def setUp(self):
         self.controller = PatchControllerTest.application.controller(

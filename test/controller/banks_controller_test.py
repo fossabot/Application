@@ -4,19 +4,14 @@ import unittest
 from architecture.BankError import BankError
 from architecture.privatemethod import privatemethod
 
-from Application import ApplicationSingleton
-
 from controller.BanksController import BanksController
 from controller.CurrentController import CurrentController
 
+from test.controller.controller_test import ControllerTest
 
-class BanksControllerTest(unittest.TestCase):
-    application = None
+
+class BanksControllerTest(ControllerTest):
     controller = None
-
-    @classmethod
-    def setUpClass(cls):
-        cls.application = ApplicationSingleton.getInstance()
 
     def setUp(self):
         self.controller = self.get_controller(BanksController)
@@ -70,7 +65,7 @@ class BanksControllerTest(unittest.TestCase):
     def test_update_bank(self):
         bankJson = self.generate_bank("test_update_bank")
         index = self.controller.createBank(bankJson)
-        
+
         newName = 'Single a tom or chord?'
 
         bank = self.controller.banks[index]
