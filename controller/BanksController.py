@@ -12,6 +12,9 @@ from controller.NotificationController import NotificationController
 
 
 class BanksController(Controller):
+    """
+    Manage :class:`Bank`, creating new, updating or deleting.
+    """
     banks = None
 
     def configure(self):
@@ -26,9 +29,11 @@ class BanksController(Controller):
 
     def createBank(self, bank, token=None):
         """
-        :param bank: dict
-        :param token: Request token identifier
-        :return: bank index
+        Persists a new :class:`Bank` in database.
+
+        :param dict bank: Bank content
+        :param string token: Request token identifier
+        :return int: bank index
         """
         bankModel = Bank(bank)
 
@@ -39,6 +44,19 @@ class BanksController(Controller):
         return bankModel.index
 
     def updateBank(self, bank, data, token=None):
+        """
+        Update a :class:`Bank` object based in data parsed.
+
+        .. note::
+            If you're changing a bank that has a current patch,
+            the patch should be fully charged. So, prefer the use of other
+            Controllers for simple changes.
+
+        :param Bank bank: Bank to be updated
+        :param dict data: New data bank
+        :param string token: Request token identifier
+        :return int: bank index
+        """
         self.dao.delete(bank)
         bank.json = data
 
@@ -50,6 +68,16 @@ class BanksController(Controller):
         self.notifyChange(bank, UpdateType.UPDATED, token)
 
     def deleteBank(self, bank, token=None):
+        """
+        Remove the :class:`Bank` object parameter.
+
+        .. note::
+            If the Bank contains deleted contains the current patch,
+            another patch will be loaded and it will be the new current patch.
+
+        :param Bank bank: Bank to be updated
+        :param string token: Request token identifier
+        """
         if bank == self.currentController.currentBank:
             self.currentController.toNextBank()
 
@@ -59,6 +87,11 @@ class BanksController(Controller):
         self.notifyChange(bank, UpdateType.DELETED, token)
 
     def swapBanks(self, bankA, bankB, token=None):
+        """
+        Deprecated
+
+        Swap bankA index to bankB index
+        """
         self.banks.swap(bankA, bankB)
 
         self.dao.save(bankA)
@@ -68,6 +101,11 @@ class BanksController(Controller):
         self.notifyChange(bankB, UpdateType.UPDATED, token)
 
     def swapPatches(self, patchA, patchB):
+        """
+        Deprecated
+
+        Swap patchA order to patchB order
+        """
         patchA.bank.swapPatches(patchA, patchB)
         self.dao.save(patchA.bank)
 
