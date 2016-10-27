@@ -62,3 +62,7 @@ UpdatesObserver
 .. autoclass:: model.UpdatesObserver.UpdatesObserver
    :members:
    :special-members:
+
+.. autoclass:: model.UpdatesObserver.UpdateType
+   :members:
+   :special-members:

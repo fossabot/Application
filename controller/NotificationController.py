@@ -4,7 +4,7 @@ from controller.Controller import Controller
 
 class NotificationController(Controller):
     """
-    Notifies request changes to all :class:`UpdatesObservers` registered
+    Notifies request changes to all :class:`UpdatesObserver` registered
     than not contains the same request _token_.
     """
 
@@ -16,9 +16,19 @@ class NotificationController(Controller):
         pass
 
     def register(self, observer):
+        """
+        Register an observer
+
+        :param Notification observer: An observer that will be received the changes
+        """
         self.observers.append(observer)
 
     def unregister(self, observer):
+        """
+        Unregister an observer
+        
+        :param Notification observer: An observer that not will be more received the changes
+        """
         self.observers.remove(observer)
 
     def is_requisitor(self, observer, token):
@@ -39,7 +49,7 @@ class NotificationController(Controller):
         """
         Notify current patch change.
 
-        :patch Patch patch: New current patch
+        :param Patch patch: New current patch
         :param string token: Request token identifier
         """
         for observer in self.observers:
@@ -50,7 +60,7 @@ class NotificationController(Controller):
         """
         Notify changes in :class:`Bank`.
 
-        :patch Bank patch: Bank changed.
+        :param Bank patch: Bank changed.
         :param UpdateType update_type: Change type
         :param string token: Request token identifier
         """
@@ -62,7 +72,7 @@ class NotificationController(Controller):
         """
         Notify changes in :class:`Patch`.
 
-        :patch Patch patch: Patch changed
+        :param Patch patch: Patch changed
         :param UpdateType update_type: Change type
         :param string token: Request token identifier
         """
@@ -74,7 +84,7 @@ class NotificationController(Controller):
         """
         Notify changes in :class:`Effect`.
 
-        :patch Effect effect: Effect changed
+        :param Effect effect: Effect changed
         :param UpdateType update_type: Change type
         :param string token: Request token identifier
         """
@@ -86,7 +96,7 @@ class NotificationController(Controller):
         """
         Notify :class:`Effect` status toggled.
 
-        :patch Effect effect: Effect when status has been toggled
+        :param Effect effect: Effect when status has been toggled
         :param string token: Request token identifier
         """
         for observer in self.observers:
@@ -95,9 +105,9 @@ class NotificationController(Controller):
 
     def notifyParamValueChange(self, param, token=None):
         """
-        Notify param value change in :class:`Effect`.
+        Notify :class:`Param` value change.
 
-        :patch Param param: Param with value changed
+        :param Param param: Param with value changed
         :param string token: Request token identifier
         """
         for observer in self.observers:

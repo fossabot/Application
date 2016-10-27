@@ -8,6 +8,8 @@ class Bank(object):
     Bank is a data structure that contains :class:`Patch`. It's useful
     for group common patches, like "Patches will be used in
     the Sunday show"
+
+    :param dict json: Json representation of Bank
     """
 
     __json = {}
@@ -43,7 +45,7 @@ class Bank(object):
 
     def __eq__(self, another):
         """
-        Compare this bank with another Bank if they are equals
+        Compare if this bank is equals with another bank
 
         :param Bank another: Other bank that be comparable
         :return bool: This bank is equals to another bank?
@@ -53,7 +55,7 @@ class Bank(object):
 
     def __ne__(self, another):
         """
-        Compare this bank with another Bank if they are't equals
+        Compare if this bank are not equals with another bank
 
         :param Bank another: Other bank that be comparable
         :return bool: This bank is not equals to another bank?
@@ -128,7 +130,7 @@ class Bank(object):
 
     def indexOfPatch(self, patch):
         """
-        .. deprecated::
+        .. note::
             Use :func:`index` :class:`Patch` attribute instead.
 
         :param Patch patch:
