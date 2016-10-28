@@ -5,13 +5,6 @@ API for pythonic management with LV2 audio plugins using `mod-host`_.
 
 .. _mod-host: https://github.com/moddevices/mod-host
 
-Contents:
-
-.. toctree::
-   :maxdepth: 2
-
-   controllers
-   models
 
 Using
 -----
@@ -41,26 +34,27 @@ Using
 
 .. code-block:: python
 
+    sys.path.append('application')
+
     from application.Application import Application
 
-    address = 'localhost'
-
-    application = Application(data_patch="data/", address=address, test=True)
+    application = Application(data_patch="data/", address='localhost')
 
     application.start()
 
-5º Register something components
+5º Register something components if neccessary
 
-TODO - Add components list
+See the components list in `github Components Project`_.
 
-6º Download and install `mod-host`
+6º Download and install `mod-host`_
 
 7º Start audio process
 
 .. code-block:: bash
 
+    # In this example, is starting a Zoom g3 series audio interface
     jackd -R -P70 -t2000 -dalsa -dhw:Series -p256 -n3 -r44100 -s &
-    mod-host
+    mod-host &
 
 8º Start application
 
@@ -68,8 +62,40 @@ TODO - Add components list
 
     python3 start.py
 
-Application
------------
+Extending
+---------
 
-.. autoclass:: Application.Application
-  :members:
+It's possible add functionalists or extends the controller with addiction of :class:`Component`.
+For list all possibilities, see the `github Components Project`_.
+
+.. _github Components Project: https://github.com/PedalPi/Components
+
+Distributed System
+------------------
+
+The connection with `mod-host`_ is over `TCP`_. So it's possible to place a
+machine to perform the processing and another to provide the control services.
+
+For example, you have a **Raspberry Pi B+** and a **PC**.
+ * The PC in http://10.0.0.100 will process the audio, then it will execute `jack` process, `mod-host` process and the audio interface will be connected to it.
+ * The *RPi* will executes :class:`Application` with :class:`Component`, like `Raspberry P0 component`_. Raspberry P0 disposes a simple current patch control.
+
+.. code-block:: python
+
+    application = Application(data_patch="data/", address='10.0.0.100', test=False)
+
+.. _Raspberry P0 component: https://github.com/PedalPi/Raspberry-P0
+.. _TCP: https://en.wikipedia.org/wiki/Transmission_Control_Protocol
+
+
+API
+---
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+   application
+   controllers
+   models
