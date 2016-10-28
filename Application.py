@@ -11,12 +11,43 @@ from controller.PluginsController import PluginsController
 
 
 class Application(object):
+    """
+    Application is a API for pythonic management with LV2 audio plugins.
+    Current, it offers a bridge with `mod-host`_
+    (LV2 host for Jack controllable via socket or command line)
+    by a *TCP* connection.
+
+    By a application instance, it's possible obtains a :class:Controller
+    for control::
+
+        >>> from Application import Application
+        >>> from controller.CurrentController import CurrentController
+
+        >>> application = Application()
+        >>> currentController = application.controller(CurrentController)
+
+        >>> print(currentController.currentPatch)
+        <Patch object as Shows with 2 effects at 0x7fa3bcb49be0>
+
+        >>> currentController.toNextPatch()
+        >>> currentController.currentPatch
+        <Patch object as Shows 2 with 1 effects at 0x7fa3bbcdecf8>
+
+    For more details, please, see the Controllers extended classes.
+
+    :param string data_patch: Uri where the data will be persisted
+    :param string address: `mod-host`_ address
+    :param bool test: If ``test == True``, the connection with mod-host will be simulated
+
+    .. _mod-host: https://github.com/moddevices/mod-host
+    """
 
     def __init__(self, data_patch="data/", address="localhost", test=False):
         self.dataPatch = data_patch
-        self.controllers = self._load_controllers(address, test)
-        self._configure_controllers(self.controllers)
         self.components = []
+        self.controllers = self._load_controllers(address, test)
+
+        self._configure_controllers(self.controllers)
 
     def _load_controllers(self, address, test):
         controllers = {}
@@ -31,14 +62,14 @@ class Application(object):
             PluginsController
         ]
 
-        controllers[DeviceController.__name__] = self.init_device_controller(address, test)
+        controllers[DeviceController.__name__] = self._init_device_controller(address, test)
 
         for controller in list_controllers:
             controllers[controller.__name__] = controller(self)
 
         return controllers
 
-    def init_device_controller(self, address, test):
+    def _init_device_controller(self, address, test):
         if test:
             from unittest.mock import Mock
             return Mock(spec=DeviceController)
@@ -52,12 +83,6 @@ class Application(object):
     def _configure_controllers(self, controllers):
         for controller in list(controllers.values()):
             controller.configure()
-
-    def dao(self, dao):
-        return dao(self.dataPatch)
-
-    def controller(self, controller):
-        return self.controllers[controller.__name__]
 
     def register(self, component):
         """
@@ -76,13 +101,20 @@ class Application(object):
             print('[' + time.strftime('%Y-%m-%d %H:%M:%S') + ']', 'Loading', component.__class__.__name__)
             component.init()
 
+    def controller(self, controller):
+        """
+        Returns the controller instance by Controller class identifier
 
-class ApplicationSingleton(object):
-    instance = None
+        :param Controller controller: Class identifier
+        :return: Controller instance
+        """
+        return self.controllers[controller.__name__]
 
-    @classmethod
-    def getInstance(cls):
-        if cls.instance is None:
-            cls.instance = Application(test=True)
+    def dao(self, dao):
+        """
+        Returns a Dao persister instance by Dao class identifier
 
-        return cls.instance
+        :param dao: Class identifier
+        :return: Dao instance
+        """
+        return dao(self.dataPatch)

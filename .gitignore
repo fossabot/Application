@@ -2,3 +2,4 @@
 PedalPi_Application.egg-info
 .coverage
 htmlcov/
+docs/build

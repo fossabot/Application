@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from architecture.EffectException import EffectException
-from architecture.privatemethod import privatemethod
 
 from dao.BankDao import BankDao
 
@@ -15,6 +14,9 @@ from model.UpdatesObserver import UpdateType
 
 
 class EffectController(Controller):
+    """
+    Manage :class:`Effect`, creating new, deleting or changing status.
+    """
     dao = None
     currentController = None
     deviceController = None
@@ -31,23 +33,26 @@ class EffectController(Controller):
 
     def createEffect(self, patch, uri):
         """
-        @return effect index
+        Add an :class:`Effect` in a :class:`Patch`
+
+        :param Patch patch: Patch that will be added effect
+        :param string uri: Effect plugin LV2 uri identifier
+        :return int: Index of effect created
         """
         try:
             plugin = self.pluginsController.plugins[uri]
         except KeyError:
             raise EffectException('Undefined plugin uri ' + uri)
 
-        effect = self.prepareEffect(plugin)
+        effect = self._prepare_effect(plugin)
         patch.addEffect(effect)
 
-        self.update(patch)
-        self.notifyChange(effect, UpdateType.CREATED)
+        self._update(patch)
+        self._notify_change(effect, UpdateType.CREATED)
 
         return len(patch['effects']) - 1
 
-    @privatemethod
-    def prepareEffect(self, plugin):
+    def _prepare_effect(self, plugin):
         effect = dict()
 
         effect['uri'] = plugin['uri']
@@ -59,39 +64,47 @@ class EffectController(Controller):
         effect['ports'] = dict(plugin['ports'])
         effect['status'] = True
 
-        effect = self.preparePorts(effect)
+        effect = self._prepare_ports(effect)
 
         return Effect(effect)
 
-    @privatemethod
-    def preparePorts(self, effect):
+    def _prepare_ports(self, effect):
         for param in effect['ports']['control']['input']:
             param['value'] = param['ranges']['default']
 
         return effect
 
     def deleteEffect(self, effect):
+        """
+        Remove an :class:`Effect` instance in your :class:`Patch`
+
+        :param Effect effect: Effect will be removed
+        """
         patch = effect.patch
 
-        self.notifyChange(effect, UpdateType.DELETED)
+        self._notify_change(effect, UpdateType.DELETED)
         del patch['effects'][effect.index]
 
-        self.update(patch)
+        self._update(patch)
 
     def toggleStatus(self, effect, token=None):
+        """
+        Toggle the effect status: ``status = not effect.status``
+
+        :param Effect effect: Effect will be toggled your status
+        :param string token: Request token identifier
+        """
         effect.json["status"] = not effect.status
         patch = effect.patch
 
-        self.update(patch)
+        self._update(patch)
         self.notificationController.notifyEffectStatusToggled(effect, token)
 
-    @privatemethod
-    def update(self, patch):
+    def _update(self, patch):
         self.dao.save(patch.bank)
 
         if self.currentController.isCurrentPatch(patch):
             self.deviceController.loadPatch(patch)
 
-    @privatemethod
-    def notifyChange(self, effect, updateType):
+    def _notify_change(self, effect, updateType):
         self.notificationController.notifyEffectUpdated(effect, updateType)

@@ -4,20 +4,16 @@ import unittest
 from architecture.EffectException import EffectException
 from architecture.privatemethod import privatemethod
 
-from Application import ApplicationSingleton
-
 from controller.EffectController import EffectController
 from controller.PluginsController import PluginsController
 from controller.CurrentController import CurrentController
 
+from test.controller.controller_test import ControllerTest
 
-class EffectControllerTest(unittest.TestCase):
+
+class EffectControllerTest(ControllerTest):
     application = None
     controller = None
-
-    @classmethod
-    def setUpClass(cls):
-        cls.application = ApplicationSingleton.getInstance()
 
     def setUp(self):
         self.controller = self.get_controller(EffectController)
@@ -46,7 +42,7 @@ class EffectControllerTest(unittest.TestCase):
     def create_effect(self, uri=None):
         if uri is None:
             uri = self.any_plugin_uri()
-        
+
         patch = self.currentPatch
         return self.controller.createEffect(patch, uri)
 

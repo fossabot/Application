@@ -7,6 +7,9 @@ from controller.NotificationController import NotificationController
 
 
 class ParamController(Controller):
+    """
+    Manage :class:`Param`, updating your value
+    """
 
     def configure(self):
         from controller.CurrentController import CurrentController
@@ -16,6 +19,13 @@ class ParamController(Controller):
         self.notificationController = self.app.controller(NotificationController)
 
     def updateValue(self, param, new_value, token=None):
+        """
+        Set the value of a :class:`Param`.
+
+        :param Param param: Effect parameter that will be changed your value
+        :param new_value: New param value
+        :param string token: Request token identifier
+        """
         patch = param.effect.patch
         bank = patch.bank
 
