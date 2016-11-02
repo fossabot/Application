@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import unittest
-
 from controller.ComponentDataController import ComponentDataController
 
 from test.controller.controller_test import ControllerTest

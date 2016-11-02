@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import unittest
-
 from architecture.BankError import BankError
 from architecture.privatemethod import privatemethod
 

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import unittest
-
 from architecture.privatemethod import privatemethod
 
 from controller.CurrentController import CurrentController

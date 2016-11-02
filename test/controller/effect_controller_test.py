@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import unittest
-
 from architecture.EffectException import EffectException
 from architecture.privatemethod import privatemethod
 
