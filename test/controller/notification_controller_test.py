@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import unittest
 from unittest.mock import Mock
 
 from controller.NotificationController import NotificationController

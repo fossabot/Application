@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
-import unittest
-
 from architecture.privatemethod import privatemethod
 
 from controller.PatchController import PatchController
 from controller.CurrentController import CurrentController
-
-from model.Patch import Patch
 
 from test.controller.controller_test import ControllerTest
 

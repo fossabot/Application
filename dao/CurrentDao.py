@@ -1,29 +1,25 @@
 # -*- coding: utf-8 -*-
 from dao.DataBank import DataBank
-from architecture.privatemethod import privatemethod
 
 
 class CurrentDao(object):
-    dataPath = ""
 
-    def __init__(self, dataPath):
-        self.dataPath = dataPath + 'current/'
+    def __init__(self, data_path):
+        self.data_path = data_path + 'current/'
 
     def load(self):
-        return self.readFile()
+        return self._read_file()
 
-    def save(self, bankIndex, patchIndex):
+    def save(self, bank_index, patch_index):
         json = {
-            "bank": bankIndex,
-            "patch": patchIndex
+            "bank": bank_index,
+            "patch": patch_index
         }
 
-        DataBank.save(self.url(), json)
+        DataBank.save(self._url(), json)
 
-    @privatemethod
-    def readFile(self):
-        return DataBank.read(self.url())
+    def _read_file(self):
+        return DataBank.read(self._url())
 
-    @privatemethod
-    def url(self):
-        return self.dataPath + "current.json"
+    def _url(self):
+        return self.data_path + "current.json"

@@ -35,3 +35,16 @@ killall -9 jackd
 killall -9 mod-host
 # execute "Usign" steps
 ```
+
+## Documentation
+
+This project uses [Sphinx](www.sphinx-doc.org) and [Read the doc](readthedocs.org).
+
+For local documentation build
+
+```bash
+cd docs
+make html
+```
+
+For view the last documentation, access http://pedalpi-application.readthedocs.io/.

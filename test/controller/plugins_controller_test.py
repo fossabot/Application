@@ -1,5 +1,3 @@
-import unittest
-
 from architecture.privatemethod import privatemethod
 
 from controller.PluginsController import PluginsController, PluginTechnology
