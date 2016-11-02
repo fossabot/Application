@@ -59,7 +59,7 @@ class ComponentDataController(Controller):
 
     def configure(self):
         self.dao = self.app.dao(ComponentDao)
-        self.__data = {}
+        self.__data = self.dao.load()
 
     def __getitem__(self, key):
         """
@@ -92,4 +92,4 @@ class ComponentDataController(Controller):
         """
         del self.__data[key]
 
-        self.dao.save(key)
+        self.dao.save(self.__data)

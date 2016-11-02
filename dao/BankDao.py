@@ -2,38 +2,34 @@
 import glob
 
 from dao.DataBank import DataBank
-from architecture.privatemethod import privatemethod
 
 from model.Bank import Bank
 from model.Banks import Banks
 
 
 class BankDao(object):
-    dataPath = ""
 
-    def __init__(self, dataPath):
-        self.dataPath = dataPath + 'banks/'
+    def __init__(self, data_path):
+        self.data_path = data_path + 'banks/'
 
     @property
     def all(self):
-        return self.readBanks(self.dataPath)
+        return self._read_banks(self.data_path)
 
-    @privatemethod
-    def readBanks(self, dataPath):
+    def _read_banks(self, data_path):
         banks = Banks()
 
-        for file in glob.glob(dataPath + "*.json"):
+        for file in glob.glob(data_path + "*.json"):
             bank = Bank(DataBank.read(file))
             banks.append(bank)
 
         return banks
 
     def save(self, bank):
-        DataBank.save(self.url(bank), bank.json)
+        DataBank.save(self._url(bank), bank.json)
 
     def delete(self, bank):
-        DataBank.delete(self.url(bank))
+        DataBank.delete(self._url(bank))
 
-    @privatemethod
-    def url(self, bank):
-        return self.dataPath + bank["name"] + ".json"
+    def _url(self, bank):
+        return self.data_path + bank["name"] + ".json"
