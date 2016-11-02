@@ -61,19 +61,19 @@ class ComponentDataController(Controller):
         self.dao = self.app.dao(ComponentDao)
         self.__data = {}
 
-    def __getattr__(self, item):
+    def __getitem__(self, key):
         """
-        Returns the data for the informed `item`
+        Returns the data for the informed `key`
 
         :param item:
         :return dict: Content if exist for key informed, else empty `dict`
         """
         try:
-            return dict(self.__data[item])
+            return dict(self.__data[key])
         except KeyError:
             return {}
 
-    def __setattr__(self, key, value):
+    def __setitem__(self, key, value):
         """
         Change the `key` identifier content to `value`
 
@@ -84,12 +84,12 @@ class ComponentDataController(Controller):
 
         self.dao.save(self.__data)
 
-    def __delattr__(self, item):
+    def __delitem__(self, key):
         """
         Remove all `item` identifier content
 
-        :param string item: Identifier
+        :param string key: Identifier
         """
-        del self.__data[item]
+        del self.__data[key]
 
-        self.dao.save(item)
+        self.dao.save(key)

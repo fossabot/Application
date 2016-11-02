@@ -2,6 +2,7 @@ import time
 
 from controller.BanksController import BanksController
 from controller.CurrentController import CurrentController
+from controller.ComponentDataController import ComponentDataController
 from controller.DeviceController import DeviceController
 from controller.EffectController import EffectController
 from controller.NotificationController import NotificationController
@@ -54,6 +55,7 @@ class Application(object):
 
         list_controllers = [
             BanksController,
+            ComponentDataController,
             CurrentController,
             EffectController,
             NotificationController,
