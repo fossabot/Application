@@ -8,4 +8,4 @@ class ControllerTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.application = Application(test=True)
+        cls.application = Application(data_patch='test/data/', test=True)
