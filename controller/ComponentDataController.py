@@ -65,7 +65,7 @@ class ComponentDataController(Controller):
         """
         Returns the data for the informed `key`
 
-        :param item:
+        :param string key:
         :return dict: Content if exist for key informed, else empty `dict`
         """
         try:

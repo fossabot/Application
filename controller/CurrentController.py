@@ -73,7 +73,7 @@ class CurrentController(Controller):
         effect = self.currentPatch.effects[effect_index]
         self.effectController.toggleStatus(effect, token)
 
-    def setEffectParam(self, effect_index, param_index, new_value):
+    def setEffectParam(self, effect_index, param_index, new_value, token=None):
         """
         Set a :class:`Param` value of an :class:`Effect` that belongs to the
         current :class:`Patch`
@@ -81,11 +81,12 @@ class CurrentController(Controller):
         :param int effect_index: Effect index in the current patch
         :param int param_index: Param index in the effect
         :param new_value: New value of the parameter
+        :param string token: Request token identifier
         """
         effect = self.currentPatch.effects[effect_index]
         param = effect.params[param_index]
 
-        self.paramController.updateValue(param, new_value)
+        self.paramController.updateValue(param, new_value, token)
 
     # ************************
     # Get of Current

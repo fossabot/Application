@@ -74,7 +74,7 @@ class Patch(object):
     @property
     def effects(self):
         """
-        Returns all :class:`Effects` of this bank
+        Returns all :class:`Effects` of this patch
         """
         returned = []
         effects = self.json["effects"]
@@ -83,6 +83,23 @@ class Patch(object):
             returned.append(Effect(effectJson, self))
 
         return returned
+
+    @property
+    def connections(self):
+        """
+        returns dict: All :class:`Effect` connections in this patch
+        """
+        return self['connections']
+
+    @connections.setter
+    def connections(self, connections):
+        """
+        Change all patch connections.
+        This action is not validated
+
+        :param list[dict] connections: Format ``{'in': str, 'out': str}``
+        """
+        self.json['connections'] = connections
 
     @property
     def index(self):
@@ -97,8 +114,20 @@ class Patch(object):
 
         :param Effect effect: Effect that will be added
         """
+        if effect.patch is not None:
+            raise PatchError("Effect has been added other patch")
+
         self["effects"].append(effect.json)
         effect.patch = self
+
+    def deleteEffect(self, effect):
+        if effect.patch != self:
+            raise PatchError("effect isn't of this patch")
+
+        connections = effect.connections
+        self.connections = list(filter(lambda connection: connection not in connections, self.connections))
+
+        del self['effects'][effect.index]
 
     def indexOfEffect(self, effect):
         """
@@ -124,6 +153,20 @@ class Patch(object):
         effects = self.json['effects']
 
         effects[indexA], effects[indexB] = effects[indexB], effects[indexA]
+
+    def connect(self, effectOutput, output, effectInput, input):
+        """
+        Connect the output of effectOutput to input of effectInput:
+
+        :param Effect effectOutput: Effect that the output port audio will be connect with input port audio
+        :param dict output: Output port information of effectOutput
+        :param Effect effectInput:Effect that the input port audio will be connect with output port audio
+        :param dict input: Input port information of effectInput
+        """
+        self['connections'].append({
+            'out': '{}:{}'.format(effectOutput.representation, output['symbol']),
+            'in': '{}:{}'.format(effectInput.representation, input['symbol'])
+        })
 
     def __repr__(self, *args, **kargs):
         return "<%s object as %s with %d effects at 0x%x>" % (

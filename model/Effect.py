@@ -17,6 +17,13 @@ class Effect(object):
         self.patch = patch
 
     @property
+    def representation(self):
+        """
+        :return string: Effect representation for mod-host
+        """
+        return 'effect_' + str(self.index)
+
+    @property
     def json(self):
         """
         Get a json representation of this effect
@@ -101,3 +108,28 @@ class Effect(object):
         :return: Index of the param
         """
         return self["ports"]["control"]["input"].index(param.json)
+
+    @property
+    def inputs(self):
+        """
+        :return list: Effect inputs
+        """
+        return self['ports']['audio']['input']
+
+    @property
+    def outputs(self):
+        """
+        :return list: Effect outputs
+        """
+        return self['ports']['audio']['output']
+
+    @property
+    def connections(self):
+        """
+        :return list: Connections that this effects is present (with input or output port)
+        """
+        representation = self.representation
+        function = lambda connection: connection['in'].startswith(representation) \
+                                   or connection['out'].startswith(representation)
+
+        return filter(function, self.patch.connections)

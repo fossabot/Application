@@ -83,7 +83,7 @@ class EffectController(Controller):
         patch = effect.patch
 
         self._notify_change(effect, UpdateType.DELETED)
-        del patch['effects'][effect.index]
+        patch.deleteEffect(effect)
 
         self._update(patch)
 
@@ -108,3 +108,28 @@ class EffectController(Controller):
 
     def _notify_change(self, effect, updateType):
         self.notificationController.notifyEffectUpdated(effect, updateType)
+
+    def connect(self, effectOutput, output, effectInput, input):
+        """
+        Connect the output of effectOutput to input of effectInput::
+
+        >>> patch = currentController.currentPatch
+
+        >>> effectOutput = patch.effects[0]
+        >>> effectInput = patch.effects[1]
+
+        >>> output = effectOutput.outputs[0]
+        >>> input = effectOutput.inputs[1]
+
+        >>> effectController.connect(effectOutput, output, effectInput, input)
+
+        :param Effect effectOutput: Effect that the output port audio will be connect with input port audio
+        :param dict output: Output port information of effectOutput
+        :param Effect effectInput:Effect that the input port audio will be connect with output port audio
+        :param dict input: Input port information of effectInput
+        """
+        if effectOutput.patch != effectInput.patch:
+            raise EffectException('Effect output and effect input are\'nt of the same patch')
+
+        patch = effectOutput.patch
+        patch.connect(effectOutput, output, effectInput, input)
