@@ -71,8 +71,13 @@ class EffectControllerTest(ControllerTest):
         self.assertEqual(total_effects - 1, self._total_effects_current_patch())
 
     def test_delete_undefined_effect(self):
-        #FIXME - Implement this
-        pass
+        effect_index = self._create_effect()
+        effect = self.current_patch.effects[effect_index]
+
+        self.controller.deleteEffect(effect)
+
+        with self.assertRaises(EffectException):
+            self.controller.deleteEffect(effect)
 
     def test_connect_effects(self):
         effect_index_a = self._create_effect(uri='http://guitarix.sourceforge.net/plugins/gx_tremolo#_tremolo')
@@ -116,10 +121,9 @@ class EffectControllerTest(ControllerTest):
         effect_b = self.current_patch.effects[effect_index_b]
 
         original_total_connections = len(self.current_patch.connections)
+
         self.controller.connect(effect_a, effect_a.outputs[0], effect_b, effect_b.inputs[0])
         self.assertEqual(original_total_connections+1, len(self.current_patch.connections))
-
-        print(effect_a.patch.connections)
 
         self.controller.deleteEffect(effect_a)
         self.controller.deleteEffect(effect_b)

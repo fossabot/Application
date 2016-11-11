@@ -103,9 +103,24 @@ class PatchTest(unittest.TestCase):
             patch2.addEffect(effect)
 
     def test_delete_effect(self):
-        pass
+        json = self._generate_patch('generic-patch')
 
-    def test_delete_effect_other_patch(self):
+        patch = Patch(json)
+        effect = Effect(self._generate_effect('Generic-EffectGxReverb-Stereo1'))
+
+        total_effects = len(patch.effects)
+        patch.addEffect(effect)
+
+        index = effect.index
+        self.assertEqual(patch.effects[index], effect)
+        patch.deleteEffect(effect)
+
+        with self.assertRaises(IndexError):
+            patch.effects[index]
+
+        self.assertEqual(len(patch.effects), total_effects)
+
+    def test_delete_effect_of_other_patch(self):
         json = self._generate_patch('generic-patch')
         json2 = self._generate_patch('generic-patch2')
 
@@ -142,7 +157,29 @@ class PatchTest(unittest.TestCase):
             "status": True,
             "ports": {
                 "audio": {
-                    "input": [],
+                    "input": [{
+                        "ranges": {},
+                        "designation": "",
+                        "index": 4,
+                        "units": {},
+                        "shortName": "in",
+                        "properties": [],
+                        "name": "in",
+                        "symbol": "in",
+                        "rangeSteps": None,
+                        "scalePoints": []
+                    }, {
+                        "ranges": {},
+                        "designation": "",
+                        "index": 4,
+                        "units": {},
+                        "shortName": "in-right",
+                        "properties": [],
+                        "name": "in",
+                        "symbol": "in-right",
+                        "rangeSteps": None,
+                        "scalePoints": []
+                    }],
                     "output": [{
                         "symbol": "out",
                         "name": "Out",

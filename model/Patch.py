@@ -27,7 +27,7 @@ class Patch(object):
         :return dict: json representation
         """
         return self.__json
-    
+
     @json.setter
     def json(self, value):
         """
@@ -124,10 +124,12 @@ class Patch(object):
         if effect.patch != self:
             raise PatchError("effect isn't of this patch")
 
-        connections = effect.connections
-        self.connections = list(filter(lambda connection: connection not in connections, self.connections))
+        effect_connections = effect.connections
+        filtered = lambda connection: connection not in effect_connections
+        self.connections = list(filter(filtered, self.connections))
 
         del self['effects'][effect.index]
+        effect.patch = None
 
     def indexOfEffect(self, effect):
         """

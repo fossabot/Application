@@ -82,6 +82,9 @@ class EffectController(Controller):
         """
         patch = effect.patch
 
+        if patch is None:
+            raise EffectException("Effect not contains a patch")
+
         self._notify_change(effect, UpdateType.DELETED)
         patch.deleteEffect(effect)
 
