@@ -6,9 +6,14 @@ from model.param import ParamError
 
 
 class ParamTest(unittest.TestCase):
+    builder = None
+
+    @classmethod
+    def setUpClass(cls):
+        cls.builder = Lv2EffectBuilder()
 
     def test_set_value(self):
-        builder = Lv2EffectBuilder()
+        builder = ParamTest.builder
         reverb = builder.build('http://calf.sourceforge.net/plugins/Reverb')
 
         param = reverb.params[0]
@@ -24,8 +29,7 @@ class ParamTest(unittest.TestCase):
         self.assertEqual(3, param.observer.onParamValueChange.call_count)
 
     def test_set_invalid_value(self):
-        builder = Lv2EffectBuilder()
-
+        builder = ParamTest.builder
         reverb = builder.build('http://calf.sourceforge.net/plugins/Reverb')
 
         param = reverb.params[0]

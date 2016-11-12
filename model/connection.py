@@ -29,3 +29,34 @@ class Connection(object):
     @property
     def input(self):
         return self._input
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) \
+           and self.input == other.input \
+           and self.output == other.output
+
+    def __repr__(self):
+        return "<{} object as '{}.{} -> {}.{}' at 0x{:x}>".format(
+            self.__class__.__name__,
+            self.output.effect,
+            self.output,
+            self.input.effect,
+            self.input,
+            id(self)
+        )
+
+    @property
+    def json(self):
+        """
+        Get a json decodable representation of this effect
+
+        :return dict: json representation
+        """
+        return self.__dict__
+
+    @property
+    def __dict__(self):
+        return {
+            'output': self.output.json,
+            'input': self.input.json,
+        }

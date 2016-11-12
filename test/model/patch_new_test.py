@@ -4,6 +4,8 @@ from unittest.mock import MagicMock
 from model.patch import Patch
 from model.update_type import UpdateType
 
+from model.lv2.lv2_effect_builder import Lv2EffectBuilder
+
 
 class PatchTest(unittest.TestCase):
 
@@ -116,3 +118,31 @@ class PatchTest(unittest.TestCase):
 
         self.assertEqual(len(patch.connections), 0)
         patch.observer.onConnectionUpdated.assert_called_with(connection, UpdateType.DELETED)
+
+    def test_delete_effect_remove_your_connections(self):
+        patch = Patch('Patch name')
+
+        builder = Lv2EffectBuilder()
+        reverb = builder.build('http://calf.sourceforge.net/plugins/Reverb')
+        fuzz = builder.build('http://guitarix.sourceforge.net/plugins/gx_fuzzfacefm_#_fuzzfacefm_')
+        reverb2 = builder.build('http://calf.sourceforge.net/plugins/Reverb')
+
+        patch.append(reverb)
+        patch.append(fuzz)
+        patch.append(reverb2)
+
+        reverb.outputs[0].connect(fuzz.inputs[0])
+        reverb.outputs[1].connect(fuzz.inputs[0])
+        fuzz.outputs[0].connect(reverb2.inputs[0])
+        reverb.outputs[0].connect(reverb2.inputs[0])
+
+        self.assertEqual(4, len(patch.connections))
+
+        patch.observer = MagicMock()
+        fuzz_connections = fuzz.connections
+
+        patch.effects.remove(fuzz)
+
+        self.assertEqual(1, len(patch.connections))
+        for connection in fuzz_connections:
+            patch.observer.onConnectionUpdated.assert_any_call(connection, UpdateType.DELETED)

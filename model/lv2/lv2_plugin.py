@@ -10,3 +10,13 @@ class Lv2Plugin(object):
         :return: Returns a Plugin property
         """
         return self._json[key]
+
+    def __str__(self):
+        return self['name']
+
+    def __repr__(self):
+        return "<{} object as {} at 0x{:x}>".format(
+            self.__class__.__name__,
+            str(self),
+            id(self)
+        )

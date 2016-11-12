@@ -30,6 +30,9 @@ class Patch(object):
         self.observer.onEffectUpdated(effect, update_type)
 
         if update_type == UpdateType.DELETED:
+            for connection in effect.connections:
+                self.connections.remove(connection)
+
             effect.patch = None
             effect.observer = MagicMock()
 
@@ -39,7 +42,7 @@ class Patch(object):
     @property
     def json(self):
         """
-        Get a json decodable representation of this bank
+        Get a json decodable representation of this patch
 
         :return dict: json representation
         """

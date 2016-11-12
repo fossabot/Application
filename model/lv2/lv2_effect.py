@@ -43,3 +43,22 @@ class Lv2Effect(Effect):
         :return list[Output]: Outputs of effect
         """
         return self._outputs
+
+    def __str__(self):
+        return str(self.plugin)
+
+    def __repr__(self):
+        return "<{} object as {} at 0x{:x}>".format(
+            self.__class__.__name__,
+            str(self),
+            id(self)
+        )
+
+    @property
+    def __dict__(self):
+        return {
+            'technology': 'lv2',
+            'plugin': self.plugin['uri'],
+            'active': self.active,
+            'params': [param.json for param in self.params],
+        }

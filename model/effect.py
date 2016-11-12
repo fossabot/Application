@@ -11,11 +11,8 @@ class Effect(metaclass=ABCMeta):
     a list of :class:`Input` and a list of :class:`Connection`
     """
 
-    def __init__(self):
-        self._params = []
-        self._inputs = []
-        self._outputs = []
-
+    def __init__(self, patch=None):
+        self.patch = patch
         self._active = True
 
         self.observer = MagicMock()
@@ -73,3 +70,27 @@ class Effect(metaclass=ABCMeta):
         Toggle the effect status: ``self.active = not self.active``
         """
         self.active = not self.active
+
+    @property
+    def connections(self):
+        """
+        :return list: Connections that this effects is present (with input or output port)
+        """
+        function = lambda connection: connection.input.effect == self \
+                                   or connection.output.effect == self
+
+        return tuple([c for c in self.patch.connections if function(c)])
+
+    @property
+    def json(self):
+        """
+        Get a json decodable representation of this effect
+
+        :return dict: json representation
+        """
+        return self.__dict__
+
+    @property
+    @abstractmethod
+    def __dict__(self):
+        ...

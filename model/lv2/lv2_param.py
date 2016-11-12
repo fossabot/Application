@@ -20,3 +20,20 @@ class Lv2Param(Param):
     @property
     def minimum(self):
         return self._param['ranges']['minimum']
+
+    @property
+    def json(self):
+        """
+        Get a json decodable representation of this param
+
+        :return dict: json representation
+        """
+        return self.__dict__
+
+    @property
+    def __dict__(self):
+        return {
+            'index': self._param['index'],
+            'symbol': self._param['symbol'],
+            'value': self.value,
+        }

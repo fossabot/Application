@@ -71,3 +71,29 @@ class BankTest(unittest.TestCase):
         self.assertEqual(patch.bank, None)
         self.assertEqual(len(bank.patches), 0)
         bank.observer.onPatchUpdated.assert_called_with(patch, UpdateType.DELETED)
+
+    def test_json(self):
+        from model.patch import Patch
+        from model.lv2.lv2_effect_builder import Lv2EffectBuilder
+
+        bank = Bank('Bank 1')
+        patch = Patch('Rocksmith')
+
+        builder = Lv2EffectBuilder()
+        reverb = builder.build('http://calf.sourceforge.net/plugins/Reverb')
+        fuzz = builder.build('http://guitarix.sourceforge.net/plugins/gx_fuzzfacefm_#_fuzzfacefm_')
+        reverb2 = builder.build('http://calf.sourceforge.net/plugins/Reverb')
+
+        patch.append(reverb)
+        patch.append(fuzz)
+        patch.append(reverb2)
+
+        reverb.outputs[0].connect(fuzz.inputs[0])
+        reverb.outputs[1].connect(fuzz.inputs[0])
+        fuzz.outputs[0].connect(reverb2.inputs[0])
+        reverb.outputs[0].connect(reverb2.inputs[0])
+
+        bank.append(patch)
+
+        import json
+        print(json.dumps(bank.json, sort_keys=True, indent=2))
