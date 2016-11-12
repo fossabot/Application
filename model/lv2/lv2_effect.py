@@ -1,5 +1,8 @@
 from model.effect import Effect
 from model.lv2.lv2_param import Lv2Param
+from model.lv2.lv2_input import Lv2Input
+from model.lv2.lv2_output import Lv2Output
+
 
 class Lv2Effect(Effect):
     """
@@ -15,13 +18,10 @@ class Lv2Effect(Effect):
         super(Lv2Effect, self).__init__()
 
         self.plugin = plugin
-        from unittest.mock import MagicMock
-        Lv2Input = MagicMock()
-        Lv2Output = MagicMock()
 
         self._params = tuple([Lv2Param(param) for param in plugin["ports"]["control"]["input"]])
-        self._inputs = tuple([Lv2Input(input_) for input_ in plugin['ports']['audio']['input']])
-        self._outputs = tuple([Lv2Output(output) for output in plugin['ports']['audio']['output']])
+        self._inputs = tuple([Lv2Input(self, input) for input in plugin['ports']['audio']['input']])
+        self._outputs = tuple([Lv2Output(self, output) for output in plugin['ports']['audio']['output']])
 
     @property
     def params(self):

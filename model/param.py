@@ -3,6 +3,13 @@ from abc import ABCMeta, abstractmethod
 from unittest.mock import MagicMock
 
 
+class ParamError(Exception):
+
+    def __init__(self, message):
+        super(ParamError, self).__init__(message)
+        self.message = message
+
+
 class Param(metaclass=ABCMeta):
     """
     :class:`Param` is an object representation of an Audio Plugin
@@ -33,7 +40,15 @@ class Param(metaclass=ABCMeta):
         if self._value == new_value:
             pass
 
-        self.value = new_value
+        if not(self.minimum <= new_value <= self.maximum):
+            msg = 'New value out of range: {} [{} - {}]'.format(
+                new_value,
+                self.minimum,
+                self.maximum
+            )
+            raise ParamError(msg)
+
+        self._value = new_value
         self.observer.onParamValueChange(self)
 
     @property
@@ -45,3 +60,13 @@ class Param(metaclass=ABCMeta):
     @abstractmethod
     def maximum(self):
         ...
+
+    def __repr__(self, *args, **kargs):
+        print(id(self))
+        return "<{} object as value={} [{} - {}] at 0x{:x}>".format(
+            self.__class__.__name__,
+            self.value,
+            self.minimum,
+            self.maximum,
+            id(self)
+        )
