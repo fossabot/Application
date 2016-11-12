@@ -9,7 +9,7 @@ For API documentation, see [Application Documentation](http://pedalpi-applicatio
 ## Local test
 
 ```bash
-coverage3 run --source=architecture,controller,dao,model setup.py test
+coverage3 run --source=architecture,controller,dao,model,model/lv2,util setup.py test
 coverage3 report
 coverage3 html
 firefox htmlcov/index.html

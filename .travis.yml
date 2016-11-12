@@ -13,7 +13,7 @@ install:
   - pip3 install coveralls
 
 script:
-  - coverage3 run --source=architecture,controller,dao,model setup.py test
+  - coverage3 run --source=architecture,controller,dao,model,model/lv2,util setup.py test
 
 after_success:
   - coveralls
