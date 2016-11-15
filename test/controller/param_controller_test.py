@@ -1,7 +1,7 @@
-from controller.EffectController import EffectController
-from controller.ParamController import ParamController
-from controller.PluginsController import PluginsController
-from controller.NotificationController import NotificationController
+from application.controller.effect_controller import EffectController
+from application.controller.param_controller import ParamController
+from application.controller.plugins_controller import PluginsController
+from application.controller.notification_controller import NotificationController
 
 from pluginsmanager.model.bank import Bank
 from pluginsmanager.model.patch import Patch

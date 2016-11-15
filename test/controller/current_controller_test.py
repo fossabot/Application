@@ -1,5 +1,5 @@
-from controller.CurrentController import CurrentController
-from controller.BanksController import BanksController
+from application.controller.current_controller import CurrentController
+from application.controller.banks_controller import BanksController
 
 from test.controller.controller_test import ControllerTest
 

@@ -1,4 +1,4 @@
-from application.controller.NotificationController import NotificationController
+from application.application.controller.notification_controller import NotificationController
 
 
 class Component(object):

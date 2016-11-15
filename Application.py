@@ -1,14 +1,14 @@
 import time
 
-from controller.BanksController import BanksController
-from controller.CurrentController import CurrentController
-from controller.ComponentDataController import ComponentDataController
-from controller.DeviceController import DeviceController
-from controller.EffectController import EffectController
-from controller.NotificationController import NotificationController
-from controller.ParamController import ParamController
-from controller.PatchController import PatchController
-from controller.PluginsController import PluginsController
+from application.controller.banks_controller import BanksController
+from application.controller.current_controller import CurrentController
+from application.controller.component_data_controller import ComponentDataController
+from application.controller.device_controller import DeviceController
+from application.controller.effect_controller import EffectController
+from application.controller.notification_controller import NotificationController
+from application.controller.param_controller import ParamController
+from application.controller.patch_controller import PatchController
+from application.controller.plugins_controller import PluginsController
 
 
 class Application(object):

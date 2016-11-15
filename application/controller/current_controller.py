@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
-from controller.Controller import Controller
-from controller.BanksController import BanksController
-from controller.DeviceController import DeviceController
-from controller.EffectController import EffectController
-from controller.NotificationController import NotificationController
-from controller.ParamController import ParamController
+from application.controller.controller import Controller
+from application.controller.banks_controller import BanksController
+from application.controller.device_controller import DeviceController
+from application.controller.effect_controller import EffectController
+from application.controller.notification_controller import NotificationController
+from application.controller.param_controller import ParamController
 
 from dao.CurrentDao import CurrentDao
 

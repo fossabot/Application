@@ -1,5 +1,5 @@
-from controller.PluginsController import PluginsController, PluginTechnology
-from controller.CurrentController import CurrentController
+from application.controller.plugins_controller import PluginsController, PluginTechnology
+from application.controller.current_controller import CurrentController
 
 from test.controller.controller_test import ControllerTest
 

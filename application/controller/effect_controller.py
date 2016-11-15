@@ -1,10 +1,9 @@
 from dao.BankDao import BankDao
 
-from controller.Controller import Controller
-from controller.DeviceController import DeviceController
-from controller.NotificationController import NotificationController
-
-from controller.PluginsController import PluginsController
+from application.controller.controller import Controller
+from application.controller.device_controller import DeviceController
+from application.controller.notification_controller import NotificationController
+from application.controller.plugins_controller import PluginsController
 
 from pluginsmanager.model.update_type import UpdateType
 
@@ -23,7 +22,7 @@ class EffectController(Controller):
         self.notifier = None
 
     def configure(self):
-        from controller.CurrentController import CurrentController
+        from application.controller.current_controller import CurrentController
         self.dao = self.app.dao(BankDao)
         self.current_controller = self.app.controller(CurrentController)
         self.device_controller = self.app.controller(DeviceController)

@@ -1,9 +1,9 @@
 from dao.BankDao import BankDao
 
-from controller.Controller import Controller
-from controller.CurrentController import CurrentController
-from controller.DeviceController import DeviceController
-from controller.NotificationController import NotificationController
+from application.controller.controller import Controller
+from application.controller.current_controller import CurrentController
+from application.controller.device_controller import DeviceController
+from application.controller.notification_controller import NotificationController
 
 from pluginsmanager.model.update_type import UpdateType
 

@@ -1,5 +1,5 @@
-from controller.BanksController import BanksController
-from controller.NotificationController import NotificationController
+from application.controller.banks_controller import BanksController
+from application.controller.notification_controller import NotificationController
 
 from test.controller.controller_test import ControllerTest
 

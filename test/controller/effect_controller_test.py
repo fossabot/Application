@@ -1,6 +1,6 @@
-from controller.EffectController import EffectController
-from controller.PluginsController import PluginsController
-from controller.NotificationController import NotificationController
+from application.controller.effect_controller import EffectController
+from application.controller.plugins_controller import PluginsController
+from application.controller.notification_controller import NotificationController
 
 from test.controller.controller_test import ControllerTest
 

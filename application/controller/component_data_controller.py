@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 from dao.ComponentDao import ComponentDao
 
-from controller.Controller import Controller
+from application.controller.controller import Controller
 
 
 class ComponentDataController(Controller):

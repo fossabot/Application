@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
+#from application.controller.plugins.Lv2Library import Lv2Library
+from application.controller.plugins.Lv2LibraryMock import Lv2Library
+from application.controller.plugins.LadspaLibrary import LadspaLibrary
 
-#from controller.plugins.Lv2Library import Lv2Library
-from controller.plugins.Lv2LibraryMock import Lv2Library
-from controller.plugins.LadspaLibrary import LadspaLibrary
-
-from controller.Controller import Controller
-
+from application.controller.controller import Controller
 
 from enum import Enum
 

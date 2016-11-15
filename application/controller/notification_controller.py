@@ -1,4 +1,4 @@
-from controller.Controller import Controller
+from application.controller.controller import Controller
 
 
 class NotificationController(Controller):

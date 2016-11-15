@@ -1,5 +1,5 @@
-from controller.PatchController import PatchController
-from controller.NotificationController import NotificationController
+from application.controller.patch_controller import PatchController
+from application.controller.notification_controller import NotificationController
 
 from test.controller.controller_test import ControllerTest
 
