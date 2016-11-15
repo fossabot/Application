@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from architecture.privatemethod import privatemethod
 
 from controller.CurrentController import CurrentController
@@ -7,6 +6,7 @@ from controller.BanksController import BanksController
 from test.controller.controller_test import ControllerTest
 
 
+"""
 class CurrentControllerTest(ControllerTest):
     application = None
     controller = None
@@ -161,3 +161,4 @@ class CurrentControllerTest(ControllerTest):
     def test_set_index_out_bank(self):
         with self.assertRaises(IndexError):
             self.controller.setBank(5000)
+"""

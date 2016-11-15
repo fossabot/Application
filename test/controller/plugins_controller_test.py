@@ -6,6 +6,7 @@ from controller.CurrentController import CurrentController
 from test.controller.controller_test import ControllerTest
 
 
+
 class PluginsControllerTest(ControllerTest):
     controller = None
 

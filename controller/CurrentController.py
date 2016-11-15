@@ -35,6 +35,10 @@ class CurrentController(Controller):
         self.notificationController = self.app.controller(NotificationController)
         self.paramController = self.app.controller(ParamController)
 
+        #TODO - Gambiarra
+        self.current_bank = None
+        self.current_patch = None
+
     # ************************
     # Property
     # ************************

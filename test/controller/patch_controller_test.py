@@ -1,112 +1,101 @@
-# -*- coding: utf-8 -*-
-from architecture.privatemethod import privatemethod
-
 from controller.PatchController import PatchController
 from controller.CurrentController import CurrentController
+from controller.NotificationController import NotificationController
+
+from model.UpdatesObserver import UpdateType
 
 from test.controller.controller_test import ControllerTest
 
+from pluginsmanager.model.bank import Bank
+from pluginsmanager.model.patch import Patch
+
+import unittest
+from unittest.mock import MagicMock
+
 
 class PatchControllerTest(ControllerTest):
-    controller = None
 
     def setUp(self):
-        self.controller = PatchControllerTest.application.controller(
-            PatchController
-        )
+        self.TOKEN = 'PATCH_TOKEN'
 
-        self.currentController = PatchControllerTest.application.controller(
-            CurrentController
-        )
+        controller = PatchControllerTest.application.controller
 
-        self.currentController.setBank(0)
-        self.currentController.setPatch(0)
-
-        self.currentBank = self.currentController.currentBank
-
-    @privatemethod
-    def generate_patch(self, name):
-        return {
-            'name': name,
-            'effects': [],
-            'connections': []
-        }
+        self.controller = controller(PatchController)
+        self.notificationController = controller(NotificationController)
 
     def test_create_patch(self):
-        json = self.generate_patch('test_create_patch')
+        observer = MagicMock()
+        self.notificationController.register(observer)
 
-        totalPatches = len(self.currentBank.patches)
-        patchIndex = self.controller.createPatch(self.currentBank, json)
-        patch = self.currentController.currentBank.patches[patchIndex]
+        bank = Bank('test_create_patch - bank')
+        patch = Patch('test_create_patch')
+        patch2 = Patch('test_create_patch2')
 
-        # Index is last patch + 1
-        self.assertEqual(totalPatches, patchIndex)
+        bank.append(patch)
+        self.controller.create_patch(patch)
+        observer.onPatchUpdated.assert_called_with(patch, UpdateType.CREATED, None)
 
-        self.assertLess(totalPatches, len(self.currentBank.patches))
+        bank.append(patch2)
+        self.controller.create_patch(patch2, self.TOKEN)
+        observer.onPatchUpdated.assert_called_with(patch2, UpdateType.CREATED, self.TOKEN)
 
-        self.controller.deletePatch(patch)
+        self.controller.delete_patch(patch)
+        self.controller.delete_patch(patch2)
 
     def test_update_patch(self):
-        newName = 'test_update_patch 2'
-        json = self.generate_patch('test_update_patch')
+        observer = MagicMock()
+        self.notificationController.register(observer)
 
-        patchIndex = self.controller.createPatch(self.currentBank, json)
-        patch = self.currentBank.patches[patchIndex]
+        bank = Bank('test_update_patch - bank')
+        patch = Patch('test_update_patch')
+        patch2 = Patch('test_update_patch2')
+        patch3 = Patch('test_update_patch2')
 
-        newPatchData = dict(self.currentController.currentPatch.json)
-        newPatchData['name'] = newName
+        bank.append(patch)
+        self.controller.create_patch(patch)
 
-        self.controller.updatePatch(patch, newPatchData)
+        bank.patches[bank.patches.index(patch)] = patch2
+        self.controller.update_patch(patch2)
 
-        self.assertEqual(patch['name'], newName)
+        observer.onPatchUpdated.assert_called_with(patch2, UpdateType.UPDATED, None)
 
-        self.controller.deletePatch(patch)
+        bank.patches[bank.patches.index(patch2)] = patch3
+        self.controller.update_patch(patch3, self.TOKEN)
+        observer.onPatchUpdated.assert_called_with(patch3, UpdateType.UPDATED, self.TOKEN)
 
+        self.controller.delete_patch(patch3)
+
+    @unittest.skip("Not implemented")
     def test_update_current_patch(self):
-        newName = 'test_update_current_patch 2'
-        json = self.generate_patch('test_update_current_patch')
-
-        patchIndex = self.controller.createPatch(self.currentBank, json)
-        patch = self.currentBank.patches[patchIndex]
-
-        self.currentController.setPatch(patchIndex)
-
-        newPatchData = dict(self.currentController.currentPatch.json)
-        newPatchData['name'] = newName
-
-        self.controller.updatePatch(patch, newPatchData)
-
-        self.assertEqual(patch['name'], newName)
-
-        self.currentController.setPatch(0)  # Delete current patch is tested in another test
-        self.controller.deletePatch(patch)
+        ...
 
     def test_delete_patch(self):
-        json = self.generate_patch('test_delete_patch')
+        observer = MagicMock()
+        self.notificationController.register(observer)
 
-        patchIndex = self.controller.createPatch(self.currentBank, json)
-        patch = self.currentBank.patches[patchIndex]
+        bank = Bank('test_delete_patch - bank')
+        patch = Patch('test_delete_patch')
+        patch2 = Patch('test_delete_patch2')
 
-        totalPatches = len(self.currentBank.patches)
-        self.controller.deletePatch(patch)
+        bank.append(patch)
+        bank.append(patch2)
 
-        self.assertEqual(totalPatches - 1, len(self.currentBank.patches))
+        self.controller.create_patch(patch)
+        self.controller.create_patch(patch2)
 
+        self.controller.delete_patch(patch)
+        observer.onPatchUpdated.assert_called_with(patch, UpdateType.DELETED, None)
+        self.controller.delete_patch(patch2, self.TOKEN)
+        observer.onPatchUpdated.assert_called_with(patch2, UpdateType.DELETED, self.TOKEN)
+
+    @unittest.skip("Not implemented")
     def test_update_deleted_patch(self):
-        #FIXME - Implement
-        pass
+        ...
 
+    @unittest.skip("Not implemented")
     def test_delete_current_patch(self):
-        json = self.generate_patch('test_delete_current_patch')
+        ...
 
-        patchIndex = self.controller.createPatch(self.currentBank, json)
-
-        self.currentController.setPatch(patchIndex)
-
-        totalPatches = len(self.currentBank.patches)
-        self.controller.deletePatch(self.currentController.currentPatch)
-
-        self.assertEqual(totalPatches-1, len(self.currentBank.patches))
-
-        currentPatchNumber = self.currentController.patchNumber
-        self.assertNotEqual(patchIndex, currentPatchNumber)
+    @unittest.skip("Not implemented")
+    def test_swap(self):
+        ...

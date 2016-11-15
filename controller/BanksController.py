@@ -1,23 +1,29 @@
-# -*- coding: utf-8 -*-
 from dao.BankDao import BankDao
 
-from model.Bank import Bank
 from model.UpdatesObserver import UpdateType
 
 from controller.Controller import Controller
 from controller.DeviceController import DeviceController
 from controller.NotificationController import NotificationController
 
+from pluginsmanager.banks_manager import BanksManager
+
 
 class BanksController(Controller):
     """
     Manage :class:`Bank`, creating new, updating or deleting.
     """
-    banks = None
+
+    def __init__(self, application):
+        super(BanksController, self).__init__(application)
+        self.dao = None
+
+        self.manager = None
 
     def configure(self):
         self.dao = self.app.dao(BankDao)
-        self.banks = self.dao.all
+
+        self.manager = BanksManager()
 
         # To fix Cyclic dependece
         from controller.CurrentController import CurrentController
@@ -25,47 +31,47 @@ class BanksController(Controller):
         self.deviceController = self.app.controller(DeviceController)
         self.notificationController = self.app.controller(NotificationController)
 
-    def createBank(self, bank, token=None):
+    @property
+    def banks(self):
+        return self.manager.banks
+
+    def create_bank(self, bank, token=None):
         """
         Persists a new :class:`Bank` in database.
 
-        :param dict bank: Bank content
+        :param Bank bank: Bank that will be added
         :param string token: Request token identifier
         :return int: bank index
         """
-        bankModel = Bank(bank)
+        # TODO - Save
+        self.manager.append(bank)
 
-        self.banks.append(bankModel)
-        self.dao.save(bankModel)
-        self._notify_change(bankModel, UpdateType.CREATED, token)
+        self._notify_change(bank, UpdateType.CREATED, token)
 
-        return bankModel.index
+        return self.manager.banks.index(bank)
 
-    def updateBank(self, bank, data, token=None):
+    def update_bank(self, bank, token=None):
         """
-        Updates a :class:`Bank` object based in data parsed.
+        Notify all observers that the :class:`Bank` object has updated
+        and persists the new state.
 
         .. note::
             If you're changing a bank that has a current patch,
             the patch should be fully charged and loaded. So, prefer the use
             of other Controllers methods for simple changes.
 
-        :param Bank bank: Bank to be updated
-        :param dict data: New bank data
+        :param Bank bank: Bank updated
         :param string token: Request token identifier
-        :return int: bank index
         """
-        self.dao.delete(bank)
-        bank.json = data
-
-        self.dao.save(bank)
+        # TODO - Save
+        # TODO - Current bank
         if self.currentController.isCurrentBank(bank):
-            currentPatch = self.currentController.currentPatch
-            self.deviceController.loadPatch(currentPatch)
+            current_patch = self.currentController.currentPatch
+            self.deviceController.loadPatch(current_patch)
 
         self._notify_change(bank, UpdateType.UPDATED, token)
 
-    def deleteBank(self, bank, token=None):
+    def delete_bank(self, bank, token=None):
         """
         Remove the informed :class:`Bank`.
 
@@ -76,38 +82,27 @@ class BanksController(Controller):
         :param Bank bank: Bank to be removed
         :param string token: Request token identifier
         """
-        if bank == self.currentController.currentBank:
+        # TODO - Save
+        if bank == self.currentController.current_bank:
             self.currentController.toNextBank()
 
-        del self.banks[bank.index]
-        self.dao.delete(bank)
+        self.manager.banks.remove(bank)
 
         self._notify_change(bank, UpdateType.DELETED, token)
 
-    def swapBanks(self, bankA, bankB, token=None):
+    def swap(self, bank_a, bank_b, token=None):
         """
-        .. deprecated:: ever
-            Don't use
-
-        Swap bankA index to bankB index
+        Swap bank_a with bank_b
         """
-        self.banks.swap(bankA, bankB)
+        index_a = self.banks.index(bank_a)
+        index_b = self.banks.index(bank_b)
 
-        self.dao.save(bankA)
-        self.dao.save(bankB)
+        self.banks[index_a], self.banks[index_a] = self.banks[index_b], self.banks[index_a]
 
-        self._notify_change(bankA, UpdateType.UPDATED, token)
-        self._notify_change(bankB, UpdateType.UPDATED, token)
+        # TODO - Save
 
-    def swapPatches(self, patchA, patchB):
-        """
-        .. deprecated::
-            Don't use
-
-        Swap patchA order to patchB order
-        """
-        patchA.bank.swapPatches(patchA, patchB)
-        self.dao.save(patchA.bank)
+        self._notify_change(bank_a, UpdateType.UPDATED, token)
+        self._notify_change(bank_b, UpdateType.UPDATED, token)
 
     def _notify_change(self, bank, update_type, token=None):
         self.notificationController.notifyBankUpdate(bank, update_type, token)

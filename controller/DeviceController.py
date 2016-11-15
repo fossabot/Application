@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 from controller.Controller import Controller
-from lib.ModHostBinding.Host import Host
-from lib.ModHostBinding.plugin.Lv2Plugin import Lv2Plugin
+#from lib.ModHostBinding.Host import Host
+#from lib.ModHostBinding.plugin.Lv2Plugin import Lv2Plugin
 
 
 class DeviceController(Controller):

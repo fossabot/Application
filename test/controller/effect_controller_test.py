@@ -6,7 +6,7 @@ from controller.CurrentController import CurrentController
 
 from test.controller.controller_test import ControllerTest
 
-
+'''
 class EffectControllerTest(ControllerTest):
     application = None
     controller = None
@@ -129,3 +129,4 @@ class EffectControllerTest(ControllerTest):
         self.controller.deleteEffect(effect_b)
 
         self.assertEqual(original_total_connections, len(self.current_patch.connections))
+'''

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from architecture.privatemethod import privatemethod
 
 from controller.CurrentController import CurrentController
@@ -9,6 +8,7 @@ from controller.PluginsController import PluginsController
 from test.controller.controller_test import ControllerTest
 
 
+'''
 class ParamControllerTest(ControllerTest):
     controller = None
 
@@ -43,3 +43,4 @@ class ParamControllerTest(ControllerTest):
         self.assertEqual(param['value'], newValue)
 
         self.effectController.deleteEffect(effect)
+'''

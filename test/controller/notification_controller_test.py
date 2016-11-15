@@ -9,6 +9,7 @@ from model.UpdatesObserver import UpdatesObserver
 from test.controller.controller_test import ControllerTest
 
 
+'''
 class NotificationControllerTest(ControllerTest):
     controller = None
     currentController = None
@@ -32,3 +33,4 @@ class NotificationControllerTest(ControllerTest):
         observer.onCurrentPatchChange.assert_called_once_with(self.currentController.currentPatch, None)
 
         self.controller.unregister(observer)
+'''

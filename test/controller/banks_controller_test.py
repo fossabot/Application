@@ -1,132 +1,105 @@
-# -*- coding: utf-8 -*-
-from architecture.BankError import BankError
-from architecture.privatemethod import privatemethod
-
 from controller.BanksController import BanksController
 from controller.CurrentController import CurrentController
+from controller.NotificationController import NotificationController
+
+from model.UpdatesObserver import UpdateType
 
 from test.controller.controller_test import ControllerTest
 
+from pluginsmanager.model.bank import Bank
+
+import unittest
+from unittest.mock import MagicMock
+
 
 class BanksControllerTest(ControllerTest):
-    controller = None
 
     def setUp(self):
+        self.TOKEN = 'BANKS_TOKEN'
         self.controller = self.get_controller(BanksController)
         self.currentController = self.get_controller(CurrentController)
+        self.notificationController = self.get_controller(NotificationController)
 
         self.currentController.setBank(0)
         self.currentController.setPatch(0)
 
-    @privatemethod
     def get_controller(self, controller):
         return BanksControllerTest.application.controller(controller)
 
-    @privatemethod
-    def generate_bank(self, name):
-        return {
-            "name": name,
-            "patches": [{
-                "name": "Decorator, a legend",
-                "effects": [],
-                "connections": []
-            }]
-        }
-
+    @unittest.skip("Not implemented")
     def test_load_banks(self):
-        self.assertIsNotNone(self.controller.banks)
-        self.assertNotEqual(0, len(self.controller.banks))
-
-    def test_create_bank_empty_patch(self):
-        totalBanks = len(self.controller.banks)
-        bank = {
-            "name": "test_create_bank_empty_patch",
-            "patches": []
-        }
-
-        with self.assertRaises(BankError):
-            self.controller.createBank(bank)
-
-        # Bank not added
-        self.assertEqual(totalBanks, len(self.controller.banks))
+        #self.assertIsNotNone(self.controller.banks)
+        #self.assertNotEqual(0, len(self.controller.banks))
+        ...
 
     def test_create_bank(self):
-        totalBanks = len(self.controller.banks)
-        bank = self.generate_bank("test_create_bank")
+        observer = MagicMock()
+        self.notificationController.register(observer)
 
-        index = self.controller.createBank(bank)
-        self.assertLess(totalBanks, len(self.controller.banks))
+        bank = Bank('test_create_bank')
+        index = self.controller.create_bank(bank)
+        observer.onBankUpdate.assert_called_with(bank, UpdateType.CREATED, None)
+        self.assertEqual(0, index)
 
-        self.controller.deleteBank(self.controller.banks[index])
-        self.assertEqual(totalBanks, len(self.controller.banks))
+        bank2 = Bank('test_create_bank_2')
+        index2 = self.controller.create_bank(bank2, self.TOKEN)
+        observer.onBankUpdate.assert_called_with(bank2, UpdateType.CREATED, self.TOKEN)
+        self.assertEqual(1, index2)
+
+        self.notificationController.unregister(observer)
+
+        self.controller.delete_bank(bank)
+        self.controller.delete_bank(bank2)
 
     def test_update_bank(self):
-        bankJson = self.generate_bank("test_update_bank")
-        index = self.controller.createBank(bankJson)
+        observer = MagicMock()
 
-        newName = 'Single a tom or chord?'
+        bank = Bank('test_update_bank')
+        self.controller.create_bank(bank)
 
-        bank = self.controller.banks[index]
-        bankChangedJson = dict(bank.json)
-        bankChangedJson['name'] = newName
+        self.notificationController.register(observer)
 
-        self.controller.updateBank(bank, bankChangedJson)
+        bank.name = 'test_update_bank_new'
+        self.controller.update_bank(bank)
+        observer.onBankUpdate.assert_called_with(bank, UpdateType.UPDATED, None)
 
-        changedName = bank['name']
-        self.assertEqual(newName, changedName)
+        bank.name = 'test_update_bank_new_new'
+        self.controller.update_bank(bank, self.TOKEN)
+        observer.onBankUpdate.assert_called_with(bank, UpdateType.UPDATED, self.TOKEN)
 
-        self.controller.deleteBank(bank)
+        self.controller.delete_bank(bank)
 
+    @unittest.skip("Not implemented")
     def test_update_current_bank(self):
-        currentBankData = dict(self.currentController.currentBank.json)
-
-        originalName = currentBankData['name']
-        newName = "test_update_current_bank"
-        currentBankData['name'] = newName
-
-        currentBank = self.currentController.currentBank
-
-        self.controller.updateBank(currentBank, currentBankData)
-
-        self.assertEqual(currentBank['name'], newName)
-
-        currentBankData['name'] = originalName
-
-        # Restoring name
-        self.controller.updateBank(currentBank, currentBankData)
+        ...
 
     def test_delete_bank(self):
-        totalBanks = len(self.controller.banks)
-        bank = self.generate_bank("test_delete_bank")
+        observer = MagicMock()
 
-        # Added a bank
-        index = self.controller.createBank(bank)
-        self.assertLess(totalBanks, len(self.controller.banks))
+        total = len(self.controller.banks)
 
-        # Delete a bank
-        self.controller.deleteBank(self.controller.banks[index])
-        self.assertEqual(totalBanks, len(self.controller.banks))
+        bank = Bank('test_delete_bank')
 
+        self.controller.create_bank(bank)
+
+        self.notificationController.register(observer)
+
+        self.assertLess(total, len(self.controller.banks))
+        self.controller.delete_bank(bank)
+        self.assertEqual(total, len(self.controller.banks))
+
+        observer.onBankUpdate.assert_called_with(bank, UpdateType.DELETED, None)
+
+        bank2 = Bank('test_delete_bank')
+        self.controller.create_bank(bank2)
+        self.controller.delete_bank(bank2, self.TOKEN)
+
+        observer.onBankUpdate.assert_called_with(bank2, UpdateType.DELETED, self.TOKEN)
+
+    @unittest.skip("Not implemented")
     def test_delete_current_bank(self):
-        bank = self.generate_bank("test_delete_current_bank")
+        ...
 
-        index = self.controller.createBank(bank)
-
-        # Setted currend bank
-        self.currentController.setBank(index)
-        self.assertEqual(
-            index,
-            self.currentController.bankNumber
-        )
-
-        # Deleting bank
-        totalBanks = len(self.controller.banks)
-
-        self.controller.deleteBank(self.controller.banks[index])
-        self.assertGreater(totalBanks, len(self.controller.banks))
-
-        # Test updated current bank
-        self.assertNotEqual(
-            index,
-            self.currentController.bankNumber
-        )
+    @unittest.skip("Not implemented")
+    def test_swap(self):
+        ...
