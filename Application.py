@@ -25,13 +25,13 @@ class Application(object):
         >>> from controller.CurrentController import CurrentController
 
         >>> application = Application()
-        >>> currentController = application.controller(CurrentController)
+        >>> current_controller = application.controller(CurrentController)
 
-        >>> print(currentController.currentPatch)
+        >>> print(current_controller.currentPatch)
         <Patch object as Shows with 2 effects at 0x7fa3bcb49be0>
 
-        >>> currentController.toNextPatch()
-        >>> currentController.currentPatch
+        >>> current_controller.toNextPatch()
+        >>> current_controller.currentPatch
         <Patch object as Shows 2 with 1 effects at 0x7fa3bbcdecf8>
 
     For more details, please, see the Controllers extended classes.

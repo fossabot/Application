@@ -8,6 +8,11 @@ For API documentation, see [Application Documentation](http://pedalpi-applicatio
 
 ## Local test
 
+The purpose of the tests is:
+
+* Check if the notifications are working, since the module pluginsmanager is responsible for testing the models;
+* Serve as a sample basis.
+
 ```bash
 coverage3 run --source=architecture,controller,dao,model,model/lv2,util setup.py test
 coverage3 report

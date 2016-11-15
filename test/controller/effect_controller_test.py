@@ -1,132 +1,168 @@
-from architecture.EffectException import EffectException
-
 from controller.EffectController import EffectController
 from controller.PluginsController import PluginsController
 from controller.CurrentController import CurrentController
+from controller.NotificationController import NotificationController
 
 from test.controller.controller_test import ControllerTest
 
-'''
-class EffectControllerTest(ControllerTest):
-    application = None
-    controller = None
+from pluginsmanager.model.bank import Bank
+from pluginsmanager.model.patch import Patch
+from pluginsmanager.model.connection import Connection
+from pluginsmanager.model.update_type import UpdateType
+from pluginsmanager.model.lv2.lv2_effect_builder import Lv2EffectBuilder
 
-    plugins_controller = None
-    current_controller = None
-    current_bank = None
-    current_patch = None
+import unittest
+from unittest.mock import MagicMock
+
+
+class EffectControllerTest(ControllerTest):
 
     def setUp(self):
-        self.controller = self._get_controller(EffectController)
-        self.plugins_controller = self._get_controller(PluginsController)
-        self.current_controller = self._get_controller(CurrentController)
+        self.TOKEN = 'EFFECT_TOKEN'
+
+        controller = EffectControllerTest.application.controller
+        self.controller = controller(EffectController)
+        self.plugins_controller = controller(PluginsController)
+        self.current_controller = controller(CurrentController)
+        self.notification_controller = controller(NotificationController)
 
         self.current_controller.setBank(0)
         self.current_controller.setPatch(0)
 
-        self.current_bank = self.current_controller.currentBank
-        self.current_patch = self.current_controller.currentPatch
-
-    def _get_controller(self, controller):
-        return EffectControllerTest.application.controller(controller)
-
-    def _total_effects_current_patch(self):
-        return len(self.current_patch['effects'])
-
-    def _any_plugin_uri(self):
-        return list(self.plugins_controller.plugins.keys())[0]
-
-    def _create_effect(self, uri=None, patch=None):
-        if uri is None:
-            uri = self._any_plugin_uri()
-
-        patch = self.current_patch if patch is None else patch
-        return self.controller.createEffect(patch, uri)
+        self.builder = Lv2EffectBuilder()
 
     def test_create_effect(self):
-        total_effects = self._total_effects_current_patch()
+        observer = MagicMock()
+        self.notification_controller.register(observer)
 
-        effect_index = self._create_effect()
-        effect = self.current_patch.effects[effect_index]
+        bank = Bank('test_create_effect Bank')
+        patch = Patch('test_create_effect Patch')
+        bank.append(patch)
+        reverb = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
+        reverb2 = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
 
-        # Index is last effect + 1
-        self.assertEqual(total_effects, effect_index)
+        patch.append(reverb)
+        patch.append(reverb2)
 
-        self.assertLess(total_effects, self._total_effects_current_patch())
+        self.controller.create_effect(reverb)
+        observer.onEffectUpdated.assert_called_with(reverb, UpdateType.CREATED, None)
 
-        self.controller.deleteEffect(effect)
+        self.controller.create_effect(reverb2, self.TOKEN)
+        observer.onEffectUpdated.assert_called_with(reverb2, UpdateType.CREATED, self.TOKEN)
 
-    def test_create_undefined_effect(self):
-        with self.assertRaises(EffectException):
-            self._create_effect('http://undefined.plugin.uri')
+        self.controller.delete_effect(reverb)
+        self.controller.delete_effect(reverb2)
 
     def test_delete_effect(self):
-        effect_index = self._create_effect()
-        effect = self.current_patch.effects[effect_index]
+        observer = MagicMock()
+        self.notification_controller.register(observer)
 
-        total_effects = self._total_effects_current_patch()
+        bank = Bank('test_create_effect Bank')
+        patch = Patch('test_create_effect Patch')
+        bank.append(patch)
+        reverb = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
+        reverb2 = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
 
-        self.controller.deleteEffect(effect)
+        patch.append(reverb)
+        patch.append(reverb2)
 
-        self.assertEqual(total_effects - 1, self._total_effects_current_patch())
+        self.controller.create_effect(reverb)
+        self.controller.create_effect(reverb2)
 
-    def test_delete_undefined_effect(self):
-        effect_index = self._create_effect()
-        effect = self.current_patch.effects[effect_index]
+        self.controller.delete_effect(reverb)
+        observer.onEffectUpdated.assert_called_with(reverb, UpdateType.DELETED, None)
+        self.controller.delete_effect(reverb2, self.TOKEN)
+        observer.onEffectUpdated.assert_called_with(reverb2, UpdateType.DELETED, self.TOKEN)
 
-        self.controller.deleteEffect(effect)
+    def test_toggle_status(self):
+        observer = MagicMock()
+        self.notification_controller.register(observer)
 
-        with self.assertRaises(EffectException):
-            self.controller.deleteEffect(effect)
+        bank = Bank('test_create_effect Bank')
+        patch = Patch('test_create_effect Patch')
+        bank.append(patch)
+        reverb = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
+        reverb2 = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
 
-    def test_connect_effects(self):
-        effect_index_a = self._create_effect(uri='http://guitarix.sourceforge.net/plugins/gx_tremolo#_tremolo')
-        effect_a = self.current_patch.effects[effect_index_a]
+        patch.append(reverb)
+        patch.append(reverb2)
 
-        effect_index_b = self._create_effect(uri='http://guitarix.sourceforge.net/plugins/gxts9#ts9sim')
-        effect_b = self.current_patch.effects[effect_index_b]
+        self.controller.create_effect(reverb)
+        self.controller.create_effect(reverb2)
 
-        total_connections = len(self.current_patch.connections)
-        self.controller.connect(effect_a, effect_a.outputs[0], effect_b, effect_b.inputs[0])
+        self.controller.toggle_status(reverb)
+        observer.onEffectStatusToggled.assert_called_with(reverb, None)
 
-        self.assertEqual(total_connections+1, len(self.current_patch.connections))
+        self.controller.toggle_status(reverb2, self.TOKEN)
+        observer.onEffectStatusToggled.assert_called_with(reverb2, self.TOKEN)
 
-        self.controller.deleteEffect(effect_a)
-        self.controller.deleteEffect(effect_b)
+        self.controller.delete_effect(reverb)
+        self.controller.delete_effect(reverb2, self.TOKEN)
 
-    def test_connect_effects_different_patch(self):
-        effect_a_uri = 'http://guitarix.sourceforge.net/plugins/gx_tremolo#_tremolo'
-        effect_index_a = self._create_effect(uri=effect_a_uri, patch=self.current_controller.currentPatch)
-        effect_a = self.current_controller.currentPatch.effects[effect_index_a]
+    def test_connected_effects(self):
+        observer = MagicMock()
+        self.notification_controller.register(observer)
 
-        self.current_controller.toNextPatch()
+        bank = Bank('test_create_effect Bank')
+        patch = Patch('test_create_effect Patch')
+        bank.append(patch)
+        reverb = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
+        reverb2 = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
 
-        effect_b_uri = 'http://guitarix.sourceforge.net/plugins/gxts9#ts9sim'
-        effect_b_index = self._create_effect(uri=effect_b_uri, patch=self.current_controller.currentPatch)
-        effect_b = self.current_controller.currentPatch.effects[effect_b_index]
+        patch.append(reverb)
+        patch.append(reverb2)
 
-        self.current_controller.toBeforePatch()
+        self.controller.create_effect(reverb)
+        self.controller.create_effect(reverb2)
 
-        with self.assertRaises(EffectException):
-            self.controller.connect(effect_a, effect_a.outputs[0], effect_b, effect_b.inputs[0])
+        reverb.outputs[0].connect(reverb2.inputs[0])
+        connection1 = patch.connections[-1]
 
-        self.controller.deleteEffect(effect_a)
-        self.controller.deleteEffect(effect_b)
+        connection2 = Connection(reverb.outputs[1], reverb2.inputs[0])
+        patch.connections.append(connection2)
 
+        self.controller.connected(connection1)
+        observer.on_connection_updated.assert_called_with(connection1, UpdateType.CREATED, None)
+
+        self.controller.connected(connection2, self.TOKEN)
+        observer.on_connection_updated.assert_called_with(connection2, UpdateType.CREATED, self.TOKEN)
+
+        self.controller.delete_effect(reverb)
+        self.controller.delete_effect(reverb2)
+
+    def test_disconnected_effects(self):
+        observer = MagicMock()
+        self.notification_controller.register(observer)
+
+        bank = Bank('test_create_effect Bank')
+        patch = Patch('test_create_effect Patch')
+        bank.append(patch)
+        reverb = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
+        reverb2 = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
+
+        patch.append(reverb)
+        patch.append(reverb2)
+
+        self.controller.create_effect(reverb)
+        self.controller.create_effect(reverb2)
+
+        reverb.outputs[0].connect(reverb2.inputs[0])
+        connection1 = patch.connections[-1]
+
+        connection2 = Connection(reverb.outputs[1], reverb2.inputs[0])
+        patch.connections.append(connection2)
+
+        patch.connections.remove(connection1)
+        self.controller.disconnected(connection1)
+        observer.on_connection_updated.assert_called_with(connection1, UpdateType.DELETED, None)
+
+        patch.connections.remove(connection2)
+        self.controller.disconnected(connection2, self.TOKEN)
+        observer.on_connection_updated.assert_called_with(connection2, UpdateType.DELETED, self.TOKEN)
+
+        self.controller.delete_effect(reverb)
+        self.controller.delete_effect(reverb2)
+
+    @unittest.skip('Not implemented')
     def test_delete_effect_remove_connections(self):
-        effect_index_a = self._create_effect(uri='http://guitarix.sourceforge.net/plugins/gx_tremolo#_tremolo')
-        effect_a = self.current_patch.effects[effect_index_a]
-
-        effect_index_b = self._create_effect(uri='http://guitarix.sourceforge.net/plugins/gxts9#ts9sim')
-        effect_b = self.current_patch.effects[effect_index_b]
-
-        original_total_connections = len(self.current_patch.connections)
-
-        self.controller.connect(effect_a, effect_a.outputs[0], effect_b, effect_b.inputs[0])
-        self.assertEqual(original_total_connections+1, len(self.current_patch.connections))
-
-        self.controller.deleteEffect(effect_a)
-        self.controller.deleteEffect(effect_b)
-
-        self.assertEqual(original_total_connections, len(self.current_patch.connections))
-'''
+        pass

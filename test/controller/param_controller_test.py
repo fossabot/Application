@@ -15,14 +15,14 @@ class ParamControllerTest(ControllerTest):
     def setUp(self):
         self.controller = self.get_controller(ParamController)
         self.effectController = self.get_controller(EffectController)
-        self.pluginsController = self.get_controller(PluginsController)
-        self.currentController = self.get_controller(CurrentController)
+        self.plugins_controller = self.get_controller(PluginsController)
+        self.current_controller = self.get_controller(CurrentController)
 
-        self.currentController.setBank(0)
-        self.currentController.setPatch(0)
+        self.current_controller.setBank(0)
+        self.current_controller.setPatch(0)
 
-        self.currentBank = self.currentController.currentBank
-        self.currentPatch = self.currentController.currentPatch
+        self.currentBank = self.current_controller.currentBank
+        self.currentPatch = self.current_controller.currentPatch
 
     @privatemethod
     def get_controller(self, controller):

@@ -5,31 +5,35 @@ from controller.CurrentController import CurrentController
 from controller.DeviceController import DeviceController
 from controller.NotificationController import NotificationController
 
-from model.UpdatesObserver import UpdateType
+from pluginsmanager.model.update_type import UpdateType
 
 
 class PatchController(Controller):
     """
-    Manage :class:`Patch`, creating new, updating or deleting.
+    Manage :class:`Patch`, informing the creation, informing the updates
+    or deleting and informing it.
     """
 
     def __init__(self, application):
         super(PatchController, self).__init__(application)
         self.dao = None
-        self.currentController = None
-        self.deviceController = None
-        self.notificationController = None
+        self.current_controller = None
+        self.device_controller = None
+        self.notifier = None
 
     def configure(self):
         self.dao = self.app.dao(BankDao)
-        self.currentController = self.app.controller(CurrentController)
-        self.deviceController = self.app.controller(DeviceController)
-        self.notificationController = self.app.controller(NotificationController)
+        self.current_controller = self.app.controller(CurrentController)
+        self.device_controller = self.app.controller(DeviceController)
+        self.notifier = self.app.controller(NotificationController)
 
     def create_patch(self, patch, token=None):
         """
-        Persists a new :class:`Patch`. The patch needs be added in a :class:`Bank`
-        before.
+        Persists a new :class:`Patch`.
+
+        .. note::
+
+            The patch needs be added in a :class:`Bank` before.
 
         :param Patch patch: Patch created
         :param string token: Request token identifier
@@ -52,8 +56,8 @@ class PatchController(Controller):
         """
         # self.dao.save(patch.bank)
 
-        # if self.currentController.isCurrentPatch(patch):
-        #     self.deviceController.loadPatch(patch)
+        # if self.current_controller.isCurrentPatch(patch):
+        #     self.device_controller.loadPatch(patch)
 
         self._notify_change(patch, UpdateType.UPDATED, token)
 
@@ -71,8 +75,8 @@ class PatchController(Controller):
         bank = patch.bank
 
         # FIXME - Current controller
-        #if self.currentController.isCurrentPatch(patch):
-        #    self.currentController.toNextPatch()
+        #if self.current_controller.isCurrentPatch(patch):
+        #    self.current_controller.toNextPatch()
 
         patch.bank.patches.remove(patch)
         self._notify_change(patch, UpdateType.DELETED, token)
@@ -91,4 +95,4 @@ class PatchController(Controller):
         self.dao.save(patchA.bank)
 
     def _notify_change(self, patch, update_type, token=None):
-        self.notificationController.notifyPatchUpdated(patch, update_type, token)
+        self.notifier.patch_updated(patch, update_type, token)

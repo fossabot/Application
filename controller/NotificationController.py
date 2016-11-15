@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from controller.Controller import Controller
 
 
@@ -56,19 +55,19 @@ class NotificationController(Controller):
             if not self.is_requisitor(observer, token):
                 observer.onCurrentPatchChange(patch, token)
 
-    def notifyBankUpdate(self, bank, update_type, token=None):
+    def bank_updated(self, bank, update_type, token=None):
         """
         Notify changes in :class:`Bank`.
 
-        :param Bank patch: Bank changed.
+        :param Bank bank: Bank changed.
         :param UpdateType update_type: Change type
         :param string token: Request token identifier
         """
         for observer in self.observers:
             if not self.is_requisitor(observer, token):
-                observer.onBankUpdate(bank, update_type, token)
+                observer.on_bank_update(bank, update_type, token)
 
-    def notifyPatchUpdated(self, patch, update_type, token=None):
+    def patch_updated(self, patch, update_type, token=None):
         """
         Notify changes in :class:`Patch`.
 
@@ -78,9 +77,9 @@ class NotificationController(Controller):
         """
         for observer in self.observers:
             if not self.is_requisitor(observer, token):
-                observer.onPatchUpdated(patch, update_type, token)
+                observer.on_patch_updated(patch, update_type, token)
 
-    def notifyEffectUpdated(self, effect, update_type, token=None):
+    def effect_updated(self, effect, update_type, token=None):
         """
         Notify changes in :class:`Effect`.
 
@@ -92,7 +91,7 @@ class NotificationController(Controller):
             if not self.is_requisitor(observer, token):
                 observer.onEffectUpdated(effect, update_type, token)
 
-    def notifyEffectStatusToggled(self, effect, token=None):
+    def effect_status_toggled(self, effect, token=None):
         """
         Notify :class:`Effect` status toggled.
 
@@ -113,3 +112,8 @@ class NotificationController(Controller):
         for observer in self.observers:
             if not self.is_requisitor(observer, token):
                 observer.onParamValueChange(param, token)
+
+    def notify_connection_updated(self, connection, update_type, token=None):
+        for observer in self.observers:
+            if not self.is_requisitor(observer, token):
+                observer.on_connection_updated(connection, update_type, token)

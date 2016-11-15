@@ -1,12 +1,11 @@
 from dao.BankDao import BankDao
 
-from model.UpdatesObserver import UpdateType
-
 from controller.Controller import Controller
 from controller.DeviceController import DeviceController
 from controller.NotificationController import NotificationController
 
 from pluginsmanager.banks_manager import BanksManager
+from pluginsmanager.model.update_type import UpdateType
 
 
 class BanksController(Controller):
@@ -19,6 +18,9 @@ class BanksController(Controller):
         self.dao = None
 
         self.manager = None
+        self.currentController = None
+        self.deviceController = None
+        self.notifier = None
 
     def configure(self):
         self.dao = self.app.dao(BankDao)
@@ -29,7 +31,7 @@ class BanksController(Controller):
         from controller.CurrentController import CurrentController
         self.currentController = self.app.controller(CurrentController)
         self.deviceController = self.app.controller(DeviceController)
-        self.notificationController = self.app.controller(NotificationController)
+        self.notifier = self.app.controller(NotificationController)
 
     @property
     def banks(self):
@@ -105,4 +107,4 @@ class BanksController(Controller):
         self._notify_change(bank_b, UpdateType.UPDATED, token)
 
     def _notify_change(self, bank, update_type, token=None):
-        self.notificationController.notifyBankUpdate(bank, update_type, token)
+        self.notifier.bank_updated(bank, update_type, token)
