@@ -76,7 +76,7 @@ class EffectController(Controller):
 
         # self.dao.save(patch.bank)
 
-        # if self.current_controller.isCurrentPatch(patch):
+        # if self.current_controller.is_current_patch(patch):
         #     self.device_controller.loadPatch(patch)
         # FIXME
         ...

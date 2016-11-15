@@ -56,7 +56,7 @@ class PatchController(Controller):
         """
         # self.dao.save(patch.bank)
 
-        # if self.current_controller.isCurrentPatch(patch):
+        # if self.current_controller.is_current_patch(patch):
         #     self.device_controller.loadPatch(patch)
 
         self._notify_change(patch, UpdateType.UPDATED, token)
@@ -75,7 +75,7 @@ class PatchController(Controller):
         bank = patch.bank
 
         # FIXME - Current controller
-        #if self.current_controller.isCurrentPatch(patch):
+        #if self.current_controller.is_current_patch(patch):
         #    self.current_controller.toNextPatch()
 
         patch.bank.patches.remove(patch)

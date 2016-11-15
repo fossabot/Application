@@ -3,7 +3,7 @@ from application.controller.current_controller import CurrentController
 
 from test.controller.controller_test import ControllerTest
 
-
+'''
 class PluginsControllerTest(ControllerTest):
     """
     Deprecated
@@ -14,8 +14,8 @@ class PluginsControllerTest(ControllerTest):
         self.controller = controller(PluginsController)
         current_controller = controller(CurrentController)
 
-        current_controller.setBank(0)
-        current_controller.setPatch(0)
+        current_controller.set_bank(0)
+        current_controller.set_patch(0)
 
     def test_plugins_loaded(self):
         self.assertIsNot(0, len(self.controller.plugins))
@@ -33,3 +33,4 @@ class PluginsControllerTest(ControllerTest):
             self.controller.getBy(PluginTechnology.VST),
             dict
         )
+'''

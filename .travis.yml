@@ -6,15 +6,18 @@ python:
 
 sudo: required
 
-before_install:
-  - git submodule update --init --recursive
-
 install:
   - pip3 install coveralls
 
 script:
-  - coverage3 run --source=architecture,controller,dao,model,model/lv2,util setup.py test
+  - ls
+  - cd ..
+  - git clone https://github.com/PedalPi/PluginsManager pluginsmanager --depth=1
+  - cd pluginsmanager
+  - python setup.py develop
+  - cd ..
+  - cd application
+  - coverage3 run --source=application setup.py test
 
 after_success:
-  - coveralls
   - bash <(curl -s https://codecov.io/bash)

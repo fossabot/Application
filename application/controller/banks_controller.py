@@ -5,6 +5,9 @@ from application.controller.device_controller import DeviceController
 from application.controller.notification_controller import NotificationController
 
 from pluginsmanager.banks_manager import BanksManager
+from pluginsmanager.model.bank import Bank
+from pluginsmanager.model.patch import Patch
+
 from pluginsmanager.model.update_type import UpdateType
 
 
@@ -26,6 +29,8 @@ class BanksController(Controller):
         self.dao = self.app.dao(BankDao)
 
         self.manager = BanksManager()
+        self.manager.append(Bank('Empty Bank'))
+        self.manager.banks[0].patches.append(Patch('Empty patch'))
 
         # To fix Cyclic dependece
         from application.controller.current_controller import CurrentController
@@ -67,8 +72,8 @@ class BanksController(Controller):
         """
         # TODO - Save
         # TODO - Current bank
-        if self.currentController.isCurrentBank(bank):
-            current_patch = self.currentController.currentPatch
+        if self.currentController.is_current_bank(bank):
+            current_patch = self.currentController.current_patch
             self.deviceController.loadPatch(current_patch)
 
         self._notify_change(bank, UpdateType.UPDATED, token)

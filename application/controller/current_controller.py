@@ -12,101 +12,71 @@ class CurrentController(Controller):
     """
     Manage the current :class:`Bank` and current :class:`Patch`
     """
-    dao = None
-    bankNumber = 0
-    patchNumber = 0
 
-    deviceController = None
-    banksController = None
-    effectController = None
-    notificationController = None
-    paramController = None
+    def __init__(self, application):
+        super(CurrentController, self).__init__(application)
+        self.dao = None
+        self.bank_number = 0
+        self.patch_number = 0
+
+        self.device_controller = None
+        self.banks_controller = None
+        self.effect_controller = None
+        self.notifier = None
+        self.param_controller = None
 
     def configure(self):
+        self.device_controller = self.app.controller(DeviceController)
+        self.banks_controller = self.app.controller(BanksController)
+        self.effect_controller = self.app.controller(EffectController)
+        self.notifier = self.app.controller(NotificationController)
+        self.param_controller = self.app.controller(ParamController)
+
         self.dao = self.app.dao(CurrentDao)
         data = self.dao.load()
-        self.bankNumber = data["bank"]
-        self.patchNumber = data["patch"]
-
-        self.deviceController = self.app.controller(DeviceController)
-        self.banksController = self.app.controller(BanksController)
-        self.effectController = self.app.controller(EffectController)
-        self.notificationController = self.app.controller(NotificationController)
-        self.paramController = self.app.controller(ParamController)
-
-        #TODO - Gambiarra
-        self.current_bank = None
-        self.current_patch = None
+        self.bank_number = data["bank"]
+        self.patch_number = data["patch"]
 
     # ************************
     # Property
     # ************************
 
     @property
-    def currentPatch(self):
+    def current_patch(self):
         """
         Get the current :class:`Patch`
         """
-        return self.currentBank.patches[self.patchNumber]
+        return self.current_bank.patches[self.patch_number]
 
     @property
-    def currentBank(self):
+    def current_bank(self):
         """
         Get the :class:`Bank` that contains the current :class:`Patch`
         """
-        return self.banksController.banks[self.bankNumber]
+        return self.banks_controller.banks[self.bank_number]
 
     # ************************
     # Persistance
     # ************************
     def _save_current(self):
-        self.dao.save(self.bankNumber, self.patchNumber)
-
-    # ************************
-    # Effect
-    # ************************
-    def toggleStatusEffect(self, effect_index, token=None):
-        """
-        Toggle the status of an :class:`Effect` that belongs to the
-        current :class:`Patch`
-
-        :param int effect_index: Effect index
-        :param string token: Request token identifier
-        """
-        effect = self.currentPatch.effects[effect_index]
-        self.effectController.toggleStatus(effect, token)
-
-    def setEffectParam(self, effect_index, param_index, new_value, token=None):
-        """
-        Set a :class:`Param` value of an :class:`Effect` that belongs to the
-        current :class:`Patch`
-
-        :param int effect_index: Effect index in the current patch
-        :param int param_index: Param index in the effect
-        :param new_value: New value of the parameter
-        :param string token: Request token identifier
-        """
-        effect = self.currentPatch.effects[effect_index]
-        param = effect.params[param_index]
-
-        self.paramController.updateValue(param, new_value, token)
+        self.dao.save(self.bank_number, self.patch_number)
 
     # ************************
     # Get of Current
     # ************************
-    def isCurrentBank(self, bank):
+    def is_current_bank(self, bank):
         """
         :param Bank bank:
         :return bool: The :class:`Bank` is the current bank?
         """
-        return bank.index == self.bankNumber
+        return bank == self.current_bank
 
-    def isCurrentPatch(self, patch):
+    def is_current_patch(self, patch):
         """
         :param Patch patch:
         :return bool: The :class:`Patch` is the current patch?
         """
-        return self.isCurrentBank(patch.bank) and self.currentPatch == patch
+        return self.is_current_bank(patch.bank) and self.current_patch == patch
 
     # ************************
     # Set Current Patch/Bank
@@ -120,11 +90,11 @@ class CurrentController(Controller):
 
         :param string token: Request token identifier
         """
-        before_patch_number = self.patchNumber - 1
+        before_patch_number = self.patch_number - 1
         if before_patch_number == -1:
-            before_patch_number = len(self.currentBank.patches) - 1
+            before_patch_number = len(self.current_bank.patches) - 1
 
-        self.setPatch(before_patch_number, token)
+        self.set_patch(before_patch_number, token)
 
     def toNextPatch(self, token=None):
         """
@@ -135,13 +105,13 @@ class CurrentController(Controller):
 
         :param string token: Request token identifier
         """
-        next_patch_number = self.patchNumber + 1
-        if next_patch_number == len(self.currentBank.patches):
+        next_patch_number = self.patch_number + 1
+        if next_patch_number == len(self.current_bank.patches):
             next_patch_number = 0
 
-        self.setPatch(next_patch_number, token)
+        self.set_patch(next_patch_number, token)
 
-    def setPatch(self, patch_number, token=None):
+    def set_patch(self, patch_number, token=None):
         """
         Set the current :class:`Patch` for the patch with
         ``index == patch_number`` only if the
@@ -150,10 +120,10 @@ class CurrentController(Controller):
         :param int patch_number: Index of new current patch
         :param string token: Request token identifier
         """
-        if self.patchNumber == patch_number:
+        if self.patch_number == patch_number:
             return
 
-        self._set_current(self.bankNumber, patch_number, token=token)
+        self._set_current(self.bank_number, patch_number, token=token)
 
     def toBeforeBank(self):
         """
@@ -162,8 +132,8 @@ class CurrentController(Controller):
 
         The current patch will be the first of the new current bank.
         """
-        banks = self.banksController.banks.all
-        position = banks.index(self.currentBank)
+        banks = self.banks_controller.banks.all
+        position = banks.index(self.current_bank)
 
         before = position - 1
         if before == -1:
@@ -171,7 +141,7 @@ class CurrentController(Controller):
 
         beforeBankIndex = banks[before].index
 
-        self.setBank(beforeBankIndex)
+        self.set_bank(beforeBankIndex)
 
     def toNextBank(self):
         """
@@ -180,8 +150,8 @@ class CurrentController(Controller):
 
         The current patch will be the first of the new current bank.
         """
-        banks = self.banksController.banks.all
-        position = banks.index(self.currentBank)
+        banks = self.banks_controller.banks.all
+        position = banks.index(self.current_bank)
 
         nextBankIndex = position + 1
         if nextBankIndex == len(banks):
@@ -189,38 +159,37 @@ class CurrentController(Controller):
 
         nextBank = banks[nextBankIndex].index
 
-        self.setBank(nextBank)
+        self.set_bank(nextBank)
 
-    def setBank(self, bank_number, token=None, notify=True):
+    def set_bank(self, bank, token=None, notify=True):
         """
-        Set the current :class:`Bank` for the bank with
-        ``index == bank_number`` only if the
-        ``bank_number != currentBank.index``
+        Set the current :class:`Bank` for the bank
+        only if the ``bank != current_bank``
 
-        :param int bank_number: Index of new current bank
+        :param Bank bank: Bank that will be the current
         :param string token: Request token identifier
         :param bool notify: If false, not notify change for :class:`UpdatesObserver`
-                            instances registred in :class:`Application`
+                            instances registered in :class:`Application`
         """
-        if self.bankNumber == bank_number:
+        if self.current_bank == bank:
             return
 
-        self._set_current(bank_number, 0, token, notify)
+        self._set_current(bank, 0, token, notify)
 
-    def _set_current(self, bankNumber, patchNumber, token=None, notify=True):
+    def _set_current(self, bank, patchNumber, token=None, notify=True):
         self._load_device_patch(  # throwable. need be first
-            bankNumber,
+            bank,
             patchNumber
         )
-        self.bankNumber = bankNumber
-        self.patchNumber = patchNumber
+        self.bank_number = bank
+        self.patch_number = patchNumber
         self._save_current()
 
         if notify:
-            self.notificationController.notifyCurrentPatchChange(self.currentPatch, token)
+            self.notifier.notifyCurrentPatchChange(self.current_patch, token)
 
     def _load_device_patch(self, bankNumber, patchNumber):
-        bank = self.banksController.banks[bankNumber]
+        bank = self.banks_controller.banks[bankNumber]
         patch = bank.patches[patchNumber]
 
-        self.deviceController.loadPatch(patch)
+        self.device_controller.loadPatch(patch)

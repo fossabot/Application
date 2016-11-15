@@ -33,12 +33,12 @@ class BanksControllerTest(ControllerTest):
         bank = Bank('test_create_bank')
         index = self.controller.create_bank(bank)
         observer.on_bank_update.assert_called_with(bank, UpdateType.CREATED, None)
-        self.assertEqual(0, index)
+        self.assertEqual(index, self.controller.banks.index(bank))
 
         bank2 = Bank('test_create_bank_2')
         index2 = self.controller.create_bank(bank2, self.TOKEN)
         observer.on_bank_update.assert_called_with(bank2, UpdateType.CREATED, self.TOKEN)
-        self.assertEqual(1, index2)
+        self.assertEqual(index2, self.controller.banks.index(bank2))
 
         self.notification_controller.unregister(observer)
 

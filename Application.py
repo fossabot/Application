@@ -27,11 +27,11 @@ class Application(object):
         >>> application = Application()
         >>> current_controller = application.controller(CurrentController)
 
-        >>> print(current_controller.currentPatch)
+        >>> print(current_controller.current_patch)
         <Patch object as Shows with 2 effects at 0x7fa3bcb49be0>
 
         >>> current_controller.toNextPatch()
-        >>> current_controller.currentPatch
+        >>> current_controller.current_patch
         <Patch object as Shows 2 with 1 effects at 0x7fa3bbcdecf8>
 
     For more details, please, see the Controllers extended classes.
