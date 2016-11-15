@@ -89,7 +89,7 @@ class NotificationController(Controller):
         """
         for observer in self.observers:
             if not self.is_requisitor(observer, token):
-                observer.onEffectUpdated(effect, update_type, token)
+                observer.on_effect_updated(effect, update_type, token)
 
     def effect_status_toggled(self, effect, token=None):
         """
@@ -100,9 +100,9 @@ class NotificationController(Controller):
         """
         for observer in self.observers:
             if not self.is_requisitor(observer, token):
-                observer.onEffectStatusToggled(effect, token)
+                observer.on_effect_status_toggled(effect, token)
 
-    def notifyParamValueChange(self, param, token=None):
+    def param_value_changed(self, param, token=None):
         """
         Notify :class:`Param` value change.
 
@@ -111,7 +111,7 @@ class NotificationController(Controller):
         """
         for observer in self.observers:
             if not self.is_requisitor(observer, token):
-                observer.onParamValueChange(param, token)
+                observer.on_param_value_changed(param, token)
 
     def notify_connection_updated(self, connection, update_type, token=None):
         for observer in self.observers:

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from dao.BankDao import BankDao
 
 from controller.Controller import Controller
@@ -14,26 +13,20 @@ class ParamController(Controller):
     def configure(self):
         from controller.CurrentController import CurrentController
         self.dao = self.app.dao(BankDao)
-        self.currentController = self.app.controller(CurrentController)
-        self.deviceController = self.app.controller(DeviceController)
-        self.notificationController = self.app.controller(NotificationController)
+        self.current_controller = self.app.controller(CurrentController)
+        self.device_controller = self.app.controller(DeviceController)
+        self.notifier = self.app.controller(NotificationController)
 
-    def updateValue(self, param, new_value, token=None):
+    def updated_value(self, param, token=None):
         """
-        Set the value of a :class:`Param`.
+        Informs the :class:`Param` are updated.
 
-        :param Param param: Effect parameter that will be changed your value
-        :param new_value: New param value
+        :param Param param: Effect parameter with your value changed
         :param string token: Request token identifier
         """
-        patch = param.effect.patch
-        bank = patch.bank
+        # self.dao.save(param.effect.patch.bank)
 
-        param.value = new_value
+        # if self.current_controller.isCurrentPatch(patch):
+        #    self.device_controller.updateParamValue(param)
 
-        self.dao.save(bank)
-
-        if self.currentController.isCurrentPatch(patch):
-            self.deviceController.updateParamValue(param)
-
-        self.notificationController.notifyParamValueChange(param, token)
+        self.notifier.param_value_changed(param, token)

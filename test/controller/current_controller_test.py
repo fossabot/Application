@@ -1,5 +1,3 @@
-from architecture.privatemethod import privatemethod
-
 from controller.CurrentController import CurrentController
 from controller.BanksController import BanksController
 

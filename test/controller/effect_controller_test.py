@@ -1,6 +1,5 @@
 from controller.EffectController import EffectController
 from controller.PluginsController import PluginsController
-from controller.CurrentController import CurrentController
 from controller.NotificationController import NotificationController
 
 from test.controller.controller_test import ControllerTest
@@ -23,11 +22,7 @@ class EffectControllerTest(ControllerTest):
         controller = EffectControllerTest.application.controller
         self.controller = controller(EffectController)
         self.plugins_controller = controller(PluginsController)
-        self.current_controller = controller(CurrentController)
         self.notification_controller = controller(NotificationController)
-
-        self.current_controller.setBank(0)
-        self.current_controller.setPatch(0)
 
         self.builder = Lv2EffectBuilder()
 
@@ -45,10 +40,10 @@ class EffectControllerTest(ControllerTest):
         patch.append(reverb2)
 
         self.controller.create_effect(reverb)
-        observer.onEffectUpdated.assert_called_with(reverb, UpdateType.CREATED, None)
+        observer.on_effect_updated.assert_called_with(reverb, UpdateType.CREATED, None)
 
         self.controller.create_effect(reverb2, self.TOKEN)
-        observer.onEffectUpdated.assert_called_with(reverb2, UpdateType.CREATED, self.TOKEN)
+        observer.on_effect_updated.assert_called_with(reverb2, UpdateType.CREATED, self.TOKEN)
 
         self.controller.delete_effect(reverb)
         self.controller.delete_effect(reverb2)
@@ -70,16 +65,16 @@ class EffectControllerTest(ControllerTest):
         self.controller.create_effect(reverb2)
 
         self.controller.delete_effect(reverb)
-        observer.onEffectUpdated.assert_called_with(reverb, UpdateType.DELETED, None)
+        observer.on_effect_updated.assert_called_with(reverb, UpdateType.DELETED, None)
         self.controller.delete_effect(reverb2, self.TOKEN)
-        observer.onEffectUpdated.assert_called_with(reverb2, UpdateType.DELETED, self.TOKEN)
+        observer.on_effect_updated.assert_called_with(reverb2, UpdateType.DELETED, self.TOKEN)
 
     def test_toggle_status(self):
         observer = MagicMock()
         self.notification_controller.register(observer)
 
-        bank = Bank('test_create_effect Bank')
-        patch = Patch('test_create_effect Patch')
+        bank = Bank('test_toggle_status Bank')
+        patch = Patch('test_toggle_status Patch')
         bank.append(patch)
         reverb = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
         reverb2 = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
@@ -91,20 +86,20 @@ class EffectControllerTest(ControllerTest):
         self.controller.create_effect(reverb2)
 
         self.controller.toggle_status(reverb)
-        observer.onEffectStatusToggled.assert_called_with(reverb, None)
+        observer.on_effect_status_toggled.assert_called_with(reverb, None)
 
         self.controller.toggle_status(reverb2, self.TOKEN)
-        observer.onEffectStatusToggled.assert_called_with(reverb2, self.TOKEN)
+        observer.on_effect_status_toggled.assert_called_with(reverb2, self.TOKEN)
 
         self.controller.delete_effect(reverb)
         self.controller.delete_effect(reverb2, self.TOKEN)
 
-    def test_connected_effects(self):
+    def test_connected(self):
         observer = MagicMock()
         self.notification_controller.register(observer)
 
-        bank = Bank('test_create_effect Bank')
-        patch = Patch('test_create_effect Patch')
+        bank = Bank('test_connected Bank')
+        patch = Patch('test_connected Patch')
         bank.append(patch)
         reverb = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
         reverb2 = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
@@ -130,12 +125,12 @@ class EffectControllerTest(ControllerTest):
         self.controller.delete_effect(reverb)
         self.controller.delete_effect(reverb2)
 
-    def test_disconnected_effects(self):
+    def test_disconnected(self):
         observer = MagicMock()
         self.notification_controller.register(observer)
 
-        bank = Bank('test_create_effect Bank')
-        patch = Patch('test_create_effect Patch')
+        bank = Bank('test_disconnected Bank')
+        patch = Patch('test_disconnected Patch')
         bank.append(patch)
         reverb = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
         reverb2 = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')

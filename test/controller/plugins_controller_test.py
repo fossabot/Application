@@ -1,25 +1,21 @@
-from architecture.privatemethod import privatemethod
-
 from controller.PluginsController import PluginsController, PluginTechnology
 from controller.CurrentController import CurrentController
 
 from test.controller.controller_test import ControllerTest
 
 
-
 class PluginsControllerTest(ControllerTest):
-    controller = None
+    """
+    Deprecated
+    """
 
     def setUp(self):
-        self.controller = self.get_controller(PluginsController)
-        currentController = self.get_controller(CurrentController)
+        controller = PluginsControllerTest.application.controller
+        self.controller = controller(PluginsController)
+        current_controller = controller(CurrentController)
 
-        currentController.setBank(0)
-        currentController.setPatch(0)
-
-    @privatemethod
-    def get_controller(self, controller):
-        return PluginsControllerTest.application.controller(controller)
+        current_controller.setBank(0)
+        current_controller.setPatch(0)
 
     def test_plugins_loaded(self):
         self.assertIsNot(0, len(self.controller.plugins))

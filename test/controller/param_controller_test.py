@@ -1,46 +1,46 @@
-from architecture.privatemethod import privatemethod
-
-from controller.CurrentController import CurrentController
 from controller.EffectController import EffectController
 from controller.ParamController import ParamController
 from controller.PluginsController import PluginsController
+from controller.NotificationController import NotificationController
+
+from pluginsmanager.model.bank import Bank
+from pluginsmanager.model.patch import Patch
+from pluginsmanager.model.lv2.lv2_effect_builder import Lv2EffectBuilder
 
 from test.controller.controller_test import ControllerTest
 
+from unittest.mock import MagicMock
 
-'''
+
 class ParamControllerTest(ControllerTest):
-    controller = None
 
     def setUp(self):
-        self.controller = self.get_controller(ParamController)
-        self.effectController = self.get_controller(EffectController)
-        self.plugins_controller = self.get_controller(PluginsController)
-        self.current_controller = self.get_controller(CurrentController)
+        self.TOKEN = 'PARAM_TOKEN'
 
-        self.current_controller.setBank(0)
-        self.current_controller.setPatch(0)
+        controller = ParamControllerTest.application.controller
+        self.controller = controller(ParamController)
+        self.effect_controller = controller(EffectController)
+        self.plugins_controller = controller(PluginsController)
+        self.notification_controller = controller(NotificationController)
 
-        self.currentBank = self.current_controller.currentBank
-        self.currentPatch = self.current_controller.currentPatch
-
-    @privatemethod
-    def get_controller(self, controller):
-        return ParamControllerTest.application.controller(controller)
+        self.builder = Lv2EffectBuilder()
 
     def test_update_value(self):
-        uri = 'http://guitarix.sourceforge.net/plugins/gx_reverb_stereo#_reverb_stereo'
+        observer = MagicMock()
+        self.notification_controller.register(observer)
 
-        effectIndex = self.effectController.createEffect(self.currentPatch, uri)
+        bank = Bank('test_create_effect Bank')
+        patch = Patch('test_create_effect Patch')
+        bank.append(patch)
+        reverb = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
+        patch.append(reverb)
 
-        effect = self.currentPatch.effects[effectIndex]
-        param = effect.params[0]
+        param = reverb.params[0]
 
-        ranges = param['ranges']
-        newValue = (ranges['maximum'] + ranges['minimum']) / 2
-        self.controller.updateValue(param, newValue)
+        param.value = param.minimum
+        self.controller.updated_value(param)
+        observer.on_param_value_changed.assert_called_with(param, None)
 
-        self.assertEqual(param['value'], newValue)
-
-        self.effectController.deleteEffect(effect)
-'''
+        param.value = param.maximum
+        self.controller.updated_value(param, self.TOKEN)
+        observer.on_param_value_changed.assert_called_with(param, self.TOKEN)
