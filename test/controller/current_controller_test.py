@@ -1,10 +1,13 @@
 from application.controller.current_controller import CurrentController
 from application.controller.banks_controller import BanksController
+from application.controller.notification_controller import NotificationController
 
 from pluginsmanager.model.bank import Bank
 from pluginsmanager.model.patch import Patch
 
 from test.controller.controller_test import ControllerTest
+
+from unittest.mock import MagicMock
 
 
 class CurrentControllerTest(ControllerTest):
@@ -13,9 +16,12 @@ class CurrentControllerTest(ControllerTest):
     banks_controller = None
 
     def setUp(self):
+        self.TOKEN = 'CURRENT_TOKEN'
+
         controller = CurrentControllerTest.application.controller
         self.controller = controller(CurrentController)
         self.banks_controller = controller(BanksController)
+        self.notification_controller = controller(NotificationController)
 
     @property
     def bank_with_patch(self):
@@ -70,29 +76,114 @@ class CurrentControllerTest(ControllerTest):
 
         self.banks_controller.banks.remove(bank)
 
-    """
     def test_to_before_patch(self):
-        totalPatches = len(self.controller.currentBank.patches)
-        for idPatch in reversed(range(totalPatches)):
-            self.controller.toBeforePatch()
-            self.assertEqual(idPatch, self.controller.patch_number)
+        observer = MagicMock()
+        self.notification_controller.register(observer)
 
-    def test_next_patch(self):
-        totalPatches = len(self.controller.currentBank.patches)
-        for idPatch in range(totalPatches):
-            self.assertEqual(idPatch, self.controller.patch_number)
-            self.controller.toNextPatch()
+        patch = Patch('Other patch')
+        self.controller.current_bank.append(patch)
+
+        total_patches = len(self.controller.current_bank.patches)
+        for id_patch in reversed(range(total_patches)):
+            self.controller.to_before_patch()
+            self.assertEqual(id_patch, self.controller.patch_number)
+            observer.on_current_patch_changed.assert_called_with(self.controller.current_patch, None)
+
+        for id_patch in reversed(range(total_patches)):
+            self.controller.to_before_patch(self.TOKEN)
+            self.assertEqual(id_patch, self.controller.patch_number)
+            observer.on_current_patch_changed.assert_called_with(self.controller.current_patch, self.TOKEN)
 
         self.assertEqual(0, self.controller.patch_number)
 
+        self.controller.current_bank.patches.remove(patch)
+
+        self.notification_controller.unregister(observer)
+
+    def test_to_next_patch(self):
+        observer = MagicMock()
+        self.notification_controller.register(observer)
+
+        patch = Patch('Other patch')
+        self.controller.current_bank.append(patch)
+
+        total_patches = len(self.controller.current_bank.patches)
+        for id_patch in reversed(range(total_patches)):
+            self.controller.to_next_patch()
+            self.assertEqual(id_patch, self.controller.patch_number)
+            observer.on_current_patch_changed.assert_called_with(self.controller.current_patch, None)
+
+        for id_patch in reversed(range(total_patches)):
+            self.controller.to_next_patch(self.TOKEN)
+            self.assertEqual(id_patch, self.controller.patch_number)
+            observer.on_current_patch_changed.assert_called_with(self.controller.current_patch, self.TOKEN)
+
+        self.assertEqual(0, self.controller.patch_number)
+
+        self.controller.current_bank.patches.remove(patch)
+
+        self.notification_controller.unregister(observer)
+
     def test_set_patch(self):
-        firstPatch = self.controller.currentPatch
+        observer = MagicMock()
+        self.notification_controller.register(observer)
 
-        self.controller.setPatch(1)
+        patch = Patch('Other patch')
+        self.controller.current_bank.append(patch)
+
+        original_patch = self.controller.current_patch
+
+        self.controller.set_patch(patch)
         self.assertEqual(1, self.controller.patch_number)
+        observer.on_current_patch_changed.assert_called_with(patch, None)
 
-        self.assertNotEqual(firstPatch, self.controller.currentPatch)
+        self.assertNotEqual(original_patch, self.controller.current_patch)
+        self.assertEqual(patch, self.controller.current_patch)
 
+        self.controller.set_patch(original_patch, self.TOKEN)
+        self.assertEqual(0, self.controller.patch_number)
+        observer.on_current_patch_changed.assert_called_with(original_patch, self.TOKEN)
+
+        self.controller.current_bank.patches.remove(patch)
+
+        self.notification_controller.unregister(observer)
+
+    def test_set_patch_other_bank(self):
+        observer = MagicMock()
+        self.notification_controller.register(observer)
+
+        bank = self.bank_with_patch
+        self.banks_controller.banks.append(bank)
+
+        original_patch = self.controller.current_patch
+
+        self.controller.set_patch(bank.patches[0])
+        self.assertEqual(0, self.controller.patch_number)
+        self.assertEqual(1, self.controller.bank_number)
+        observer.on_current_patch_changed.assert_called_with(bank.patches[0], None)
+
+        self.assertNotEqual(original_patch, self.controller.current_patch)
+        self.assertEqual(bank.patches[0], self.controller.current_patch)
+        self.assertEqual(1, self.controller.bank_number)
+
+        self.controller.set_patch(original_patch, self.TOKEN)
+        self.assertEqual(0, self.controller.patch_number)
+        self.assertEqual(0, self.controller.bank_number)
+        observer.on_current_patch_changed.assert_called_with(original_patch, self.TOKEN)
+
+        self.banks_controller.banks.remove(bank)
+        self.notification_controller.unregister(observer)
+
+    def test_set_patch_current_patch(self):
+        observer = MagicMock()
+        self.notification_controller.register(observer)
+
+        self.controller.set_patch(self.controller.current_patch)
+        observer.on_current_patch_changed.assert_not_called()
+
+        self.notification_controller.unregister(observer)
+
+"""
     def test_set_index_out_patch(self):
         with self.assertRaises(IndexError):
             self.controller.setPatch(5000)

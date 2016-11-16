@@ -76,7 +76,7 @@ class PatchController(Controller):
 
         # FIXME - Current controller
         #if self.current_controller.is_current_patch(patch):
-        #    self.current_controller.toNextPatch()
+        #    self.current_controller.to_next_patch()
 
         patch.bank.patches.remove(patch)
         self._notify_change(patch, UpdateType.DELETED, token)

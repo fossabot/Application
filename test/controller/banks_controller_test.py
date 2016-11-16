@@ -62,6 +62,7 @@ class BanksControllerTest(ControllerTest):
         observer.on_bank_update.assert_called_with(bank, UpdateType.UPDATED, self.TOKEN)
 
         self.controller.delete_bank(bank)
+        self.notification_controller.unregister(observer)
 
     @unittest.skip("Not implemented")
     def test_update_current_bank(self):
@@ -89,6 +90,7 @@ class BanksControllerTest(ControllerTest):
         self.controller.delete_bank(bank2, self.TOKEN)
 
         observer.on_bank_update.assert_called_with(bank2, UpdateType.DELETED, self.TOKEN)
+        self.notification_controller.unregister(observer)
 
     @unittest.skip("Not implemented")
     def test_delete_current_bank(self):

@@ -90,7 +90,7 @@ class EffectController(Controller):
 
         :param Connection connection: Connection created
         """
-        self.notifier.notify_connection_updated(connection, UpdateType.CREATED, token)
+        self.notifier.connection_updated(connection, UpdateType.CREATED, token)
 
     def disconnected(self, connection, token=None):
         """
@@ -98,4 +98,4 @@ class EffectController(Controller):
 
         :param Connection connection: Connection created
         """
-        self.notifier.notify_connection_updated(connection, UpdateType.DELETED, token)
+        self.notifier.connection_updated(connection, UpdateType.DELETED, token)

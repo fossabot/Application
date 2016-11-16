@@ -81,7 +81,7 @@ class CurrentController(Controller):
     # ************************
     # Set Current Patch/Bank
     # ************************
-    def toBeforePatch(self, token=None):
+    def to_before_patch(self, token=None):
         """
         Change the current :class:`Patch` for the previous patch.
 
@@ -94,9 +94,9 @@ class CurrentController(Controller):
         if before_patch_number == -1:
             before_patch_number = len(self.current_bank.patches) - 1
 
-        self.set_patch(before_patch_number, token)
+        self.set_patch(self.current_bank.patches[before_patch_number], token)
 
-    def toNextPatch(self, token=None):
+    def to_next_patch(self, token=None):
         """
         Change the current :class:`Patch` for the next patch.
 
@@ -109,21 +109,23 @@ class CurrentController(Controller):
         if next_patch_number == len(self.current_bank.patches):
             next_patch_number = 0
 
-        self.set_patch(next_patch_number, token)
+        self.set_patch(self.current_bank.patches[next_patch_number], token)
 
-    def set_patch(self, patch_number, token=None):
+    def set_patch(self, patch, token=None):
         """
-        Set the current :class:`Patch` for the patch with
-        ``index == patch_number`` only if the
-        ``patch_number != currentPatch.index``
+        Set the current :class:`Patch` for the patch
+        only if the ``patch != current_patch``
 
-        :param int patch_number: Index of new current patch
+        :param Patch patch: New current patch
         :param string token: Request token identifier
         """
-        if self.patch_number == patch_number:
+        if self.is_current_patch(patch):
             return
 
-        self._set_current(self.bank_number, patch_number, token=token)
+        bank_number = self.banks_controller.banks.index(patch.bank)
+        patch_number = patch.bank.patches.index(patch)
+
+        self._set_current(bank_number, patch_number, token=token)
 
     def toBeforeBank(self):
         """
@@ -176,17 +178,17 @@ class CurrentController(Controller):
 
         self._set_current(bank, 0, token, notify)
 
-    def _set_current(self, bank, patchNumber, token=None, notify=True):
+    def _set_current(self, bank, patch_number, token=None, notify=True):
         self._load_device_patch(  # throwable. need be first
             bank,
-            patchNumber
+            patch_number
         )
         self.bank_number = bank
-        self.patch_number = patchNumber
+        self.patch_number = patch_number
         self._save_current()
 
         if notify:
-            self.notifier.notifyCurrentPatchChange(self.current_patch, token)
+            self.notifier.current_patch_changed(self.current_patch, token)
 
     def _load_device_patch(self, bankNumber, patchNumber):
         bank = self.banks_controller.banks[bankNumber]

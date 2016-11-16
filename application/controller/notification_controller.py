@@ -44,7 +44,7 @@ class NotificationController(Controller):
     ########################
     # Notify methods
     ########################
-    def notifyCurrentPatchChange(self, patch, token=None):
+    def current_patch_changed(self, patch, token=None):
         """
         Notify current patch change.
 
@@ -53,7 +53,7 @@ class NotificationController(Controller):
         """
         for observer in self.observers:
             if not self.is_requisitor(observer, token):
-                observer.onCurrentPatchChange(patch, token)
+                observer.on_current_patch_changed(patch, token)
 
     def bank_updated(self, bank, update_type, token=None):
         """
@@ -113,7 +113,7 @@ class NotificationController(Controller):
             if not self.is_requisitor(observer, token):
                 observer.on_param_value_changed(param, token)
 
-    def notify_connection_updated(self, connection, update_type, token=None):
+    def connection_updated(self, connection, update_type, token=None):
         for observer in self.observers:
             if not self.is_requisitor(observer, token):
                 observer.on_connection_updated(connection, update_type, token)

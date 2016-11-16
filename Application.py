@@ -30,7 +30,7 @@ class Application(object):
         >>> print(current_controller.current_patch)
         <Patch object as Shows with 2 effects at 0x7fa3bcb49be0>
 
-        >>> current_controller.toNextPatch()
+        >>> current_controller.to_next_patch()
         >>> current_controller.current_patch
         <Patch object as Shows 2 with 1 effects at 0x7fa3bbcdecf8>
 
