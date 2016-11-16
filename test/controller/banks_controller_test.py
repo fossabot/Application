@@ -18,7 +18,7 @@ class BanksControllerTest(ControllerTest):
         controller = BanksControllerTest.application.controller
 
         self.controller = controller(BanksController)
-        self.notification_controller = controller(NotificationController)
+        self.notifier = controller(NotificationController)
 
     @unittest.skip("Not implemented")
     def test_load_banks(self):
@@ -28,7 +28,7 @@ class BanksControllerTest(ControllerTest):
 
     def test_create_bank(self):
         observer = MagicMock()
-        self.notification_controller.register(observer)
+        self.notifier.register(observer)
 
         bank = Bank('test_create_bank')
         index = self.controller.create_bank(bank)
@@ -40,7 +40,7 @@ class BanksControllerTest(ControllerTest):
         observer.on_bank_update.assert_called_with(bank2, UpdateType.CREATED, self.TOKEN)
         self.assertEqual(index2, self.controller.banks.index(bank2))
 
-        self.notification_controller.unregister(observer)
+        self.notifier.unregister(observer)
 
         self.controller.delete_bank(bank)
         self.controller.delete_bank(bank2)
@@ -51,7 +51,7 @@ class BanksControllerTest(ControllerTest):
         bank = Bank('test_update_bank')
         self.controller.create_bank(bank)
 
-        self.notification_controller.register(observer)
+        self.notifier.register(observer)
 
         bank.name = 'test_update_bank_new'
         self.controller.update_bank(bank)
@@ -62,7 +62,7 @@ class BanksControllerTest(ControllerTest):
         observer.on_bank_update.assert_called_with(bank, UpdateType.UPDATED, self.TOKEN)
 
         self.controller.delete_bank(bank)
-        self.notification_controller.unregister(observer)
+        self.notifier.unregister(observer)
 
     @unittest.skip("Not implemented")
     def test_update_current_bank(self):
@@ -77,7 +77,7 @@ class BanksControllerTest(ControllerTest):
 
         self.controller.create_bank(bank)
 
-        self.notification_controller.register(observer)
+        self.notifier.register(observer)
 
         self.assertLess(total, len(self.controller.banks))
         self.controller.delete_bank(bank)
@@ -90,7 +90,7 @@ class BanksControllerTest(ControllerTest):
         self.controller.delete_bank(bank2, self.TOKEN)
 
         observer.on_bank_update.assert_called_with(bank2, UpdateType.DELETED, self.TOKEN)
-        self.notification_controller.unregister(observer)
+        self.notifier.unregister(observer)
 
     @unittest.skip("Not implemented")
     def test_delete_current_bank(self):
@@ -98,4 +98,8 @@ class BanksControllerTest(ControllerTest):
 
     @unittest.skip("Not implemented")
     def test_swap(self):
+        ...
+
+    @unittest.skip("Not implemented")
+    def test_swap_current_bank(self):
         ...

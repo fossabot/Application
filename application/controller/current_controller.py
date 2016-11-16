@@ -34,8 +34,8 @@ class CurrentController(Controller):
 
         self.dao = self.app.dao(CurrentDao)
         data = self.dao.load()
-        self.bank_number = data["bank"]
-        self.patch_number = data["patch"]
+        self.bank_number = 0#data["bank"]
+        self.patch_number = 0#data["patch"]
 
     # ************************
     # Property
@@ -122,46 +122,43 @@ class CurrentController(Controller):
         if self.is_current_patch(patch):
             return
 
-        bank_number = self.banks_controller.banks.index(patch.bank)
-        patch_number = patch.bank.patches.index(patch)
+        self._set_current(patch, token=token)
 
-        self._set_current(bank_number, patch_number, token=token)
-
-    def toBeforeBank(self):
+    def to_before_bank(self, token=None):
         """
         Change the current :class:`Bank` for the before bank. If the current
         bank is the first, the current bank is will be the last bank.
 
         The current patch will be the first of the new current bank.
+
+        :param string token: Request token identifier
         """
-        banks = self.banks_controller.banks.all
-        position = banks.index(self.current_bank)
+        banks = self.banks_controller.banks
+        position = self.bank_number
 
-        before = position - 1
-        if before == -1:
-            before = len(banks) - 1
+        before_index = position - 1
+        if before_index == -1:
+            before_index = len(banks) - 1
 
-        beforeBankIndex = banks[before].index
+        self.set_bank(banks[before_index], token=token)
 
-        self.set_bank(beforeBankIndex)
-
-    def toNextBank(self):
+    def to_next_bank(self, token=None):
         """
         Change the current :class:`Bank` for the next bank. If the current
         bank is the last, the current bank is will be the first bank.
 
         The current patch will be the first of the new current bank.
+
+        :param string token: Request token identifier
         """
-        banks = self.banks_controller.banks.all
-        position = banks.index(self.current_bank)
+        banks = self.banks_controller.banks
+        position = self.bank_number
 
-        nextBankIndex = position + 1
-        if nextBankIndex == len(banks):
-            nextBankIndex = 0
+        next_index = position + 1
+        if next_index == len(banks):
+            next_index = 0
 
-        nextBank = banks[nextBankIndex].index
-
-        self.set_bank(nextBank)
+        self.set_bank(banks[next_index], token=token)
 
     def set_bank(self, bank, token=None, notify=True):
         """
@@ -176,15 +173,19 @@ class CurrentController(Controller):
         if self.current_bank == bank:
             return
 
-        self._set_current(bank, 0, token, notify)
+        self._set_current(bank.patches[0], token, notify)
 
-    def _set_current(self, bank, patch_number, token=None, notify=True):
+    def _set_current(self, patch, token=None, notify=True):
+        bank_number = self.banks_controller.banks.index(patch.bank)
+        patch_number = patch.bank.patches.index(patch)
+
         self._load_device_patch(  # throwable. need be first
-            bank,
+            bank_number,
             patch_number
         )
-        self.bank_number = bank
+        self.bank_number = bank_number
         self.patch_number = patch_number
+
         self._save_current()
 
         if notify:

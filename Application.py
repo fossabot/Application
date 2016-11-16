@@ -8,7 +8,6 @@ from application.controller.effect_controller import EffectController
 from application.controller.notification_controller import NotificationController
 from application.controller.param_controller import ParamController
 from application.controller.patch_controller import PatchController
-from application.controller.plugins_controller import PluginsController
 
 
 class Application(object):
@@ -60,8 +59,7 @@ class Application(object):
             EffectController,
             NotificationController,
             ParamController,
-            PatchController,
-            PluginsController
+            PatchController
         ]
 
         controllers[DeviceController.__name__] = self._init_device_controller(address, test)
