@@ -14,7 +14,7 @@ The purpose of the tests is:
 * Serve as a sample basis.
 
 ```bash
-coverage3 run --source=architecture,controller,dao,model,model/lv2,util setup.py test
+coverage3 run --source=application setup.py test
 coverage3 report
 coverage3 html
 firefox htmlcov/index.html

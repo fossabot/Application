@@ -5,7 +5,7 @@ from application.controller.effect_controller import EffectController
 from application.controller.notification_controller import NotificationController
 from application.controller.param_controller import ParamController
 
-from dao.CurrentDao import CurrentDao
+from application.dao.current_dao import CurrentDao
 
 
 class CurrentController(Controller):
@@ -194,4 +194,4 @@ class CurrentController(Controller):
         bank = self.banks_controller.banks[bankNumber]
         patch = bank.patches[patchNumber]
 
-        self.device_controller.loadPatch(patch)
+        self.device_controller.patch = patch

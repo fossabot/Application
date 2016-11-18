@@ -10,19 +10,23 @@ from application.controller.param_controller import ParamController
 from application.controller.patch_controller import PatchController
 from application.controller.plugins_controller import PluginsController
 
+from pluginsmanager.mod_host.mod_host import ModHost
+
+from unittest.mock import MagicMock
+
 
 class Application(object):
     """
-    Application is a API for pythonic management with LV2 audio plugins.
-    Current, it offers a bridge with `mod-host`_
-    (LV2 host for Jack controllable via socket or command line)
-    by a *TCP* connection.
+    PedalPi - Application is a framework for manager the PedalPi - `Components`_
+    offers an auto initialization and an updates notification between the components.
+
+    .. _Components: https://github.com/PedalPi/Components
 
     By a application instance, it's possible obtains a :class:Controller
     for control::
 
-        >>> from Application import Application
-        >>> from controller.CurrentController import CurrentController
+        >>> from application.application import Application
+        >>> from application.controller.CurrentController import CurrentController
 
         >>> application = Application()
         >>> current_controller = application.controller(CurrentController)
@@ -34,7 +38,7 @@ class Application(object):
         >>> current_controller.current_patch
         <Patch object as Shows 2 with 1 effects at 0x7fa3bbcdecf8>
 
-    For more details, please, see the Controllers extended classes.
+    For more details see the Controllers extended classes.
 
     :param string data_patch: Uri where the data will be persisted
     :param string address: `mod-host`_ address
@@ -44,19 +48,31 @@ class Application(object):
     """
 
     def __init__(self, data_patch="data/", address="localhost", test=False):
-        self.dataPatch = data_patch
+        self.mod_host = self._initialize(address, test)
+
+        self.data_patch = data_patch
         self.components = []
-        self.controllers = self._load_controllers(address, test)
+        self.controllers = self._load_controllers()
 
         self._configure_controllers(self.controllers)
 
-    def _load_controllers(self, address, test):
+    def _initialize(self, address, test=False):
+        mod_host = ModHost(address)
+        if test:
+            mod_host.host = MagicMock()
+        else:
+            mod_host.connect()
+
+        return mod_host
+
+    def _load_controllers(self):
         controllers = {}
 
         list_controllers = [
             BanksController,
             ComponentDataController,
             CurrentController,
+            DeviceController,
             EffectController,
             NotificationController,
             ParamController,
@@ -64,27 +80,15 @@ class Application(object):
             PluginsController
         ]
 
-        controllers[DeviceController.__name__] = self._init_device_controller(address, test)
-
         for controller in list_controllers:
             controllers[controller.__name__] = controller(self)
 
         return controllers
 
-    def _init_device_controller(self, address, test):
-        if test:
-            from unittest.mock import Mock
-            return Mock(spec=DeviceController)
-
-        else:
-            device_controller = DeviceController(self)
-            device_controller.address = address
-
-            return device_controller
-
     def _configure_controllers(self, controllers):
         for controller in list(controllers.values()):
             controller.configure()
+            self._log('Load controller -', controller.__class__.__name__)
 
     def register(self, component):
         """
@@ -100,8 +104,8 @@ class Application(object):
         Start this API, initializing the components.
         """
         for component in self.components:
-            print('[' + time.strftime('%Y-%m-%d %H:%M:%S') + ']', 'Loading', component.__class__.__name__)
             component.init()
+            self._log('Load component -', component.__class__.__name__)
 
     def controller(self, controller):
         """
@@ -119,4 +123,7 @@ class Application(object):
         :param dao: Class identifier
         :return: Dao instance
         """
-        return dao(self.dataPatch)
+        return dao(self.data_patch)
+
+    def _log(self, *args, **kwargs):
+        print('[' + time.strftime('%Y-%m-%d %H:%M:%S') + ']', *args, **kwargs)

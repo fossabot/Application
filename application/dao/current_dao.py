@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from dao.DataBank import DataBank
+from application.dao.database import Database
 
 
 class CurrentDao(object):
@@ -16,10 +15,10 @@ class CurrentDao(object):
             "patch": patch_index
         }
 
-        DataBank.save(self._url(), json)
+        Database.save(self._url(), json)
 
     def _read_file(self):
-        return DataBank.read(self._url())
+        return Database.read(self._url())
 
     def _url(self):
         return self.data_path + "current.json"

@@ -1,6 +1,5 @@
 from application.controller.controller import Controller
-#from lib.ModHostBinding.Host import Host
-#from lib.ModHostBinding.plugin.Lv2Plugin import Lv2Plugin
+from pluginsmanager.model.system.system_effect import SystemEffect
 
 
 class DeviceController(Controller):
@@ -8,74 +7,25 @@ class DeviceController(Controller):
     Apply changes in the device (mod-host)
     """
 
-    currentPatch = {'plugins': []}
-    address = 'localhost'
-    host = None
+    def __init__(self, application):
+        super(DeviceController, self).__init__(application)
+
+        self.sys_effect = SystemEffect('system', ('capture_1', 'capture_2'), ('playback_1', 'playback_2'))
 
     def configure(self):
-        self.host = Host(self.address)
+        from application.controller.banks_controller import BanksController
+        banks_controller = self.app.controller(BanksController)
 
-    def loadPatch(self, patch):
-        print("Removing old plugins")
-        self.removeOldPlugins()
-
-        self.plugins = []
-
-        #print("Loading effects", patch["effects"])
-        print("Loading effects")
-        self.loadEffectsOf(patch)
-
-        print("connecting", patch["connections"])
-        self.autoConnect()
-
-    def removeOldPlugins(self):
-        for plugin in self.plugins:
-            self.host.remove(plugin)
-
-    def loadEffectsOf(self, patch):
-        for effect in patch.effects:
-            plugin = Lv2Plugin(effect.json)
-            self.host.add(plugin)
-            self.plugins.append(plugin)
-
-            print("Loading params of", effect['name'])
-            self.loadParamsOf(effect)
-            self.setStatusEffect(effect)
-
-    def loadParamsOf(self, effect):
-        for param in effect.params:
-            self.updateParamValue(param)
-
-    def autoConnect(self):
-        if len(self.plugins) == 0:
-            return
-
-        first = self.plugins[0]
-        last = self.plugins[-1]
-
-        self.host.connect_input_in(first)
-
-        before = first
-        for plugin in self.plugins[1:]:
-            self.host.connect(before, plugin)
-            before = plugin
-
-        self.host.connect_on_output(last, 1)
-        self.host.connect_on_output(last, 2)
+        banks_controller.manager.register(self.mod_host)
 
     @property
-    def plugins(self):
-        return self.currentPatch['plugins']
+    def mod_host(self):
+        return self.app.mod_host
 
-    @plugins.setter
-    def plugins(self, plugins):
-        self.currentPatch['plugins'] = plugins
+    @property
+    def patch(self):
+        return self.mod_host.patch
 
-    def setStatusEffect(self, effect):
-        self.host.set_status(self.pluginOfEffect(effect))
-
-    def updateParamValue(self, param):
-        self.host.set_param_value(self.pluginOfEffect(param.effect), param)
-
-    def pluginOfEffect(self, effect):
-        return self.plugins[effect.index]
+    @patch.setter
+    def patch(self, patch):
+        self.mod_host.patch = patch

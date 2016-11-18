@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 import json
 import os
 
 
-class DataBank(object):
+class Database(object):
 
     @staticmethod
     def read(url):
@@ -12,9 +11,9 @@ class DataBank(object):
 
     @staticmethod
     def save(url, data):
-        jsonFile = open(url, "w+")
-        jsonFile.write(json.dumps(data))
-        jsonFile.close()
+        json_file = open(url, "w+")
+        json_file.write(json.dumps(data))
+        json_file.close()
 
     @staticmethod
     def delete(url):

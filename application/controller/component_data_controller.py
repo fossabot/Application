@@ -1,4 +1,4 @@
-from dao.ComponentDao import ComponentDao
+from application.dao.component_dao import ComponentDao
 
 from application.controller.controller import Controller
 

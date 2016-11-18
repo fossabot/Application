@@ -1,13 +1,12 @@
-from dao.BankDao import BankDao
-
 from application.controller.controller import Controller
 from application.controller.device_controller import DeviceController
 from application.controller.notification_controller import NotificationController
 
+from application.dao.bank_dao import BankDao
+
 from pluginsmanager.banks_manager import BanksManager
 from pluginsmanager.model.bank import Bank
 from pluginsmanager.model.patch import Patch
-
 from pluginsmanager.model.update_type import UpdateType
 
 
@@ -18,25 +17,24 @@ class BanksController(Controller):
 
     def __init__(self, application):
         super(BanksController, self).__init__(application)
-        self.dao = None
 
-        self.manager = None
+        self.dao = self.app.dao(BankDao)
+
+        self.manager = BanksManager()
         self.currentController = None
         self.deviceController = None
         self.notifier = None
 
     def configure(self):
-        self.dao = self.app.dao(BankDao)
-
-        self.manager = BanksManager()
-        self.manager.append(Bank('Empty Bank'))
-        self.manager.banks[0].patches.append(Patch('Empty patch'))
-
         # To fix Cyclic dependece
         from application.controller.current_controller import CurrentController
         self.currentController = self.app.controller(CurrentController)
         self.deviceController = self.app.controller(DeviceController)
+
         self.notifier = self.app.controller(NotificationController)
+
+        for bank in self.dao.banks(self.deviceController.sys_effect):
+            self.manager.append(bank)
 
     @property
     def banks(self):

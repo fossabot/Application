@@ -1,6 +1,6 @@
 import unittest
 
-from Application import Application
+from application.application import Application
 
 
 class ControllerTest(unittest.TestCase):

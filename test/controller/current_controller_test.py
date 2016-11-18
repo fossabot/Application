@@ -23,6 +23,8 @@ class CurrentControllerTest(ControllerTest):
         self.banks_controller = controller(BanksController)
         self.notification_controller = controller(NotificationController)
 
+        self.controller.set_patch = self.banks_controller.banks[0].patches[0]
+
     @property
     def bank_with_patch(self):
         bank = Bank('A bank')
@@ -134,7 +136,7 @@ class CurrentControllerTest(ControllerTest):
         original_patch = self.controller.current_patch
 
         self.controller.set_patch(patch)
-        self.assertEqual(1, self.controller.patch_number)
+        self.assertEqual(patch.bank.patches.index(patch), self.controller.patch_number)
         observer.on_current_patch_changed.assert_called_with(patch, None)
 
         self.assertNotEqual(original_patch, self.controller.current_patch)
@@ -159,7 +161,7 @@ class CurrentControllerTest(ControllerTest):
 
         self.controller.set_patch(bank.patches[0])
         self.assertEqual(0, self.controller.patch_number)
-        self.assertEqual(1, self.controller.bank_number)
+        self.assertEqual(self.banks_controller.banks.index(bank), self.controller.bank_number)
         observer.on_current_patch_changed.assert_called_with(bank.patches[0], None)
 
         self.assertNotEqual(original_patch, self.controller.current_patch)

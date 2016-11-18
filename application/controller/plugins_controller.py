@@ -1,7 +1,3 @@
-#from application.controller.plugins.Lv2Library import Lv2Library
-from application.controller.plugins.Lv2LibraryMock import Lv2Library
-from application.controller.plugins.LadspaLibrary import LadspaLibrary
-
 from application.controller.controller import Controller
 
 from enum import Enum
@@ -28,13 +24,15 @@ class PluginsController(Controller):
     def configure(self):
         self.plugins = dict()
 
+        '''
         self.plugins.update(Lv2Library().plugins)
         self.technology[PluginTechnology.LV2] = Lv2Library().plugins
 
         self.plugins.update(LadspaLibrary().plugins)
         self.technology[PluginTechnology.LADSPA] = LadspaLibrary().plugins
+        '''
 
-    def getBy(self, technology):
+    def get_by(self, technology):
         """
         Get the plugins registred in PedalPi by technology
 

@@ -1,4 +1,4 @@
-from dao.BankDao import BankDao
+from application.dao.bank_dao import BankDao
 
 from application.controller.controller import Controller
 from application.controller.current_controller import CurrentController
