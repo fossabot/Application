@@ -1,6 +1,5 @@
 from application.controller.effect_controller import EffectController
 from application.controller.param_controller import ParamController
-from application.controller.plugins_controller import PluginsController
 from application.controller.notification_controller import NotificationController
 
 from pluginsmanager.model.bank import Bank
@@ -20,14 +19,13 @@ class ParamControllerTest(ControllerTest):
         controller = ParamControllerTest.application.controller
         self.controller = controller(ParamController)
         self.effect_controller = controller(EffectController)
-        self.plugins_controller = controller(PluginsController)
-        self.notification_controller = controller(NotificationController)
+        self.notifier = controller(NotificationController)
 
         self.builder = Lv2EffectBuilder()
 
     def test_update_value(self):
         observer = MagicMock()
-        self.notification_controller.register(observer)
+        self.notifier.register(observer)
 
         bank = Bank('test_create_effect Bank')
         patch = Patch('test_create_effect Patch')

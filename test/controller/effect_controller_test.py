@@ -1,5 +1,4 @@
 from application.controller.effect_controller import EffectController
-from application.controller.plugins_controller import PluginsController
 from application.controller.notification_controller import NotificationController
 
 from test.controller.controller_test import ControllerTest
@@ -21,14 +20,13 @@ class EffectControllerTest(ControllerTest):
 
         controller = EffectControllerTest.application.controller
         self.controller = controller(EffectController)
-        self.plugins_controller = controller(PluginsController)
-        self.notification_controller = controller(NotificationController)
+        self.notifier = controller(NotificationController)
 
         self.builder = Lv2EffectBuilder()
 
     def test_create_effect(self):
         observer = MagicMock()
-        self.notification_controller.register(observer)
+        self.notifier.register(observer)
 
         bank = Bank('test_create_effect Bank')
         patch = Patch('test_create_effect Patch')
@@ -50,7 +48,7 @@ class EffectControllerTest(ControllerTest):
 
     def test_delete_effect(self):
         observer = MagicMock()
-        self.notification_controller.register(observer)
+        self.notifier.register(observer)
 
         bank = Bank('test_create_effect Bank')
         patch = Patch('test_create_effect Patch')
@@ -71,7 +69,7 @@ class EffectControllerTest(ControllerTest):
 
     def test_toggle_status(self):
         observer = MagicMock()
-        self.notification_controller.register(observer)
+        self.notifier.register(observer)
 
         bank = Bank('test_toggle_status Bank')
         patch = Patch('test_toggle_status Patch')
@@ -96,7 +94,7 @@ class EffectControllerTest(ControllerTest):
 
     def test_connected(self):
         observer = MagicMock()
-        self.notification_controller.register(observer)
+        self.notifier.register(observer)
 
         bank = Bank('test_connected Bank')
         patch = Patch('test_connected Patch')
@@ -127,7 +125,7 @@ class EffectControllerTest(ControllerTest):
 
     def test_disconnected(self):
         observer = MagicMock()
-        self.notification_controller.register(observer)
+        self.notifier.register(observer)
 
         bank = Bank('test_disconnected Bank')
         patch = Patch('test_disconnected Patch')

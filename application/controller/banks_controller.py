@@ -89,7 +89,7 @@ class BanksController(Controller):
         """
         # TODO - Save
         if bank == self.currentController.current_bank:
-            self.currentController.toNextBank()
+            self.currentController.to_next_bank()
 
         self.manager.banks.remove(bank)
 

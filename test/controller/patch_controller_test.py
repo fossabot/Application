@@ -19,11 +19,11 @@ class PatchControllerTest(ControllerTest):
         controller = PatchControllerTest.application.controller
 
         self.controller = controller(PatchController)
-        self.notificationController = controller(NotificationController)
+        self.notifier = controller(NotificationController)
 
     def test_create_patch(self):
         observer = MagicMock()
-        self.notificationController.register(observer)
+        self.notifier.register(observer)
 
         bank = Bank('test_create_patch - bank')
         patch = Patch('test_create_patch')
@@ -40,9 +40,11 @@ class PatchControllerTest(ControllerTest):
         self.controller.delete_patch(patch)
         self.controller.delete_patch(patch2)
 
+        self.notifier.unregister(observer)
+
     def test_update_patch(self):
         observer = MagicMock()
-        self.notificationController.register(observer)
+        self.notifier.register(observer)
 
         bank = Bank('test_update_patch - bank')
         patch = Patch('test_update_patch')
@@ -62,6 +64,7 @@ class PatchControllerTest(ControllerTest):
         observer.on_patch_updated.assert_called_with(patch3, UpdateType.UPDATED, self.TOKEN)
 
         self.controller.delete_patch(patch3)
+        self.notifier.unregister(observer)
 
     @unittest.skip("Not implemented")
     def test_update_current_patch(self):
@@ -69,7 +72,7 @@ class PatchControllerTest(ControllerTest):
 
     def test_delete_patch(self):
         observer = MagicMock()
-        self.notificationController.register(observer)
+        self.notifier.register(observer)
 
         bank = Bank('test_delete_patch - bank')
         patch = Patch('test_delete_patch')
@@ -86,6 +89,8 @@ class PatchControllerTest(ControllerTest):
         self.controller.delete_patch(patch2, self.TOKEN)
         observer.on_patch_updated.assert_called_with(patch2, UpdateType.DELETED, self.TOKEN)
 
+        self.notifier.unregister(observer)
+
     @unittest.skip("Not implemented")
     def test_update_deleted_patch(self):
         ...
@@ -94,6 +99,43 @@ class PatchControllerTest(ControllerTest):
     def test_delete_current_patch(self):
         ...
 
-    @unittest.skip("Not implemented")
     def test_swap(self):
+        observer = MagicMock()
+        self.notifier.register(observer)
+
+        observer = MagicMock()
+        self.notifier.register(observer)
+
+        bank_a = Bank('test_swap - bank')
+        patch_a = Patch('test_delete_patch 1')
+        patch_a2 = Patch('test_delete_patch 2')
+
+        bank_a.append(patch_a)
+        bank_a.append(patch_a2)
+
+        bank_b = Bank('test_swap - bank 2')
+        patch_b = Patch('test_delete_patch 1')
+
+        bank_b.append(patch_b)
+
+        self.controller.swap(patch_a2, patch_b)
+
+        self.assertEqual(bank_a.patches[1], patch_b)
+        self.assertEqual(bank_b.patches[0], patch_a2)
+
+        observer.on_patch_updated.assert_any_call(patch_b, UpdateType.UPDATED, None)
+        observer.on_patch_updated.assert_any_call(patch_a2, UpdateType.UPDATED, None)
+
+        self.controller.swap(patch_a2, patch_b, self.TOKEN)
+
+        self.assertEqual(bank_a.patches[1], patch_a2)
+        self.assertEqual(bank_b.patches[0], patch_b)
+
+        observer.on_patch_updated.assert_any_call(patch_b, UpdateType.UPDATED, self.TOKEN)
+        observer.on_patch_updated.assert_any_call(patch_a2, UpdateType.UPDATED, self.TOKEN)
+
+        self.notifier.unregister(observer)
+
+    @unittest.skip("Not implemented")
+    def test_swap_current_patch(self):
         ...

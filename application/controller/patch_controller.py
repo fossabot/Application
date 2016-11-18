@@ -84,15 +84,31 @@ class PatchController(Controller):
         # FIXME - Persistance
         #self.dao.save(bank)
 
-    def swapPatches(self, patchA, patchB):
+    def swap(self, patch_a, patch_b, token=None):
         """
-        .. deprecated::
-            Don't use
+        Swap patch_a with patch_b.
 
-        Swap patchA order to patchB order
+        :param Patch patch_a: Patch to be swapped with patch_b
+        :param Patch patch_b: Patch to be swapped with patch_a
+        :param string token: Request token identifier
         """
-        patchA.bank.swapPatches(patchA, patchB)
-        self.dao.save(patchA.bank)
+        bank_a = patch_a.bank
+        bank_b = patch_b.bank
+
+        index_a = bank_a.patches.index(patch_a)
+        index_b = bank_b.patches.index(patch_b)
+
+        bank_a.patches[index_a], bank_b.patches[index_b] = bank_b.patches[index_b], bank_a.patches[index_a]
+
+        self.notifier.patch_updated(patch_a, UpdateType.UPDATED, token=token)
+        self.notifier.patch_updated(patch_b, UpdateType.UPDATED, token=token)
+
+        # FIXME - Persistance
+        # self.dao.save(bank_a)
+        # self.dao.save(bank_b)
+
+        # FIXME - Update if is current patch
+        # if patch_a or patch_b is current patch, needs update bank index and current patch index
 
     def _notify_change(self, patch, update_type, token=None):
         self.notifier.patch_updated(patch, update_type, token)
