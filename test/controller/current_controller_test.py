@@ -19,7 +19,7 @@ class CurrentControllerTest(ControllerTest):
         self.banks_controller = controller(BanksController)
         self.notifier = controller(NotificationController)
 
-        self.controller.set_patch = self.banks_controller.banks[0].patches[0]
+        self.controller.set_patch(self.banks_controller.banks[0].patches[0])
 
     @property
     def bank_with_patch(self):
@@ -106,14 +106,15 @@ class CurrentControllerTest(ControllerTest):
         self.controller.current_bank.append(patch)
 
         total_patches = len(self.controller.current_bank.patches)
-        for id_patch in reversed(range(total_patches)):
+        patch_initial_index = self.controller.patch_number
+        for id_patch in range(total_patches):
+            self.assertEqual(id_patch + patch_initial_index, self.controller.patch_number)
             self.controller.to_next_patch()
-            self.assertEqual(id_patch, self.controller.patch_number)
             observer.on_current_patch_changed.assert_called_with(self.controller.current_patch, None)
 
-        for id_patch in reversed(range(total_patches)):
-            self.controller.to_next_patch(self.TOKEN)
+        for id_patch in range(total_patches):
             self.assertEqual(id_patch, self.controller.patch_number)
+            self.controller.to_next_patch(self.TOKEN)
             observer.on_current_patch_changed.assert_called_with(self.controller.current_patch, self.TOKEN)
 
         self.assertEqual(0, self.controller.patch_number)

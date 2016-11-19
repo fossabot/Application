@@ -34,8 +34,8 @@ class CurrentController(Controller):
 
         self.dao = self.app.dao(CurrentDao)
         data = self.dao.load()
-        self.bank_number = 0#data["bank"]
-        self.patch_number = 0#data["patch"]
+        self.bank_number = data["bank"]
+        self.patch_number = data["patch"]
 
     # ************************
     # Property
@@ -176,13 +176,11 @@ class CurrentController(Controller):
         self._set_current(bank.patches[0], token, notify)
 
     def _set_current(self, patch, token=None, notify=True):
+        self._load_device_patch(patch)  # throwable. need be first
+
         bank_number = self.banks_controller.banks.index(patch.bank)
         patch_number = patch.bank.patches.index(patch)
 
-        self._load_device_patch(  # throwable. need be first
-            bank_number,
-            patch_number
-        )
         self.bank_number = bank_number
         self.patch_number = patch_number
 
@@ -191,8 +189,5 @@ class CurrentController(Controller):
         if notify:
             self.notifier.current_patch_changed(self.current_patch, token)
 
-    def _load_device_patch(self, bankNumber, patchNumber):
-        bank = self.banks_controller.banks[bankNumber]
-        patch = bank.patches[patchNumber]
-
+    def _load_device_patch(self, patch):
         self.device_controller.patch = patch
