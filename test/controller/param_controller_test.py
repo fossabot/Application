@@ -1,10 +1,10 @@
 from application.controller.effect_controller import EffectController
-from application.controller.param_controller import ParamController
 from application.controller.notification_controller import NotificationController
+from application.controller.param_controller import ParamController
+from application.controller.plugins_controller import PluginsController
 
 from pluginsmanager.model.bank import Bank
 from pluginsmanager.model.patch import Patch
-from pluginsmanager.model.lv2.lv2_effect_builder import Lv2EffectBuilder
 
 from test.controller.controller_test import ControllerTest
 
@@ -21,7 +21,7 @@ class ParamControllerTest(ControllerTest):
         self.effect_controller = controller(EffectController)
         self.notifier = controller(NotificationController)
 
-        self.builder = Lv2EffectBuilder()
+        self.plugins = controller(PluginsController)
 
     def test_update_value(self):
         observer = MagicMock()
@@ -30,7 +30,7 @@ class ParamControllerTest(ControllerTest):
         bank = Bank('test_create_effect Bank')
         patch = Patch('test_create_effect Patch')
         bank.append(patch)
-        reverb = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
+        reverb = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
         patch.append(reverb)
 
         param = reverb.params[0]

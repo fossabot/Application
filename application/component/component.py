@@ -1,16 +1,19 @@
-from application.application.controller.notification_controller import NotificationController
+from abc import ABCMeta, abstractmethod
+
+from application.controller.notification_controller import NotificationController
 
 
-class Component(object):
+class Component(metaclass=ABCMeta):
 
     def __init__(self, application):
         self.application = application
 
+    @abstractmethod
     def init(self):
         """
         Initialize this component
         """
-        raise NotImplementedError()
+        pass
 
     def controller(self, controller):
         return self.application.controller(controller)

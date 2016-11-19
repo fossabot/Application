@@ -1,5 +1,6 @@
 from application.controller.effect_controller import EffectController
 from application.controller.notification_controller import NotificationController
+from application.controller.plugins_controller import PluginsController
 
 from test.controller.controller_test import ControllerTest
 
@@ -7,7 +8,6 @@ from pluginsmanager.model.bank import Bank
 from pluginsmanager.model.patch import Patch
 from pluginsmanager.model.connection import Connection
 from pluginsmanager.model.update_type import UpdateType
-from pluginsmanager.model.lv2.lv2_effect_builder import Lv2EffectBuilder
 
 import unittest
 from unittest.mock import MagicMock
@@ -22,7 +22,7 @@ class EffectControllerTest(ControllerTest):
         self.controller = controller(EffectController)
         self.notifier = controller(NotificationController)
 
-        self.builder = Lv2EffectBuilder()
+        self.plugins = controller(PluginsController)
 
     def test_create_effect(self):
         observer = MagicMock()
@@ -31,8 +31,8 @@ class EffectControllerTest(ControllerTest):
         bank = Bank('test_create_effect Bank')
         patch = Patch('test_create_effect Patch')
         bank.append(patch)
-        reverb = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
-        reverb2 = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
+        reverb = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
+        reverb2 = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
 
         patch.append(reverb)
         patch.append(reverb2)
@@ -53,8 +53,8 @@ class EffectControllerTest(ControllerTest):
         bank = Bank('test_create_effect Bank')
         patch = Patch('test_create_effect Patch')
         bank.append(patch)
-        reverb = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
-        reverb2 = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
+        reverb = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
+        reverb2 = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
 
         patch.append(reverb)
         patch.append(reverb2)
@@ -74,8 +74,8 @@ class EffectControllerTest(ControllerTest):
         bank = Bank('test_toggle_status Bank')
         patch = Patch('test_toggle_status Patch')
         bank.append(patch)
-        reverb = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
-        reverb2 = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
+        reverb = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
+        reverb2 = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
 
         patch.append(reverb)
         patch.append(reverb2)
@@ -99,8 +99,8 @@ class EffectControllerTest(ControllerTest):
         bank = Bank('test_connected Bank')
         patch = Patch('test_connected Patch')
         bank.append(patch)
-        reverb = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
-        reverb2 = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
+        reverb = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
+        reverb2 = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
 
         patch.append(reverb)
         patch.append(reverb2)
@@ -130,8 +130,8 @@ class EffectControllerTest(ControllerTest):
         bank = Bank('test_disconnected Bank')
         patch = Patch('test_disconnected Patch')
         bank.append(patch)
-        reverb = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
-        reverb2 = self.builder.build('http://calf.sourceforge.net/plugins/Reverb')
+        reverb = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
+        reverb2 = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
 
         patch.append(reverb)
         patch.append(reverb2)

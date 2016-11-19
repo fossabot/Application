@@ -8,6 +8,7 @@ from application.controller.effect_controller import EffectController
 from application.controller.notification_controller import NotificationController
 from application.controller.param_controller import ParamController
 from application.controller.patch_controller import PatchController
+from application.controller.plugins_controller import PluginsController
 
 from pluginsmanager.mod_host.mod_host import ModHost
 
@@ -75,7 +76,8 @@ class Application(object):
             EffectController,
             NotificationController,
             ParamController,
-            PatchController
+            PatchController,
+            PluginsController
         ]
 
         for controller in list_controllers:

@@ -19,4 +19,4 @@ class Controller(metaclass=ABCMeta):
         """
         Configure is called by :class:`Application` for initialize this object
         """
-        raise NotImplementedError()
+        pass

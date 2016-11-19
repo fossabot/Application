@@ -2,6 +2,8 @@ from application.controller.controller import Controller
 
 from enum import Enum
 
+from pluginsmanager.model.lv2.lv2_effect_builder import Lv2EffectBuilder
+
 
 class PluginTechnology(Enum):
     """
@@ -13,29 +15,24 @@ class PluginTechnology(Enum):
 
 
 class PluginsController(Controller):
-    plugins = {}
-    
-    technology = {
-        PluginTechnology.LV2: {},
-        PluginTechnology.LADSPA: {},
-        PluginTechnology.VST: {}
-    }
+
+    def __init__(self, application):
+        super(PluginsController, self).__init__(application)
+        self.lv2_builder = None
 
     def configure(self):
-        self.plugins = dict()
+        self.lv2_builder = Lv2EffectBuilder()
 
-        '''
-        self.plugins.update(Lv2Library().plugins)
-        self.technology[PluginTechnology.LV2] = Lv2Library().plugins
-
-        self.plugins.update(LadspaLibrary().plugins)
-        self.technology[PluginTechnology.LADSPA] = LadspaLibrary().plugins
-        '''
-
-    def get_by(self, technology):
+    def by(self, technology):
         """
-        Get the plugins registred in PedalPi by technology
+        Get the plugins registered in PedalPi by technology
 
         :param PluginTechnology technology: PluginTechnology identifier
         """
-        return self.technology[technology]
+        if technology == PluginTechnology.LV2:
+            return self.lv2_builder.all
+        else:
+            return []
+
+    def lv2_effect(self, lv2_uri):
+        return self.lv2_builder.build(lv2_uri)

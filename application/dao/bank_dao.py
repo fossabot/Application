@@ -18,13 +18,14 @@ class BankDao(object):
             bank = persistence.read(Database.read(file))
             banks.append(bank)
 
-        return banks
+        return sorted(banks, key=lambda b: b.index)
 
-    def save(self, bank):
+    def save(self, bank, index):
+        bank.index = index
         Database.save(self._url(bank), bank.json)
 
     def delete(self, bank):
         Database.delete(self._url(bank))
 
     def _url(self, bank):
-        return self.data_path + bank["name"] + ".json"
+        return self.data_path + bank.original_name + ".json"
