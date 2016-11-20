@@ -50,7 +50,7 @@ class CurrentControllerTest(ControllerTest):
 
     def test_is_current_bank(self):
         bank = self.bank_with_patch
-        self.banks_controller.create_bank(bank)
+        self.banks_controller.create(bank)
 
         current_bank = self.controller.current_bank
         another_bank = self.banks_controller.banks[-1]
@@ -58,11 +58,11 @@ class CurrentControllerTest(ControllerTest):
         self.assertTrue(self.controller.is_current_bank(current_bank))
         self.assertFalse(self.controller.is_current_bank(another_bank))
 
-        self.banks_controller.delete_bank(bank)
+        self.banks_controller.delete(bank)
 
     def test_is_current_patch(self):
         bank = self.bank_with_patch
-        self.banks_controller.create_bank(bank)
+        self.banks_controller.create(bank)
 
         current_patch = self.controller.current_patch
 
@@ -72,7 +72,7 @@ class CurrentControllerTest(ControllerTest):
         self.assertTrue(self.controller.is_current_patch(current_patch))
         self.assertFalse(self.controller.is_current_patch(another_patch))
 
-        self.banks_controller.delete_bank(bank)
+        self.banks_controller.delete(bank)
 
     def test_to_before_patch(self):
         observer = MagicMock()
@@ -152,9 +152,10 @@ class CurrentControllerTest(ControllerTest):
         self.notifier.register(observer)
 
         bank = self.bank_with_patch
-        self.banks_controller.create_bank(bank)
+        self.banks_controller.create(bank)
 
         original_patch = self.controller.current_patch
+        original_bank_number = self.controller.bank_number
 
         self.controller.set_patch(bank.patches[0])
         self.assertEqual(0, self.controller.patch_number)
@@ -163,14 +164,14 @@ class CurrentControllerTest(ControllerTest):
 
         self.assertNotEqual(original_patch, self.controller.current_patch)
         self.assertEqual(bank.patches[0], self.controller.current_patch)
-        self.assertEqual(1, self.controller.bank_number)
+        self.assertEqual(len(self.banks_controller.banks) - 1, self.controller.bank_number)
 
         self.controller.set_patch(original_patch, self.TOKEN)
         self.assertEqual(0, self.controller.patch_number)
-        self.assertEqual(0, self.controller.bank_number)
+        self.assertEqual(original_bank_number, self.controller.bank_number)
         observer.on_current_patch_changed.assert_called_with(original_patch, self.TOKEN)
 
-        self.banks_controller.delete_bank(bank)
+        self.banks_controller.delete(bank)
         self.notifier.unregister(observer)
 
     def test_set_patch_current_patch(self):
@@ -192,7 +193,7 @@ class CurrentControllerTest(ControllerTest):
         self.notifier.register(observer)
 
         bank = self.bank_with_patch
-        self.banks_controller.create_bank(bank)
+        self.banks_controller.create(bank)
 
         for b in reversed(self.banks_controller.banks):
             self.controller.to_before_bank()
@@ -204,7 +205,7 @@ class CurrentControllerTest(ControllerTest):
             self.assertEqual(b, self.controller.current_bank)
             observer.on_current_patch_changed.assert_called_with(b.patches[0], self.TOKEN)
 
-        self.banks_controller.delete_bank(bank)
+        self.banks_controller.delete(bank)
         self.notifier.unregister(observer)
 
     def test_next_bank(self):
@@ -212,7 +213,7 @@ class CurrentControllerTest(ControllerTest):
         self.notifier.register(observer)
 
         bank = self.bank_with_patch
-        self.banks_controller.create_bank(bank)
+        self.banks_controller.create(bank)
 
         self.controller.to_before_bank()
         for b in self.banks_controller.banks:
@@ -227,7 +228,7 @@ class CurrentControllerTest(ControllerTest):
 
         self.controller.to_next_bank()
 
-        self.banks_controller.delete_bank(bank)
+        self.banks_controller.delete(bank)
         self.notifier.unregister(observer)
 
     def test_set_bank(self):
@@ -235,7 +236,7 @@ class CurrentControllerTest(ControllerTest):
         self.notifier.register(observer)
 
         bank = self.bank_with_patch
-        index = self.banks_controller.create_bank(bank)
+        index = self.banks_controller.create(bank)
 
         first_bank = self.controller.current_bank
 
@@ -251,7 +252,7 @@ class CurrentControllerTest(ControllerTest):
         self.controller.set_bank(first_bank, self.TOKEN)
         observer.on_current_patch_changed.assert_called_with(first_bank.patches[0], self.TOKEN)
 
-        self.banks_controller.delete_bank(bank)
+        self.banks_controller.delete(bank)
         self.notifier.unregister(observer)
 
     def test_set_bank_not_added(self):

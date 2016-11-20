@@ -44,7 +44,7 @@ class BanksController(Controller):
     def banks(self):
         return self.manager.banks
 
-    def create_bank(self, bank, token=None):
+    def create(self, bank, token=None):
         """
         Persists a new :class:`Bank` in database.
 
@@ -63,10 +63,13 @@ class BanksController(Controller):
 
         return len(self.banks) - 1
 
-    def update_bank(self, bank, token=None):
+    def update(self, bank, token=None):
         """
         Notify all observers that the :class:`Bank` object has updated
         and persists the new state.
+
+        .. note::
+            If you needs change the bank to other, use ``replace`` instead.
 
         .. note::
             If you're changing a bank that has a current patch,
@@ -87,11 +90,11 @@ class BanksController(Controller):
 
         if self.current.is_current_bank(bank):
             current_patch = self.current.current_patch
-            self.device.loadPatch(current_patch)
+            self.device.patch = current_patch
 
         self._notify_change(bank, UpdateType.UPDATED, token)
 
-    def replace_bank(self, old_bank, new_bank, token=None):
+    def replace(self, old_bank, new_bank, token=None):
         """
         Replace the old bank to new bank and notifies all observers that the
         :class:`Bank` object has UPDATED
@@ -111,8 +114,12 @@ class BanksController(Controller):
         if new_bank in self.banks:
             raise BankError('New bank {} already added in banks manager'.format(new_bank))
 
+        new_bank.original_name = new_bank.name
+
+        index = self.banks.index(old_bank)
+
         self.dao.delete(old_bank)
-        self.dao.save(new_bank)
+        self.dao.save(new_bank, index)
 
         is_current_bank = self.current.is_current_bank(old_bank)
 
@@ -120,11 +127,11 @@ class BanksController(Controller):
 
         if is_current_bank:
             current_patch = self.current.current_patch
-            self.device.loadPatch(current_patch)
+            self.device.patch = current_patch
 
         self._notify_change(new_bank, UpdateType.UPDATED, token)
 
-    def delete_bank(self, bank, token=None):
+    def delete(self, bank, token=None):
         """
         Remove the informed :class:`Bank`.
 
@@ -138,11 +145,16 @@ class BanksController(Controller):
         if bank not in self.banks:
             raise BankError('Bank {} not added in banks manager'.format(bank))
 
+        next_bank = None
         if bank == self.current.current_bank:
             self.current.to_next_bank()
+            next_bank = self.current.current_bank
 
         self.dao.delete(bank)
         self.manager.banks.remove(bank)
+
+        if next_bank is not None:
+            self.current.bank_number = self.manager.banks.index(next_bank)
 
         self._notify_change(bank, UpdateType.DELETED, token)
 

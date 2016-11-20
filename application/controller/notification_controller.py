@@ -65,7 +65,7 @@ class NotificationController(Controller):
         """
         for observer in self.observers:
             if not self.is_requisitor(observer, token):
-                observer.on_bank_update(bank, update_type, token)
+                observer.on_bank_updated(bank, update_type, token)
 
     def patch_updated(self, patch, update_type, token=None):
         """
