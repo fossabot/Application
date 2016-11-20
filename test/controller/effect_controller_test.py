@@ -37,14 +37,14 @@ class EffectControllerTest(ControllerTest):
         patch.append(reverb)
         patch.append(reverb2)
 
-        self.controller.create_effect(reverb)
+        self.controller.created(reverb)
         observer.on_effect_updated.assert_called_with(reverb, UpdateType.CREATED, None)
 
-        self.controller.create_effect(reverb2, self.TOKEN)
+        self.controller.created(reverb2, self.TOKEN)
         observer.on_effect_updated.assert_called_with(reverb2, UpdateType.CREATED, self.TOKEN)
 
-        self.controller.delete_effect(reverb)
-        self.controller.delete_effect(reverb2)
+        self.controller.delete(reverb)
+        self.controller.delete(reverb2)
 
     def test_delete_effect(self):
         observer = MagicMock()
@@ -59,12 +59,12 @@ class EffectControllerTest(ControllerTest):
         patch.append(reverb)
         patch.append(reverb2)
 
-        self.controller.create_effect(reverb)
-        self.controller.create_effect(reverb2)
+        self.controller.created(reverb)
+        self.controller.created(reverb2)
 
-        self.controller.delete_effect(reverb)
+        self.controller.delete(reverb)
         observer.on_effect_updated.assert_called_with(reverb, UpdateType.DELETED, None)
-        self.controller.delete_effect(reverb2, self.TOKEN)
+        self.controller.delete(reverb2, self.TOKEN)
         observer.on_effect_updated.assert_called_with(reverb2, UpdateType.DELETED, self.TOKEN)
 
     def test_toggle_status(self):
@@ -80,8 +80,8 @@ class EffectControllerTest(ControllerTest):
         patch.append(reverb)
         patch.append(reverb2)
 
-        self.controller.create_effect(reverb)
-        self.controller.create_effect(reverb2)
+        self.controller.created(reverb)
+        self.controller.created(reverb2)
 
         self.controller.toggle_status(reverb)
         observer.on_effect_status_toggled.assert_called_with(reverb, None)
@@ -89,8 +89,8 @@ class EffectControllerTest(ControllerTest):
         self.controller.toggle_status(reverb2, self.TOKEN)
         observer.on_effect_status_toggled.assert_called_with(reverb2, self.TOKEN)
 
-        self.controller.delete_effect(reverb)
-        self.controller.delete_effect(reverb2, self.TOKEN)
+        self.controller.delete(reverb)
+        self.controller.delete(reverb2, self.TOKEN)
 
     def test_connected(self):
         observer = MagicMock()
@@ -105,8 +105,8 @@ class EffectControllerTest(ControllerTest):
         patch.append(reverb)
         patch.append(reverb2)
 
-        self.controller.create_effect(reverb)
-        self.controller.create_effect(reverb2)
+        self.controller.created(reverb)
+        self.controller.created(reverb2)
 
         reverb.outputs[0].connect(reverb2.inputs[0])
         connection1 = patch.connections[-1]
@@ -120,8 +120,8 @@ class EffectControllerTest(ControllerTest):
         self.controller.connected(connection2, self.TOKEN)
         observer.on_connection_updated.assert_called_with(connection2, UpdateType.CREATED, self.TOKEN)
 
-        self.controller.delete_effect(reverb)
-        self.controller.delete_effect(reverb2)
+        self.controller.delete(reverb)
+        self.controller.delete(reverb2)
 
     def test_disconnected(self):
         observer = MagicMock()
@@ -136,8 +136,8 @@ class EffectControllerTest(ControllerTest):
         patch.append(reverb)
         patch.append(reverb2)
 
-        self.controller.create_effect(reverb)
-        self.controller.create_effect(reverb2)
+        self.controller.created(reverb)
+        self.controller.created(reverb2)
 
         reverb.outputs[0].connect(reverb2.inputs[0])
         connection1 = patch.connections[-1]
@@ -153,8 +153,8 @@ class EffectControllerTest(ControllerTest):
         self.controller.disconnected(connection2, self.TOKEN)
         observer.on_connection_updated.assert_called_with(connection2, UpdateType.DELETED, self.TOKEN)
 
-        self.controller.delete_effect(reverb)
-        self.controller.delete_effect(reverb2)
+        self.controller.delete(reverb)
+        self.controller.delete(reverb2)
 
     @unittest.skip('Not implemented')
     def test_delete_effect_remove_connections(self):

@@ -26,7 +26,7 @@ class EffectController(Controller):
         self.device_controller = self.app.controller(DeviceController)
         self.notifier = self.app.controller(NotificationController)
 
-    def create_effect(self, effect, token=None):
+    def created(self, effect, token=None):
         """
         Persists the :class:`Effect` object created in your :class:`Patch`
 
@@ -34,13 +34,16 @@ class EffectController(Controller):
 
             The effect needs be added in a :class:`Patch` before.
 
+            >>> patch.add(effect)
+            >>> effect_controller.created(effect)
+
         :param Effect effect: Effect created and added in your Patch
         :param string token: Request token identifier
         """
         self._update(effect.patch)
         self._notify_change(effect, UpdateType.CREATED, token)
 
-    def delete_effect(self, effect, token=None):
+    def delete(self, effect, token=None):
         """
         Remove an :class:`Effect` instance in your :class:`Patch`
 
@@ -69,12 +72,12 @@ class EffectController(Controller):
 
     def _update(self, patch):
         if patch is None:
-            pass
+            ...
 
         # self.dao.save(patch.bank)
 
-        # if self.current_controller.is_current_patch(patch):
-        #     self.device_controller.loadPatch(patch)
+        # if self.current.is_current_patch(patch):
+        #     self.device.loadPatch(patch)
         # FIXME
         ...
 
@@ -89,6 +92,11 @@ class EffectController(Controller):
         """
         self.notifier.connection_updated(connection, UpdateType.CREATED, token)
 
+        # FIXME - Persistence
+        ...
+        # FIXME - Notify
+        ...
+
     def disconnected(self, connection, token=None):
         """
         Informs the :class:`Connection` object has ben created
@@ -96,3 +104,8 @@ class EffectController(Controller):
         :param Connection connection: Connection created
         """
         self.notifier.connection_updated(connection, UpdateType.DELETED, token)
+
+        # FIXME - Persistence
+        ...
+        # FIXME - Notify
+        ...

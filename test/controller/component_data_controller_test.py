@@ -3,7 +3,6 @@ from application.controller.component_data_controller import ComponentDataContro
 from test.controller.controller_test import ControllerTest
 
 
-'''
 class ComponentDataControllerTest(ControllerTest):
     application = None
     controller = None
@@ -57,4 +56,3 @@ class ComponentDataControllerTest(ControllerTest):
         del self.controller[self.key]
 
         self.assertEqual(self.controller[self.key], {})
-'''

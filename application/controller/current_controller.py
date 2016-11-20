@@ -124,6 +124,9 @@ class CurrentController(Controller):
 
         self._set_current(patch, token=token)
 
+    def reload_current_patch(self):
+        self._load_device_patch(self.current_patch)
+
     def to_before_bank(self, token=None):
         """
         Change the current :class:`Bank` for the before bank. If the current

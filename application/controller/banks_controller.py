@@ -89,14 +89,13 @@ class BanksController(Controller):
         self.dao.save(bank, self.banks.index(bank))
 
         if self.current.is_current_bank(bank):
-            current_patch = self.current.current_patch
-            self.device.patch = current_patch
+            self.current.reload_current_patch()
 
         self._notify_change(bank, UpdateType.UPDATED, token)
 
     def replace(self, old_bank, new_bank, token=None):
         """
-        Replace the old bank to new bank and notifies all observers that the
+        Replaces the old bank to new bank and notifies all observers that the
         :class:`Bank` object has UPDATED
 
         .. note::
@@ -126,8 +125,7 @@ class BanksController(Controller):
         self.banks[old_bank.index] = new_bank
 
         if is_current_bank:
-            current_patch = self.current.current_patch
-            self.device.patch = current_patch
+            self.current.reload_current_patch()
 
         self._notify_change(new_bank, UpdateType.UPDATED, token)
 
