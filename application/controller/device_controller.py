@@ -6,11 +6,10 @@ class DeviceController(Controller):
     """
     Apply changes in the device (mod-host)
     """
+    sys_effect = SystemEffect('system', ('capture_1', 'capture_2'), ('playback_1', 'playback_2'))
 
     def __init__(self, application):
         super(DeviceController, self).__init__(application)
-
-        self.sys_effect = SystemEffect('system', ('capture_1', 'capture_2'), ('playback_1', 'playback_2'))
 
     def configure(self):
         from application.controller.banks_controller import BanksController

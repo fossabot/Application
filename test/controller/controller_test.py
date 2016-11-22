@@ -9,3 +9,7 @@ class ControllerTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.application = Application(data_patch='test/data/', test=True)
+
+    @classmethod
+    def controller(cls, controller):
+        return cls.application.controller(controller)

@@ -1,6 +1,7 @@
 from application.dao.bank_dao import BankDao
 
 from application.controller.controller import Controller
+from application.controller.banks_controller import BanksController
 from application.controller.device_controller import DeviceController
 from application.controller.notification_controller import NotificationController
 
@@ -15,15 +16,17 @@ class EffectController(Controller):
     def __init__(self, application):
         super(EffectController, self).__init__(application)
         self.dao = None
-        self.current_controller = None
-        self.device_controller = None
+        self.banks = None
+        self.current = None
+        self.device = None
         self.notifier = None
 
     def configure(self):
         from application.controller.current_controller import CurrentController
         self.dao = self.app.dao(BankDao)
-        self.current_controller = self.app.controller(CurrentController)
-        self.device_controller = self.app.controller(DeviceController)
+        self.banks = self.app.controller(BanksController)
+        self.current = self.app.controller(CurrentController)
+        self.device = self.app.controller(DeviceController)
         self.notifier = self.app.controller(NotificationController)
 
     def created(self, effect, token=None):
@@ -70,17 +73,6 @@ class EffectController(Controller):
         self._update(effect.patch)
         self.notifier.effect_status_toggled(effect, token)
 
-    def _update(self, patch):
-        if patch is None:
-            ...
-
-        # self.dao.save(patch.bank)
-
-        # if self.current.is_current_patch(patch):
-        #     self.device.loadPatch(patch)
-        # FIXME
-        ...
-
     def _notify_change(self, effect, update_type, token):
         self.notifier.effect_updated(effect, update_type, token)
 
@@ -89,23 +81,30 @@ class EffectController(Controller):
         Informs the :class:`Connection` object has ben created
 
         :param Connection connection: Connection created
+        :param string token: Request token identifier
         """
-        self.notifier.connection_updated(connection, UpdateType.CREATED, token)
+        self._save_connection(connection)
 
-        # FIXME - Persistence
-        ...
-        # FIXME - Notify
-        ...
+        self.notifier.connection_updated(connection, UpdateType.CREATED, token=token)
 
     def disconnected(self, connection, token=None):
         """
         Informs the :class:`Connection` object has ben created
 
         :param Connection connection: Connection created
+        :param string token: Request token identifier
         """
-        self.notifier.connection_updated(connection, UpdateType.DELETED, token)
+        self._save_connection(connection)
 
-        # FIXME - Persistence
-        ...
-        # FIXME - Notify
-        ...
+        self.notifier.connection_updated(connection, UpdateType.DELETED, token=token)
+
+    def _save_connection(self, connection):
+        self._update(connection.input.effect.patch)
+
+    def _update(self, patch):
+        bank = patch.bank
+        index = self.banks.banks.index(bank)
+        self.dao.save(bank, index)
+
+        if self.current.is_current_patch(patch):
+            self.device.patch = patch

@@ -25,18 +25,16 @@ class BanksController(Controller):
 
         self.manager = BanksManager()
         self.current = None
-        self.device = None
         self.notifier = None
 
     def configure(self):
         # To fix Cyclic dependece
         from application.controller.current_controller import CurrentController
         self.current = self.app.controller(CurrentController)
-        self.device = self.app.controller(DeviceController)
 
         self.notifier = self.app.controller(NotificationController)
 
-        for bank in self.dao.banks(self.device.sys_effect):
+        for bank in self.dao.banks(DeviceController.sys_effect):
             bank.original_name = bank.name
             self.manager.append(bank)
 

@@ -17,7 +17,7 @@ from unittest.mock import MagicMock
 
 class Application(object):
     """
-    PedalPi - Application is a framework for manager the PedalPi - `Components`_
+    PedalPi - Application is a api for manager the PedalPi - `Components`_
     offers an auto initialization and an updates notification between the components.
 
     .. _Components: https://github.com/PedalPi/Components
@@ -77,7 +77,7 @@ class Application(object):
             NotificationController,
             ParamController,
             PatchController,
-            PluginsController
+            PluginsController,
         ]
 
         for controller in list_controllers:
