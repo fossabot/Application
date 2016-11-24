@@ -31,7 +31,7 @@ class PatchController(Controller):
         self.current = self.app.controller(CurrentController)
         self.notifier = self.app.controller(NotificationController)
 
-    def create(self, patch, token=None):
+    def created(self, patch, token=None):
         """
         Notify all observers that the :class:`Patch` object has been created.
 
@@ -40,7 +40,7 @@ class PatchController(Controller):
             The patch needs be added in a :class:`Bank` before.
 
             >>> bank.append(patch)
-            >>> patch_controller.create(patch)
+            >>> patch_controller.created(patch)
 
         :param Patch patch: Patch created
         :param string token: Request token identifier
