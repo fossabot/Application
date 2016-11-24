@@ -37,12 +37,12 @@ class PatchControllerTest(ControllerTest):
         bank.append(patch)
         self.banks.create(bank)
 
-        self.controller.create(patch)
-        observer.on_patch_updated.assert_called_with(patch, UpdateType.CREATED, None)
+        self.controller.created(patch)
+        observer.on_patch_updated.assert_called_with(patch, UpdateType.CREATED, None, index=0, origin=bank)
 
         bank.append(patch2)
-        self.controller.create(patch2, self.TOKEN)
-        observer.on_patch_updated.assert_called_with(patch2, UpdateType.CREATED, self.TOKEN)
+        self.controller.created(patch2, self.TOKEN)
+        observer.on_patch_updated.assert_called_with(patch2, UpdateType.CREATED, self.TOKEN, index=1, origin=bank)
 
         self.controller.delete(patch)
         self.controller.delete(patch2)
@@ -59,7 +59,7 @@ class PatchControllerTest(ControllerTest):
         bank.append(patch)
 
         with self.assertRaises(PatchError):
-            self.controller.create(patch)
+            self.controller.created(patch)
 
         observer.on_patch_updated.assert_not_called()
 
@@ -75,16 +75,16 @@ class PatchControllerTest(ControllerTest):
         self.banks.create(bank)
 
         bank.append(patch)
-        self.controller.create(patch)
+        self.controller.created(patch)
 
         patch.name = 'test_update_patch2'
         self.controller.update(patch)
 
-        observer.on_patch_updated.assert_called_with(patch, UpdateType.UPDATED, None)
+        observer.on_patch_updated.assert_called_with(patch, UpdateType.UPDATED, None, index=0, origin=bank)
 
         patch.name = 'test_update_patch3'
         self.controller.update(patch, self.TOKEN)
-        observer.on_patch_updated.assert_called_with(patch, UpdateType.UPDATED, self.TOKEN)
+        observer.on_patch_updated.assert_called_with(patch, UpdateType.UPDATED, self.TOKEN, index=0, origin=bank)
 
         self.controller.delete(patch)
         self.banks.delete(bank)
@@ -116,14 +116,14 @@ class PatchControllerTest(ControllerTest):
         self.banks.create(bank)
 
         bank.append(patch)
-        self.controller.create(patch)
+        self.controller.created(patch)
 
         self.current.set_patch(patch)
 
         patch.name = 'test_update_current_patch2'
         self.controller.update(patch)
 
-        observer.on_patch_updated.assert_called_with(patch, UpdateType.UPDATED, None)
+        observer.on_patch_updated.assert_called_with(patch, UpdateType.UPDATED, None, index=0, origin=bank)
 
         self.assertEqual(self.current.current_patch, patch)
         self.assertEqual(self.current.current_bank, patch.bank)
@@ -133,7 +133,7 @@ class PatchControllerTest(ControllerTest):
 
         patch.name = 'test_update_current_patch3'
         self.controller.update(patch, self.TOKEN)
-        observer.on_patch_updated.assert_called_with(patch, UpdateType.UPDATED, self.TOKEN)
+        observer.on_patch_updated.assert_called_with(patch, UpdateType.UPDATED, self.TOKEN, index=0, origin=bank)
 
         self.assertEqual(self.current.current_patch, patch)
         self.assertEqual(self.current.current_bank, patch.bank)
@@ -158,10 +158,10 @@ class PatchControllerTest(ControllerTest):
         self.banks.create(bank)
 
         self.controller.replace(patch, patch2)
-        observer.on_patch_updated.assert_called_with(patch2, UpdateType.UPDATED, None)
+        observer.on_patch_updated.assert_called_with(patch2, UpdateType.UPDATED, None, index=0, origin=bank)
 
         self.controller.replace(patch2, patch3, self.TOKEN)
-        observer.on_patch_updated.assert_called_with(patch3, UpdateType.UPDATED, self.TOKEN)
+        observer.on_patch_updated.assert_called_with(patch3, UpdateType.UPDATED, self.TOKEN, index=0, origin=bank)
 
         self.controller.delete(patch3)
         self.banks.delete(bank)
@@ -207,13 +207,13 @@ class PatchControllerTest(ControllerTest):
         bank.append(patch)
         bank.append(patch2)
 
-        self.controller.create(patch)
-        self.controller.create(patch2)
+        self.controller.created(patch)
+        self.controller.created(patch2)
 
         self.controller.delete(patch)
-        observer.on_patch_updated.assert_called_with(patch, UpdateType.DELETED, None)
+        observer.on_patch_updated.assert_called_with(patch, UpdateType.DELETED, None, index=0, origin=bank)
         self.controller.delete(patch2, self.TOKEN)
-        observer.on_patch_updated.assert_called_with(patch2, UpdateType.DELETED, self.TOKEN)
+        observer.on_patch_updated.assert_called_with(patch2, UpdateType.DELETED, self.TOKEN, index=0, origin=bank)
 
         self.banks.delete(bank)
         self.notifier.unregister(observer)
@@ -248,8 +248,8 @@ class PatchControllerTest(ControllerTest):
         bank.append(patch)
         bank.append(patch2)
 
-        self.controller.create(patch)
-        self.controller.create(patch2)
+        self.controller.created(patch)
+        self.controller.created(patch2)
 
         self.current.set_patch(patch)
         self.controller.delete(patch)
@@ -264,6 +264,7 @@ class PatchControllerTest(ControllerTest):
         self.banks.delete(bank)
         self.notifier.unregister(observer)
 
+    @unittest.skip("Not implemented")
     def test_swap(self):
         observer = MagicMock()
         self.notifier.register(observer)

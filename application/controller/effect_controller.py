@@ -73,8 +73,13 @@ class EffectController(Controller):
         self._update(effect.patch)
         self.notifier.effect_status_toggled(effect, token)
 
-    def _notify_change(self, effect, update_type, token):
-        self.notifier.effect_updated(effect, update_type, token)
+    def _notify_change(self, effect, update_type, token, **kwargs):
+        if 'index' not in kwargs:
+            kwargs['index'] = effect.patch.effects.index(effect)
+        if 'origin' not in kwargs:
+            kwargs['origin'] = effect.patch
+
+        self.notifier.effect_updated(effect, update_type, token, **kwargs)
 
     def connected(self, connection, token=None):
         """

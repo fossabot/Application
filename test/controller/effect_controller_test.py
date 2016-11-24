@@ -56,10 +56,10 @@ class EffectControllerTest(ControllerTest):
         self.banks.create(bank)
 
         self.effects.created(reverb)
-        self.observer.on_effect_updated.assert_called_with(reverb, UpdateType.CREATED, None)
+        self.observer.on_effect_updated.assert_called_with(reverb, UpdateType.CREATED, None, index=0, origin=patch)
 
         self.effects.created(reverb2, self.TOKEN)
-        self.observer.on_effect_updated.assert_called_with(reverb2, UpdateType.CREATED, self.TOKEN)
+        self.observer.on_effect_updated.assert_called_with(reverb2, UpdateType.CREATED, self.TOKEN, index=1, origin=patch)
 
         self.banks.delete(bank)
 
@@ -71,10 +71,10 @@ class EffectControllerTest(ControllerTest):
         self.banks.create(bank)
 
         self.effects.delete(reverb)
-        self.observer.on_effect_updated.assert_called_with(reverb, UpdateType.DELETED, None)
+        self.observer.on_effect_updated.assert_called_with(reverb, UpdateType.DELETED, None, index=0, origin=patch)
 
         self.effects.delete(reverb2, self.TOKEN)
-        self.observer.on_effect_updated.assert_called_with(reverb2, UpdateType.DELETED, self.TOKEN)
+        self.observer.on_effect_updated.assert_called_with(reverb2, UpdateType.DELETED, self.TOKEN, index=0, origin=patch)
 
         self.banks.delete(bank)
 

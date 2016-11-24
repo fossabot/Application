@@ -55,7 +55,7 @@ class NotificationController(Controller):
             if not self.is_requisitor(observer, token):
                 observer.on_current_patch_changed(patch, token)
 
-    def bank_updated(self, bank, update_type, token=None):
+    def bank_updated(self, bank, update_type, token=None, **kwargs):
         """
         Notify changes in :class:`Bank`.
 
@@ -65,9 +65,9 @@ class NotificationController(Controller):
         """
         for observer in self.observers:
             if not self.is_requisitor(observer, token):
-                observer.on_bank_updated(bank, update_type, token)
+                observer.on_bank_updated(bank, update_type, token, **kwargs)
 
-    def patch_updated(self, patch, update_type, token=None):
+    def patch_updated(self, patch, update_type, token=None, **kwargs):
         """
         Notify changes in :class:`Patch`.
 
@@ -77,9 +77,9 @@ class NotificationController(Controller):
         """
         for observer in self.observers:
             if not self.is_requisitor(observer, token):
-                observer.on_patch_updated(patch, update_type, token)
+                observer.on_patch_updated(patch, update_type, token, **kwargs)
 
-    def effect_updated(self, effect, update_type, token=None):
+    def effect_updated(self, effect, update_type, token=None, **kwargs):
         """
         Notify changes in :class:`Effect`.
 
@@ -89,7 +89,7 @@ class NotificationController(Controller):
         """
         for observer in self.observers:
             if not self.is_requisitor(observer, token):
-                observer.on_effect_updated(effect, update_type, token)
+                observer.on_effect_updated(effect, update_type, token, **kwargs)
 
     def effect_status_toggled(self, effect, token=None):
         """
@@ -102,7 +102,7 @@ class NotificationController(Controller):
             if not self.is_requisitor(observer, token):
                 observer.on_effect_status_toggled(effect, token)
 
-    def param_value_changed(self, param, token=None):
+    def param_value_changed(self, param, token=None, **kwargs):
         """
         Notify :class:`Param` value change.
 
@@ -111,7 +111,7 @@ class NotificationController(Controller):
         """
         for observer in self.observers:
             if not self.is_requisitor(observer, token):
-                observer.on_param_value_changed(param, token)
+                observer.on_param_value_changed(param, token, **kwargs)
 
     def connection_updated(self, connection, update_type, token=None):
         for observer in self.observers:

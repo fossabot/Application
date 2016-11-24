@@ -119,8 +119,9 @@ class PatchController(Controller):
 
         bank = patch.bank
 
-        patch.bank.patches.remove(patch)
-        self._notify_change(patch, UpdateType.DELETED, token)
+        patch_index = patch.bank.patches.index(patch)
+        del patch.bank.patches[patch_index]
+        self._notify_change(patch, UpdateType.DELETED, token, index=patch_index, origin=bank)
 
         if next_patch is not None:
             self.current.patch_number = next_patch.bank.patches.index(next_patch)
@@ -146,7 +147,7 @@ class PatchController(Controller):
         self.notifier.patch_updated(patch_a, UpdateType.UPDATED, token=token)
         self.notifier.patch_updated(patch_b, UpdateType.UPDATED, token=token)
 
-        # FIXME - Persistance
+        # FIXME - Persistence
         # self.dao.save(bank_a)
         # self.dao.save(bank_b)
 
@@ -157,5 +158,10 @@ class PatchController(Controller):
         bank = patch.bank
         self.dao.save(bank, self.banks.banks.index(bank))
 
-    def _notify_change(self, patch, update_type, token=None):
-        self.notifier.patch_updated(patch, update_type, token)
+    def _notify_change(self, patch, update_type, token=None, **kwargs):
+        if 'index' not in kwargs:
+            kwargs['index'] = patch.bank.patches.index(patch)
+        if 'origin' not in kwargs:
+            kwargs['origin'] = patch.bank
+
+        self.notifier.patch_updated(patch, update_type, token, **kwargs)
