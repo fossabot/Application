@@ -10,14 +10,14 @@ from application.dao.current_dao import CurrentDao
 
 class CurrentController(Controller):
     """
-    Manage the current :class:`Bank` and current :class:`Patch`
+    Manage the current :class:`Bank` and current :class:`Pedalboard`
     """
 
     def __init__(self, application):
         super(CurrentController, self).__init__(application)
         self.dao = None
         self.bank_number = 0
-        self.patch_number = 0
+        self.pedalboard_number = 0
 
         self.device_controller = None
         self.banks_controller = None
@@ -35,23 +35,23 @@ class CurrentController(Controller):
         self.dao = self.app.dao(CurrentDao)
         data = self.dao.load()
         self.bank_number = data["bank"]
-        self.patch_number = data["patch"]
+        self.pedalboard_number = data["pedalboard"]
 
     # ************************
     # Property
     # ************************
 
     @property
-    def current_patch(self):
+    def current_pedalboard(self):
         """
-        Get the current :class:`Patch`
+        Get the current :class:`Pedalboard`
         """
-        return self.current_bank.patches[self.patch_number]
+        return self.current_bank.pedalboards[self.pedalboard_number]
 
     @property
     def current_bank(self):
         """
-        Get the :class:`Bank` that contains the current :class:`Patch`
+        Get the :class:`Bank` that contains the current :class:`Pedalboard`
         """
         return self.banks_controller.banks[self.bank_number]
 
@@ -59,7 +59,7 @@ class CurrentController(Controller):
     # Persistance
     # ************************
     def _save_current(self):
-        self.dao.save(self.bank_number, self.patch_number)
+        self.dao.save(self.bank_number, self.pedalboard_number)
 
     # ************************
     # Get of Current
@@ -71,68 +71,68 @@ class CurrentController(Controller):
         """
         return bank == self.current_bank
 
-    def is_current_patch(self, patch):
+    def is_current_pedalboard(self, pedalboard):
         """
-        :param Patch patch:
-        :return bool: The :class:`Patch` is the current patch?
+        :param Pedalboard pedalboard:
+        :return bool: The :class:`Pedalboard` is the current pedalboard?
         """
-        return self.is_current_bank(patch.bank) and self.current_patch == patch
+        return self.is_current_bank(pedalboard.bank) and self.current_pedalboard == pedalboard
 
     # ************************
-    # Set Current Patch/Bank
+    # Set Current Pedalboard/Bank
     # ************************
-    def to_before_patch(self, token=None):
+    def to_before_pedalboard(self, token=None):
         """
-        Change the current :class:`Patch` for the previous patch.
+        Change the current :class:`Pedalboard` for the previous pedalboard.
 
-        If the current patch is the first in the current :class:`Bank`,
-        the current patch is will be the **last of the current Bank**.
+        If the current pedalboard is the first in the current :class:`Bank`,
+        the current pedalboard is will be the **last of the current Bank**.
 
         :param string token: Request token identifier
         """
-        before_patch_number = self.patch_number - 1
-        if before_patch_number == -1:
-            before_patch_number = len(self.current_bank.patches) - 1
+        before_pedalboard_number = self.pedalboard_number - 1
+        if before_pedalboard_number == -1:
+            before_pedalboard_number = len(self.current_bank.pedalboards) - 1
 
-        self.set_patch(self.current_bank.patches[before_patch_number], token)
+        self.set_pedalboard(self.current_bank.pedalboards[before_pedalboard_number], token)
 
-    def to_next_patch(self, token=None):
+    def to_next_pedalboard(self, token=None):
         """
-        Change the current :class:`Patch` for the next patch.
+        Change the current :class:`Pedalboard` for the next pedalboard.
 
-        If the current patch is the last in the current :class:`Bank`,
-        the current patch is will be the **first of the current Bank**
+        If the current pedalboard is the last in the current :class:`Bank`,
+        the current pedalboard is will be the **first of the current Bank**
 
         :param string token: Request token identifier
         """
-        next_patch_number = self.patch_number + 1
-        if next_patch_number == len(self.current_bank.patches):
-            next_patch_number = 0
+        next_pedalboard_number = self.pedalboard_number + 1
+        if next_pedalboard_number == len(self.current_bank.pedalboards):
+            next_pedalboard_number = 0
 
-        self.set_patch(self.current_bank.patches[next_patch_number], token)
+        self.set_pedalboard(self.current_bank.pedalboards[next_pedalboard_number], token)
 
-    def set_patch(self, patch, token=None):
+    def set_pedalboard(self, pedalboard, token=None):
         """
-        Set the current :class:`Patch` for the patch
-        only if the ``patch != current_patch``
+        Set the current :class:`Pedalboard` for the pedalboard
+        only if the ``pedalboard != current_pedalboard``
 
-        :param Patch patch: New current patch
+        :param Pedalboard pedalboard: New current pedalboard
         :param string token: Request token identifier
         """
-        if self.is_current_patch(patch):
+        if self.is_current_pedalboard(pedalboard):
             return
 
-        self._set_current(patch, token=token)
+        self._set_current(pedalboard, token=token)
 
-    def reload_current_patch(self):
-        self._load_device_patch(self.current_patch)
+    def reload_current_pedalboard(self):
+        self._load_device_pedalboard(self.current_pedalboard)
 
     def to_before_bank(self, token=None):
         """
         Change the current :class:`Bank` for the before bank. If the current
         bank is the first, the current bank is will be the last bank.
 
-        The current patch will be the first of the new current bank.
+        The current pedalboard will be the first of the new current bank.
 
         :param string token: Request token identifier
         """
@@ -150,7 +150,7 @@ class CurrentController(Controller):
         Change the current :class:`Bank` for the next bank. If the current
         bank is the last, the current bank is will be the first bank.
 
-        The current patch will be the first of the new current bank.
+        The current pedalboard will be the first of the new current bank.
 
         :param string token: Request token identifier
         """
@@ -176,21 +176,21 @@ class CurrentController(Controller):
         if self.current_bank == bank:
             return
 
-        self._set_current(bank.patches[0], token, notify)
+        self._set_current(bank.pedalboards[0], token, notify)
 
-    def _set_current(self, patch, token=None, notify=True):
-        self._load_device_patch(patch)  # throwable. need be first
+    def _set_current(self, pedalboard, token=None, notify=True):
+        self._load_device_pedalboard(pedalboard)  # throwable. need be first
 
-        bank_number = self.banks_controller.banks.index(patch.bank)
-        patch_number = patch.bank.patches.index(patch)
+        bank_number = self.banks_controller.banks.index(pedalboard.bank)
+        pedalboard_number = pedalboard.bank.pedalboards.index(pedalboard)
 
         self.bank_number = bank_number
-        self.patch_number = patch_number
+        self.pedalboard_number = pedalboard_number
 
         self._save_current()
 
         if notify:
-            self.notifier.current_patch_changed(self.current_patch, token)
+            self.notifier.current_pedalboard_changed(self.current_pedalboard, token)
 
-    def _load_device_patch(self, patch):
-        self.device_controller.patch = patch
+    def _load_device_pedalboard(self, pedalboard):
+        self.device_controller.pedalboard = pedalboard

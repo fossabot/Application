@@ -7,7 +7,7 @@ from application.controller.device_controller import DeviceController
 from application.controller.effect_controller import EffectController
 from application.controller.notification_controller import NotificationController
 from application.controller.param_controller import ParamController
-from application.controller.patch_controller import PatchController
+from application.controller.pedalboard_controller import PedalboardController
 from application.controller.plugins_controller import PluginsController
 
 from pluginsmanager.mod_host.mod_host import ModHost
@@ -31,26 +31,26 @@ class Application(object):
         >>> application = Application()
         >>> current_controller = application.controller(CurrentController)
 
-        >>> print(current_controller.current_patch)
-        <Patch object as Shows with 2 effects at 0x7fa3bcb49be0>
+        >>> print(current_controller.current_pedalboard)
+        <Pedalboard object as Shows with 2 effects at 0x7fa3bcb49be0>
 
-        >>> current_controller.to_next_patch()
-        >>> current_controller.current_patch
-        <Patch object as Shows 2 with 1 effects at 0x7fa3bbcdecf8>
+        >>> current_controller.to_next_pedalboard()
+        >>> current_controller.current_pedalboard
+        <Pedalboard object as Shows 2 with 1 effects at 0x7fa3bbcdecf8>
 
     For more details see the Controllers extended classes.
 
-    :param string data_patch: Uri where the data will be persisted
+    :param string data_pedalboard: Uri where the data will be persisted
     :param string address: `mod-host`_ address
     :param bool test: If ``test == True``, the connection with mod-host will be simulated
 
     .. _mod-host: https://github.com/moddevices/mod-host
     """
 
-    def __init__(self, data_patch="data/", address="localhost", test=False):
+    def __init__(self, data_pedalboard="data/", address="localhost", test=False):
         self.mod_host = self._initialize(address, test)
 
-        self.data_patch = data_patch
+        self.data_pedalboard = data_pedalboard
         self.components = []
         self.controllers = self._load_controllers()
 
@@ -76,7 +76,7 @@ class Application(object):
             EffectController,
             NotificationController,
             ParamController,
-            PatchController,
+            PedalboardController,
             PluginsController,
         ]
 
@@ -123,7 +123,7 @@ class Application(object):
         :param dao: Class identifier
         :return: Dao instance
         """
-        return dao(self.data_patch)
+        return dao(self.data_pedalboard)
 
     def _log(self, *args, **kwargs):
         print('[' + time.strftime('%Y-%m-%d %H:%M:%S') + ']', *args, **kwargs)

@@ -42,11 +42,11 @@ class ParamController(Controller):
         :param Param param: Effect parameter with your value changed
         :param string token: Request token identifier
         """
-        patch = param.effect.patch
-        bank = patch.bank
+        pedalboard = param.effect.pedalboard
+        bank = pedalboard.bank
 
         if bank not in self.banks.banks:
-            raise ParamError('Bank of patch {} not added in banks manager'.format(patch))
+            raise ParamError('Bank of pedalboard {} not added in banks manager'.format(pedalboard))
 
         self.dao.save(bank, self.banks.banks.index(bank))
 

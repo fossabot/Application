@@ -9,10 +9,10 @@ class CurrentDao(object):
     def load(self):
         return self._read_file()
 
-    def save(self, bank_index, patch_index):
+    def save(self, bank_index, pedalboard_index):
         json = {
             "bank": bank_index,
-            "patch": patch_index
+            "pedalboard": pedalboard_index
         }
 
         Database.save(self._url(), json)

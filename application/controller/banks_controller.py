@@ -70,8 +70,8 @@ class BanksController(Controller):
             If you needs change the bank to other, use ``replace`` instead.
 
         .. note::
-            If you're changing a bank that has a current patch,
-            the patch should be fully charged and loaded. So, prefer the use
+            If you're changing a bank that has a current pedalboard,
+            the pedalboard should be fully charged and loaded. So, prefer the use
             of other Controllers methods for simple changes.
 
         :param Bank bank: Bank updated
@@ -87,7 +87,7 @@ class BanksController(Controller):
         self.dao.save(bank, self.banks.index(bank))
 
         if self.current.is_current_bank(bank):
-            self.current.reload_current_patch()
+            self.current.reload_current_pedalboard()
 
         self._notify_change(bank, UpdateType.UPDATED, token)
 
@@ -97,8 +97,8 @@ class BanksController(Controller):
         :class:`Bank` object has UPDATED
 
         .. note::
-            If you're changing a bank that has a current patch,
-            the patch should be fully charged and loaded. So, prefer the use
+            If you're changing a bank that has a current pedalboard,
+            the pedalboard should be fully charged and loaded. So, prefer the use
             of other Controllers methods for simple changes.
 
         :param Bank old_bank: Bank that will be replaced for new_bank
@@ -123,7 +123,7 @@ class BanksController(Controller):
         self.banks[old_bank.index] = new_bank
 
         if is_current_bank:
-            self.current.reload_current_patch()
+            self.current.reload_current_pedalboard()
 
         self._notify_change(new_bank, UpdateType.UPDATED, token)
 
@@ -132,8 +132,8 @@ class BanksController(Controller):
         Remove the informed :class:`Bank`.
 
         .. note::
-            If the Bank contains deleted contains the current patch,
-            another patch will be loaded and it will be the new current patch.
+            If the Bank contains deleted contains the current pedalboard,
+            another pedalboard will be loaded and it will be the new current pedalboard.
 
         :param Bank bank: Bank to be removed
         :param string token: Request token identifier
@@ -160,7 +160,7 @@ class BanksController(Controller):
         and the bank b position will be the bank a position.
 
         .. note::
-            If the any of the banks contains the current patch
+            If the any of the banks contains the current pedalboard
             it will not changed.
 
         :param Bank bank_a: Bank to the swapped with bank_b

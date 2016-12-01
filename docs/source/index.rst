@@ -42,7 +42,7 @@ Using
 
     from application.Application import Application
 
-    application = Application(data_patch="data/", address='localhost')
+    application = Application(data_pedalboard="data/", address='localhost')
 
     application.start()
 
@@ -103,11 +103,11 @@ machine to perform the processing and another to provide the control services.
 
 For example, you have a **Raspberry Pi B+** and a **PC**.
  * The PC in http://10.0.0.100 will process the audio, then it will execute `jack` process, `mod-host` process and the audio interface will be connected to it.
- * The *RPi* will executes :class:`Application` with :class:`Component`, like `Raspberry P0 component`_. Raspberry P0 disposes a simple current patch control.
+ * The *RPi* will executes :class:`Application` with :class:`Component`, like `Raspberry P0 component`_. Raspberry P0 disposes a simple current pedalboard control.
 
 .. code-block:: python
 
-    application = Application(data_patch="data/", address='10.0.0.100', test=False)
+    application = Application(data_pedalboard="data/", address='10.0.0.100', test=False)
 
 .. _Raspberry P0 component: https://github.com/PedalPi/Raspberry-P0
 .. _TCP: https://en.wikipedia.org/wiki/Transmission_Control_Protocol

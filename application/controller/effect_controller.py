@@ -31,34 +31,34 @@ class EffectController(Controller):
 
     def created(self, effect, token=None):
         """
-        Persists the :class:`Effect` object created in your :class:`Patch`
+        Persists the :class:`Effect` object created in your :class:`Pedalboard`
 
         .. note::
 
-            The effect needs be added in a :class:`Patch` before.
+            The effect needs be added in a :class:`Pedalboard` before.
 
-            >>> patch.add(effect)
+            >>> pedalboard.add(effect)
             >>> effect_controller.created(effect)
 
-        :param Effect effect: Effect created and added in your Patch
+        :param Effect effect: Effect created and added in your Pedalboard
         :param string token: Request token identifier
         """
-        self._update(effect.patch)
+        self._update(effect.pedalboard)
         self._notify_change(effect, UpdateType.CREATED, token)
 
     def delete(self, effect, token=None):
         """
-        Remove an :class:`Effect` instance in your :class:`Patch`
+        Remove an :class:`Effect` instance in your :class:`Pedalboard`
 
         :param Effect effect: Effect will be removed
         :param string token: Request token identifier
         """
-        patch = effect.patch
+        pedalboard = effect.pedalboard
 
         self._notify_change(effect, UpdateType.DELETED, token)
-        patch.effects.remove(effect)
+        pedalboard.effects.remove(effect)
 
-        self._update(patch)
+        self._update(pedalboard)
 
     def toggle_status(self, effect, token=None):
         """
@@ -70,14 +70,14 @@ class EffectController(Controller):
         """
         effect.toggle()
 
-        self._update(effect.patch)
+        self._update(effect.pedalboard)
         self.notifier.effect_status_toggled(effect, token)
 
     def _notify_change(self, effect, update_type, token, **kwargs):
         if 'index' not in kwargs:
-            kwargs['index'] = effect.patch.effects.index(effect)
+            kwargs['index'] = effect.pedalboard.effects.index(effect)
         if 'origin' not in kwargs:
-            kwargs['origin'] = effect.patch
+            kwargs['origin'] = effect.pedalboard
 
         self.notifier.effect_updated(effect, update_type, token, **kwargs)
 
@@ -104,12 +104,12 @@ class EffectController(Controller):
         self.notifier.connection_updated(connection, UpdateType.DELETED, token=token)
 
     def _save_connection(self, connection):
-        self._update(connection.input.effect.patch)
+        self._update(connection.input.effect.pedalboard)
 
-    def _update(self, patch):
-        bank = patch.bank
+    def _update(self, pedalboard):
+        bank = pedalboard.bank
         index = self.banks.banks.index(bank)
         self.dao.save(bank, index)
 
-        if self.current.is_current_patch(patch):
-            self.device.patch = patch
+        if self.current.is_current_pedalboard(pedalboard):
+            self.device.pedalboard = pedalboard

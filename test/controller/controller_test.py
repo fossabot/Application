@@ -8,7 +8,7 @@ class ControllerTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.application = Application(data_patch='test/data/', test=True)
+        cls.application = Application(data_pedalboard='test/data/', test=True)
 
     @classmethod
     def controller(cls, controller):

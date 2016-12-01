@@ -5,7 +5,7 @@ from application.controller.notification_controller import NotificationControlle
 from test.controller.controller_test import ControllerTest
 
 from pluginsmanager.model.bank import Bank
-from pluginsmanager.model.patch import Patch
+from pluginsmanager.model.pedalboard import Pedalboard
 from pluginsmanager.model.update_type import UpdateType
 
 import unittest
@@ -92,27 +92,27 @@ class BanksControllerTest(ControllerTest):
 
     def test_update_current_bank(self):
         bank = Bank('test_update_current_bank 1')
-        bank.append(Patch('test_update_current_bank patch'))
+        bank.append(Pedalboard('test_update_current_bank pedalboard'))
 
-        original_current_patch = self.current.current_patch
+        original_current_pedalboard = self.current.current_pedalboard
         self.controller.create(bank)
 
-        current_patch = bank.patches[0]
-        self.current.set_patch(current_patch)
+        current_pedalboard = bank.pedalboards[0]
+        self.current.set_pedalboard(current_pedalboard)
 
-        del bank.patches[0]
-        new_patch = Patch('test_update_current_bank patch2')
-        bank.patches.append(new_patch)
+        del bank.pedalboards[0]
+        new_pedalboard = Pedalboard('test_update_current_bank pedalboard2')
+        bank.pedalboards.append(new_pedalboard)
 
         self.controller.update(bank)
 
-        self.assertEqual(self.current.current_patch, new_patch)
-        self.assertEqual(self.current.current_bank, new_patch.bank)
+        self.assertEqual(self.current.current_pedalboard, new_pedalboard)
+        self.assertEqual(self.current.current_bank, new_pedalboard.bank)
 
-        self.assertEqual(self.current.patch_number, new_patch.bank.patches.index(new_patch))
-        self.assertEqual(self.current.bank_number, self.controller.banks.index(new_patch.bank))
+        self.assertEqual(self.current.pedalboard_number, new_pedalboard.bank.pedalboards.index(new_pedalboard))
+        self.assertEqual(self.current.bank_number, self.controller.banks.index(new_pedalboard.bank))
 
-        self.current.set_patch(original_current_patch)
+        self.current.set_pedalboard(original_current_pedalboard)
 
         self.controller.delete(bank)
 
@@ -121,13 +121,13 @@ class BanksControllerTest(ControllerTest):
         self.notifier.register(observer)
 
         bank = Bank('test_replace_bank 1')
-        bank.append(Patch('test_replace_bank patch'))
+        bank.append(Pedalboard('test_replace_bank pedalboard'))
 
         bank2 = Bank('test_replace_bank 2')
-        bank2.append(Patch('test_replace_bank patch2'))
+        bank2.append(Pedalboard('test_replace_bank pedalboard2'))
 
         bank3 = Bank('test_replace_bank 3')
-        bank3.append(Patch('test_replace_bank patch3'))
+        bank3.append(Pedalboard('test_replace_bank pedalboard3'))
 
         self.controller.create(bank)
         self.controller.replace(bank, bank2)
@@ -144,10 +144,10 @@ class BanksControllerTest(ControllerTest):
         self.notifier.register(observer)
 
         bank = Bank('test_replace_bank_error 1')
-        bank.append(Patch('test_replace_bank_error patch'))
+        bank.append(Pedalboard('test_replace_bank_error pedalboard'))
 
         bank2 = Bank('test_replace_bank_error 2')
-        bank2.append(Patch('test_replace_bank_error patch2'))
+        bank2.append(Pedalboard('test_replace_bank_error pedalboard2'))
 
         with self.assertRaises(BankError):
             self.controller.replace(bank, bank2)
@@ -169,41 +169,41 @@ class BanksControllerTest(ControllerTest):
 
     def test_replace_current_bank(self):
         bank = Bank('test_replace_current_bank 1')
-        bank.append(Patch('test_replace_bank_error patch'))
+        bank.append(Pedalboard('test_replace_bank_error pedalboard'))
 
         bank2 = Bank('test_replace_current_bank 2')
-        bank2.append(Patch('test_replace_bank_error patch2'))
+        bank2.append(Pedalboard('test_replace_bank_error pedalboard2'))
 
-        original_current_patch = self.current.current_patch
-        current_patch = bank.patches[0]
+        original_current_pedalboard = self.current.current_pedalboard
+        current_pedalboard = bank.pedalboards[0]
 
         self.controller.create(bank)
-        self.current.set_patch(current_patch)
+        self.current.set_pedalboard(current_pedalboard)
 
         self.controller.replace(bank, bank2)
 
-        current_patch2 = bank2.patches[0]
-        self.assertEqual(self.current.current_patch, current_patch2)
-        self.assertEqual(self.current.current_bank, current_patch2.bank)
+        current_pedalboard2 = bank2.pedalboards[0]
+        self.assertEqual(self.current.current_pedalboard, current_pedalboard2)
+        self.assertEqual(self.current.current_bank, current_pedalboard2.bank)
 
-        self.assertEqual(self.current.patch_number, current_patch2.bank.patches.index(current_patch2))
-        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_patch2.bank))
+        self.assertEqual(self.current.pedalboard_number, current_pedalboard2.bank.pedalboards.index(current_pedalboard2))
+        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_pedalboard2.bank))
 
-        self.current.set_patch(original_current_patch)
+        self.current.set_pedalboard(original_current_pedalboard)
 
         self.controller.delete(bank2)
 
     @unittest.skip('NOT IMPLEMENTED EMPTY CASES')
     def test_replace_current_empty_bank(self):
         bank = Bank('test_replace_current_bank 1')
-        bank.append(Patch('test_replace_bank_error patch'))
+        bank.append(Pedalboard('test_replace_bank_error pedalboard'))
 
         bank2 = Bank('test_replace_current_bank 2')
 
-        current_patch = bank.patches[0]
+        current_pedalboard = bank.pedalboards[0]
 
         self.controller.create(bank)
-        self.current.set_patch(current_patch)
+        self.current.set_pedalboard(current_pedalboard)
 
         self.controller.replace(bank, bank2)
 
@@ -233,36 +233,36 @@ class BanksControllerTest(ControllerTest):
 
     def test_delete_current_bank(self):
         bank = Bank('test_delete_current_bank 1')
-        bank.append(Patch('test_delete_current_bank patch'))
+        bank.append(Pedalboard('test_delete_current_bank pedalboard'))
 
         bank2 = Bank('test_delete_current_bank 2')
-        bank2.append(Patch('test_delete_current_bank patch'))
+        bank2.append(Pedalboard('test_delete_current_bank pedalboard'))
 
-        original_current_patch = self.current.current_patch
+        original_current_pedalboard = self.current.current_pedalboard
 
         self.controller.create(bank)
         self.controller.create(bank2)
 
-        current_patch = bank.patches[0]
-        self.current.set_patch(current_patch)
+        current_pedalboard = bank.pedalboards[0]
+        self.current.set_pedalboard(current_pedalboard)
 
-        self.assertEqual(self.current.current_patch, current_patch)
-        self.assertEqual(self.current.current_bank, current_patch.bank)
+        self.assertEqual(self.current.current_pedalboard, current_pedalboard)
+        self.assertEqual(self.current.current_bank, current_pedalboard.bank)
 
-        self.assertEqual(self.current.patch_number, current_patch.bank.patches.index(current_patch))
-        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_patch.bank))
+        self.assertEqual(self.current.pedalboard_number, current_pedalboard.bank.pedalboards.index(current_pedalboard))
+        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_pedalboard.bank))
 
         self.controller.delete(bank, bank2)
 
-        current_patch2 = bank2.patches[0]
+        current_pedalboard2 = bank2.pedalboards[0]
 
-        self.assertEqual(self.current.current_bank, current_patch2.bank)
-        self.assertEqual(self.current.current_patch, current_patch2)
+        self.assertEqual(self.current.current_bank, current_pedalboard2.bank)
+        self.assertEqual(self.current.current_pedalboard, current_pedalboard2)
 
-        self.assertEqual(self.current.patch_number, current_patch2.bank.patches.index(current_patch2))
-        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_patch2.bank))
+        self.assertEqual(self.current.pedalboard_number, current_pedalboard2.bank.pedalboards.index(current_pedalboard2))
+        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_pedalboard2.bank))
 
-        self.current.set_patch(original_current_patch)
+        self.current.set_pedalboard(original_current_pedalboard)
         self.controller.delete(bank2)
 
     def test_delete_current_bank_error(self):
@@ -270,7 +270,7 @@ class BanksControllerTest(ControllerTest):
         self.notifier.register(observer)
 
         bank = Bank('test_replace_bank_error 1')
-        bank.append(Patch('test_replace_bank_error patch'))
+        bank.append(Pedalboard('test_replace_bank_error pedalboard'))
 
         with self.assertRaises(BankError):
             self.controller.delete(bank)
@@ -332,42 +332,42 @@ class BanksControllerTest(ControllerTest):
 
     def test_swap_current_bank(self):
         bank = Bank('test_swap_current_bank 1')
-        bank.append(Patch('test_swap_current_bank patch'))
+        bank.append(Pedalboard('test_swap_current_bank pedalboard'))
 
         bank2 = Bank('test_swap_current_bank 2')
-        bank2.append(Patch('test_swap_current_bank patch2'))
+        bank2.append(Pedalboard('test_swap_current_bank pedalboard2'))
 
-        original_current_patch = self.current.current_patch
+        original_current_pedalboard = self.current.current_pedalboard
 
         self.controller.create(bank)
         self.controller.create(bank2)
 
-        current_patch = bank.patches[0]
-        self.current.set_patch(current_patch)
+        current_pedalboard = bank.pedalboards[0]
+        self.current.set_pedalboard(current_pedalboard)
 
-        self.assertEqual(self.current.current_patch, current_patch)
-        self.assertEqual(self.current.current_bank, current_patch.bank)
+        self.assertEqual(self.current.current_pedalboard, current_pedalboard)
+        self.assertEqual(self.current.current_bank, current_pedalboard.bank)
 
-        self.assertEqual(self.current.patch_number, current_patch.bank.patches.index(current_patch))
-        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_patch.bank))
+        self.assertEqual(self.current.pedalboard_number, current_pedalboard.bank.pedalboards.index(current_pedalboard))
+        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_pedalboard.bank))
 
         self.controller.swap(bank, bank2)
 
-        self.assertEqual(self.current.current_patch, current_patch)
-        self.assertEqual(self.current.current_bank, current_patch.bank)
+        self.assertEqual(self.current.current_pedalboard, current_pedalboard)
+        self.assertEqual(self.current.current_bank, current_pedalboard.bank)
 
-        self.assertEqual(self.current.patch_number, current_patch.bank.patches.index(current_patch))
-        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_patch.bank))
+        self.assertEqual(self.current.pedalboard_number, current_pedalboard.bank.pedalboards.index(current_pedalboard))
+        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_pedalboard.bank))
 
         self.controller.swap(bank2, bank)
 
-        self.assertEqual(self.current.current_patch, current_patch)
-        self.assertEqual(self.current.current_bank, current_patch.bank)
+        self.assertEqual(self.current.current_pedalboard, current_pedalboard)
+        self.assertEqual(self.current.current_bank, current_pedalboard.bank)
 
-        self.assertEqual(self.current.patch_number, current_patch.bank.patches.index(current_patch))
-        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_patch.bank))
+        self.assertEqual(self.current.pedalboard_number, current_pedalboard.bank.pedalboards.index(current_pedalboard))
+        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_pedalboard.bank))
 
-        self.current.set_patch(original_current_patch)
+        self.current.set_pedalboard(original_current_pedalboard)
 
         self.controller.delete(bank)
         self.controller.delete(bank2)

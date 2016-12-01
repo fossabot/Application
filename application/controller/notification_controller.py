@@ -44,16 +44,16 @@ class NotificationController(Controller):
     ########################
     # Notify methods
     ########################
-    def current_patch_changed(self, patch, token=None):
+    def current_pedalboard_changed(self, pedalboard, token=None):
         """
-        Notify current patch change.
+        Notify current pedalboard change.
 
-        :param Patch patch: New current patch
+        :param Pedalboard pedalboard: New current pedalboard
         :param string token: Request token identifier
         """
         for observer in self.observers:
             if not self.is_requisitor(observer, token):
-                observer.on_current_patch_changed(patch, token)
+                observer.on_current_pedalboard_changed(pedalboard, token)
 
     def bank_updated(self, bank, update_type, token=None, **kwargs):
         """
@@ -67,17 +67,17 @@ class NotificationController(Controller):
             if not self.is_requisitor(observer, token):
                 observer.on_bank_updated(bank, update_type, token, **kwargs)
 
-    def patch_updated(self, patch, update_type, token=None, **kwargs):
+    def pedalboard_updated(self, pedalboard, update_type, token=None, **kwargs):
         """
-        Notify changes in :class:`Patch`.
+        Notify changes in :class:`Pedalboard`.
 
-        :param Patch patch: Patch changed
+        :param Pedalboard pedalboard: Pedalboard changed
         :param UpdateType update_type: Change type
         :param string token: Request token identifier
         """
         for observer in self.observers:
             if not self.is_requisitor(observer, token):
-                observer.on_patch_updated(patch, update_type, token, **kwargs)
+                observer.on_pedalboard_updated(pedalboard, update_type, token, **kwargs)
 
     def effect_updated(self, effect, update_type, token=None, **kwargs):
         """
@@ -114,6 +114,13 @@ class NotificationController(Controller):
                 observer.on_param_value_changed(param, token, **kwargs)
 
     def connection_updated(self, connection, update_type, token=None):
+        """
+        Notify :class:`Connection` addictions and removals.
+
+        :param connection: Connection added or removed
+        :param update_type: Change type
+        :param token: Request token identifier
+        """
         for observer in self.observers:
             if not self.is_requisitor(observer, token):
                 observer.on_connection_updated(connection, update_type, token)

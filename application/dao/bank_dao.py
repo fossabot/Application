@@ -1,7 +1,7 @@
 from glob import glob
 
 from application.dao.database import Database
-from pluginsmanager.util.persistence import Persistence
+from pluginsmanager.util.persistence_decoder import PersistenceDecoder
 
 
 class BankDao(object):
@@ -10,7 +10,7 @@ class BankDao(object):
         self.data_path = data_path + 'banks/'
 
     def banks(self, system_effect):
-        persistence = Persistence(system_effect)
+        persistence = PersistenceDecoder(system_effect)
 
         banks = []
 

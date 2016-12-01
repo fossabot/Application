@@ -5,7 +5,7 @@ from application.controller.param_controller import ParamController, ParamError
 from application.controller.plugins_controller import PluginsController
 
 from pluginsmanager.model.bank import Bank
-from pluginsmanager.model.patch import Patch
+from pluginsmanager.model.pedalboard import Pedalboard
 
 from test.controller.controller_test import ControllerTest
 
@@ -30,10 +30,10 @@ class ParamControllerTest(ControllerTest):
         self.notifier.register(observer)
 
         bank = Bank('test_create_effect Bank')
-        patch = Patch('test_create_effect Patch')
-        bank.append(patch)
+        pedalboard = Pedalboard('test_create_effect Pedalboard')
+        bank.append(pedalboard)
         reverb = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
-        patch.append(reverb)
+        pedalboard.append(reverb)
 
         self.banks.create(bank)
 
@@ -55,10 +55,10 @@ class ParamControllerTest(ControllerTest):
         self.notifier.register(observer)
 
         bank = Bank('test_create_effect Bank')
-        patch = Patch('test_create_effect Patch')
-        bank.append(patch)
+        pedalboard = Pedalboard('test_create_effect Pedalboard')
+        bank.append(pedalboard)
         reverb = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
-        patch.append(reverb)
+        pedalboard.append(reverb)
 
         param = reverb.params[0]
 

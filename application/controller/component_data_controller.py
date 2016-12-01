@@ -5,8 +5,8 @@ from application.controller.controller import Controller
 
 class ComponentDataController(Controller):
     """
-    Maybe the patch data it's not sufficient for management in a custom
-    :class:`Components`. For example, in a possible visual patch manager is
+    Maybe the pedalboard data it's not sufficient for management in a custom
+    :class:`Components`. For example, in a possible visual pedalboard manager is
     necessary persist the effects positions.
 
     :class:`ComponentDataController` offers a way to salve and restore data.
@@ -21,22 +21,22 @@ class ComponentDataController(Controller):
         >>> controller[key]
         {}
 
-        >>> controller[key] = {'patch': 0}
+        >>> controller[key] = {'pedalboard': 0}
         >>> controller[key]
-        {'patch': 0}
+        {'pedalboard': 0}
 
         >>> # The new data overrides old data
-        >>> controller[key] = {'patches': []}
+        >>> controller[key] = {'pedalboards': []}
         >>> controller[key]
-        {'patches': []}
+        {'pedalboards': []}
 
         >>> # Changes in returned object will not change the persisted data
         >>> data = controller[key]
         >>> data['component'] = 'Raspberry P0'
         >>> data
-        {'patches': [], 'component': 'Raspberry P0'}
+        {'pedalboards': [], 'component': 'Raspberry P0'}
         >>> controller[key]
-        {'patches': []}
+        {'pedalboards': []}
 
         >>> # Remove all content for 'raspberry-p0'
         >>> del controller[key]

@@ -6,7 +6,7 @@ from application.controller.plugins_controller import PluginsController
 from test.controller.controller_test import ControllerTest
 
 from pluginsmanager.model.bank import Bank
-from pluginsmanager.model.patch import Patch
+from pluginsmanager.model.pedalboard import Pedalboard
 from pluginsmanager.model.connection import Connection
 from pluginsmanager.model.update_type import UpdateType
 
@@ -37,51 +37,51 @@ class EffectControllerTest(ControllerTest):
 
     def _create_default_bank(self, name):
         bank = Bank(name + ' Bank')
-        patch = Patch(name + ' Patch')
+        pedalboard = Pedalboard(name + ' Pedalboard')
 
         reverb = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
         reverb2 = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
 
-        bank.append(patch)
+        bank.append(pedalboard)
 
-        patch.append(reverb)
-        patch.append(reverb2)
+        pedalboard.append(reverb)
+        pedalboard.append(reverb2)
         return bank
 
     def test_create_effect(self):
         bank = self._create_default_bank('test_create_effect')
-        patch = bank.patches[0]
-        reverb, reverb2 = patch.effects
+        pedalboard = bank.pedalboards[0]
+        reverb, reverb2 = pedalboard.effects
 
         self.banks.create(bank)
 
         self.effects.created(reverb)
-        self.observer.on_effect_updated.assert_called_with(reverb, UpdateType.CREATED, None, index=0, origin=patch)
+        self.observer.on_effect_updated.assert_called_with(reverb, UpdateType.CREATED, None, index=0, origin=pedalboard)
 
         self.effects.created(reverb2, self.TOKEN)
-        self.observer.on_effect_updated.assert_called_with(reverb2, UpdateType.CREATED, self.TOKEN, index=1, origin=patch)
+        self.observer.on_effect_updated.assert_called_with(reverb2, UpdateType.CREATED, self.TOKEN, index=1, origin=pedalboard)
 
         self.banks.delete(bank)
 
     def test_delete_effect(self):
         bank = self._create_default_bank('test_delete_effect')
-        patch = bank.patches[0]
-        reverb, reverb2 = patch.effects
+        pedalboard = bank.pedalboards[0]
+        reverb, reverb2 = pedalboard.effects
 
         self.banks.create(bank)
 
         self.effects.delete(reverb)
-        self.observer.on_effect_updated.assert_called_with(reverb, UpdateType.DELETED, None, index=0, origin=patch)
+        self.observer.on_effect_updated.assert_called_with(reverb, UpdateType.DELETED, None, index=0, origin=pedalboard)
 
         self.effects.delete(reverb2, self.TOKEN)
-        self.observer.on_effect_updated.assert_called_with(reverb2, UpdateType.DELETED, self.TOKEN, index=0, origin=patch)
+        self.observer.on_effect_updated.assert_called_with(reverb2, UpdateType.DELETED, self.TOKEN, index=0, origin=pedalboard)
 
         self.banks.delete(bank)
 
     def test_toggle_status(self):
         bank = self._create_default_bank('test_toggle_status')
-        patch = bank.patches[0]
-        reverb, reverb2 = patch.effects
+        pedalboard = bank.pedalboards[0]
+        reverb, reverb2 = pedalboard.effects
 
         self.banks.create(bank)
 
@@ -95,16 +95,16 @@ class EffectControllerTest(ControllerTest):
 
     def test_connected(self):
         bank = self._create_default_bank('test_connected')
-        patch = bank.patches[0]
-        reverb, reverb2 = patch.effects
+        pedalboard = bank.pedalboards[0]
+        reverb, reverb2 = pedalboard.effects
 
         self.banks.create(bank)
 
         reverb.outputs[0].connect(reverb2.inputs[0])
-        connection1 = patch.connections[-1]
+        connection1 = pedalboard.connections[-1]
 
         connection2 = Connection(reverb.outputs[1], reverb2.inputs[0])
-        patch.connections.append(connection2)
+        pedalboard.connections.append(connection2)
 
         self.effects.connected(connection1)
         self.observer.on_connection_updated.assert_called_with(connection1, UpdateType.CREATED, None)
@@ -116,22 +116,22 @@ class EffectControllerTest(ControllerTest):
 
     def test_disconnected(self):
         bank = self._create_default_bank('test_disconnected')
-        patch = bank.patches[0]
-        reverb, reverb2 = patch.effects
+        pedalboard = bank.pedalboards[0]
+        reverb, reverb2 = pedalboard.effects
 
         self.banks.create(bank)
 
         reverb.outputs[0].connect(reverb2.inputs[0])
-        connection1 = patch.connections[-1]
+        connection1 = pedalboard.connections[-1]
 
         connection2 = Connection(reverb.outputs[1], reverb2.inputs[0])
-        patch.connections.append(connection2)
+        pedalboard.connections.append(connection2)
 
-        patch.connections.remove(connection1)
+        pedalboard.connections.remove(connection1)
         self.effects.disconnected(connection1)
         self.observer.on_connection_updated.assert_called_with(connection1, UpdateType.DELETED, None)
 
-        patch.connections.remove(connection2)
+        pedalboard.connections.remove(connection2)
         self.effects.disconnected(connection2, self.TOKEN)
         self.observer.on_connection_updated.assert_called_with(connection2, UpdateType.DELETED, self.TOKEN)
 

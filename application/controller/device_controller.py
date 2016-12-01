@@ -22,9 +22,9 @@ class DeviceController(Controller):
         return self.app.mod_host
 
     @property
-    def patch(self):
-        return self.mod_host.patch
+    def pedalboard(self):
+        return self.mod_host.pedalboard
 
-    @patch.setter
-    def patch(self, patch):
-        self.mod_host.patch = patch
+    @pedalboard.setter
+    def pedalboard(self, pedalboard):
+        self.mod_host.pedalboard = pedalboard
