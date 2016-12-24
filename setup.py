@@ -1,7 +1,13 @@
-# -*- coding: utf-8 -*-
 from setuptools import setup
 setup(
     name='PedalPi - Application',
-    packages=['architecture', 'controller', 'dao', 'model', 'test'],
+    packages=[
+        'application',
+        'application/component',
+        'application/controller',
+        'application/dao'
+    ],
     test_suite='test',
+    install_requires=['PedalPi-PluginsManager'],
+    dependency_links=['https://github.com/PedalPi/PluginsManager/tarball/master#egg=PedalPi-PluginsManager']
 )

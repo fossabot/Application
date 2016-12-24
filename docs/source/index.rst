@@ -1,13 +1,17 @@
 PedalPi - Application
 =====================
 
-API for pythonic management with LV2 audio plugins using `mod-host`_.
+PedalPi - Application is a framework for manager the PedalPi - `Components`_
+offers an auto initialization and an updates notification between the components.
 
-.. _mod-host: https://github.com/moddevices/mod-host
-
+.. _Components: https://github.com/PedalPi/Components
 
 Using
 -----
+
+.. warning::
+
+    It's deprecated. I am refactoring...
 
 1º Create a folder
 
@@ -38,7 +42,7 @@ Using
 
     from application.Application import Application
 
-    application = Application(data_patch="data/", address='localhost')
+    application = Application(data_pedalboard="data/", address='localhost')
 
     application.start()
 
@@ -62,6 +66,27 @@ See the components list in `github Components Project`_.
 
     python3 start.py
 
+The Plugins manager observer problem
+------------------------------------
+
+`pluginsmanager`_ can notifies they changes, but in a case that many
+uses the plugins manager objects, is necessary in a change notifiers
+all except the one who caused the change.
+
+As example, a multi-effects uses `Raspberry-P1`_ for physical management and
+`WebService`_ for a controller with `Apk`_ controller. If they uses only
+`plugins manager`, a toggle status effect change in a Raspberry-P0 will
+informs WebService and unreasonably Raspberry-P1.
+
+Using the Application controllers for management and notification, the problem
+will be avoived.
+
+.. _pluginsmanager: https://github.com/PedalPi/PluginsManager
+.. _Raspberry-P1: https://github.com/PedalPi/Raspberry-P1
+.. _WebService: https://github.com/PedalPi/WebService
+.. _Apk: https://github.com/PedalPi/Apk
+.. _mod-host: https://github.com/moddevices/mod-host
+
 Extending
 ---------
 
@@ -78,11 +103,11 @@ machine to perform the processing and another to provide the control services.
 
 For example, you have a **Raspberry Pi B+** and a **PC**.
  * The PC in http://10.0.0.100 will process the audio, then it will execute `jack` process, `mod-host` process and the audio interface will be connected to it.
- * The *RPi* will executes :class:`Application` with :class:`Component`, like `Raspberry P0 component`_. Raspberry P0 disposes a simple current patch control.
+ * The *RPi* will executes :class:`Application` with :class:`Component`, like `Raspberry P0 component`_. Raspberry P0 disposes a simple current pedalboard control.
 
 .. code-block:: python
 
-    application = Application(data_patch="data/", address='10.0.0.100', test=False)
+    application = Application(data_pedalboard="data/", address='10.0.0.100', test=False)
 
 .. _Raspberry P0 component: https://github.com/PedalPi/Raspberry-P0
 .. _TCP: https://en.wikipedia.org/wiki/Transmission_Control_Protocol

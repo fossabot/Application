@@ -1,76 +1,142 @@
-# -*- coding: utf-8 -*-
-from architecture.EffectException import EffectException
-from architecture.privatemethod import privatemethod
-
-from controller.EffectController import EffectController
-from controller.PluginsController import PluginsController
-from controller.CurrentController import CurrentController
+from application.controller.banks_controller import BanksController
+from application.controller.effect_controller import EffectController
+from application.controller.notification_controller import NotificationController
+from application.controller.plugins_controller import PluginsController
 
 from test.controller.controller_test import ControllerTest
 
+from pluginsmanager.model.bank import Bank
+from pluginsmanager.model.pedalboard import Pedalboard
+from pluginsmanager.model.connection import Connection
+from pluginsmanager.model.update_type import UpdateType
+
+import unittest
+from unittest.mock import MagicMock
+
 
 class EffectControllerTest(ControllerTest):
-    application = None
-    controller = None
+
+    @classmethod
+    def setUpClass(cls):
+        super(EffectControllerTest, cls).setUpClass()
+
+        cls.TOKEN = 'EFFECT_TOKEN'
+
+        cls.effects = cls.controller(EffectController)
+        cls.banks = cls.controller(BanksController)
+        cls.notifier = cls.controller(NotificationController)
+
+        cls.plugins = cls.controller(PluginsController)
 
     def setUp(self):
-        self.controller = self.get_controller(EffectController)
-        self.pluginsController = self.get_controller(PluginsController)
-        self.currentController = self.get_controller(CurrentController)
+        self.observer = MagicMock()
+        self.notifier.register(self.observer)
 
-        self.currentController.setBank(0)
-        self.currentController.setPatch(0)
+    def tearDown(self):
+        self.notifier.unregister(self.observer)
 
-        self.currentBank = self.currentController.currentBank
-        self.currentPatch = self.currentController.currentPatch
+    def _create_default_bank(self, name):
+        bank = Bank(name + ' Bank')
+        pedalboard = Pedalboard(name + ' Pedalboard')
 
-    @privatemethod
-    def get_controller(self, controller):
-        return EffectControllerTest.application.controller(controller)
+        reverb = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
+        reverb2 = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
 
-    @privatemethod
-    def total_effects_current_patch(self):
-        return len(self.currentPatch['effects'])
+        bank.append(pedalboard)
 
-    @privatemethod
-    def any_plugin_uri(self):
-        return list(self.pluginsController.plugins.keys())[0]
-
-    @privatemethod
-    def create_effect(self, uri=None):
-        if uri is None:
-            uri = self.any_plugin_uri()
-
-        patch = self.currentPatch
-        return self.controller.createEffect(patch, uri)
+        pedalboard.append(reverb)
+        pedalboard.append(reverb2)
+        return bank
 
     def test_create_effect(self):
-        totalEffects = self.total_effects_current_patch()
+        bank = self._create_default_bank('test_create_effect')
+        pedalboard = bank.pedalboards[0]
+        reverb, reverb2 = pedalboard.effects
 
-        effectIndex = self.create_effect()
-        effect = self.currentPatch.effects[effectIndex]
+        self.banks.create(bank)
 
-        # Index is last effect + 1
-        self.assertEqual(totalEffects, effectIndex)
+        self.effects.created(reverb)
+        self.observer.on_effect_updated.assert_called_with(reverb, UpdateType.CREATED, None, index=0, origin=pedalboard)
 
-        self.assertLess(totalEffects, self.total_effects_current_patch())
+        self.effects.created(reverb2, self.TOKEN)
+        self.observer.on_effect_updated.assert_called_with(reverb2, UpdateType.CREATED, self.TOKEN, index=1, origin=pedalboard)
 
-        self.controller.deleteEffect(effect)
-
-    def test_create_undefined_effect(self):
-        with self.assertRaises(EffectException):
-            self.create_effect('http://undefined.plugin.uri')
+        self.banks.delete(bank)
 
     def test_delete_effect(self):
-        effectIndex = self.create_effect()
-        effect = self.currentPatch.effects[effectIndex]
+        bank = self._create_default_bank('test_delete_effect')
+        pedalboard = bank.pedalboards[0]
+        reverb, reverb2 = pedalboard.effects
 
-        totalEffects = self.total_effects_current_patch()
+        self.banks.create(bank)
 
-        self.controller.deleteEffect(effect)
+        self.effects.delete(reverb)
+        self.observer.on_effect_updated.assert_called_with(reverb, UpdateType.DELETED, None, index=0, origin=pedalboard)
 
-        self.assertEqual(totalEffects - 1, self.total_effects_current_patch())
+        self.effects.delete(reverb2, self.TOKEN)
+        self.observer.on_effect_updated.assert_called_with(reverb2, UpdateType.DELETED, self.TOKEN, index=0, origin=pedalboard)
 
-    def test_delete_undefined_effect(self):
-        #FIXME - Implement this
+        self.banks.delete(bank)
+
+    def test_toggle_status(self):
+        bank = self._create_default_bank('test_toggle_status')
+        pedalboard = bank.pedalboards[0]
+        reverb, reverb2 = pedalboard.effects
+
+        self.banks.create(bank)
+
+        self.effects.toggle_status(reverb)
+        self.observer.on_effect_status_toggled.assert_called_with(reverb, None)
+
+        self.effects.toggle_status(reverb2, self.TOKEN)
+        self.observer.on_effect_status_toggled.assert_called_with(reverb2, self.TOKEN)
+
+        self.banks.delete(bank)
+
+    def test_connected(self):
+        bank = self._create_default_bank('test_connected')
+        pedalboard = bank.pedalboards[0]
+        reverb, reverb2 = pedalboard.effects
+
+        self.banks.create(bank)
+
+        reverb.outputs[0].connect(reverb2.inputs[0])
+        connection1 = pedalboard.connections[-1]
+
+        connection2 = Connection(reverb.outputs[1], reverb2.inputs[0])
+        pedalboard.connections.append(connection2)
+
+        self.effects.connected(connection1)
+        self.observer.on_connection_updated.assert_called_with(connection1, UpdateType.CREATED, None)
+
+        self.effects.connected(connection2, self.TOKEN)
+        self.observer.on_connection_updated.assert_called_with(connection2, UpdateType.CREATED, self.TOKEN)
+
+        self.banks.delete(bank)
+
+    def test_disconnected(self):
+        bank = self._create_default_bank('test_disconnected')
+        pedalboard = bank.pedalboards[0]
+        reverb, reverb2 = pedalboard.effects
+
+        self.banks.create(bank)
+
+        reverb.outputs[0].connect(reverb2.inputs[0])
+        connection1 = pedalboard.connections[-1]
+
+        connection2 = Connection(reverb.outputs[1], reverb2.inputs[0])
+        pedalboard.connections.append(connection2)
+
+        pedalboard.connections.remove(connection1)
+        self.effects.disconnected(connection1)
+        self.observer.on_connection_updated.assert_called_with(connection1, UpdateType.DELETED, None)
+
+        pedalboard.connections.remove(connection2)
+        self.effects.disconnected(connection2, self.TOKEN)
+        self.observer.on_connection_updated.assert_called_with(connection2, UpdateType.DELETED, self.TOKEN)
+
+        self.banks.delete(bank)
+
+    @unittest.skip('Not implemented')
+    def test_delete_effect_remove_connections(self):
         pass

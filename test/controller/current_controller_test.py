@@ -1,163 +1,270 @@
-# -*- coding: utf-8 -*-
-from architecture.privatemethod import privatemethod
+from application.controller.current_controller import CurrentController
+from application.controller.banks_controller import BanksController
+from application.controller.notification_controller import NotificationController
 
-from controller.CurrentController import CurrentController
-from controller.BanksController import BanksController
+from pluginsmanager.model.bank import Bank
+from pluginsmanager.model.pedalboard import Pedalboard
 
 from test.controller.controller_test import ControllerTest
 
+from unittest.mock import MagicMock
+
 
 class CurrentControllerTest(ControllerTest):
-    application = None
-    controller = None
-    banksController = None
-
     def setUp(self):
-        self.controller = self.get_controller(CurrentController)
-        self.banksController = self.get_controller(BanksController)
+        self.TOKEN = 'CURRENT_TOKEN'
 
-        self.controller.setBank(0)
-        self.controller.setPatch(0)
+        controller = CurrentControllerTest.application.controller
+        self.controller = controller(CurrentController)
+        self.banks_controller = controller(BanksController)
+        self.notifier = controller(NotificationController)
 
-    @privatemethod
-    def get_controller(self, controller):
-        return CurrentControllerTest.application.controller(controller)
+        self.controller.set_pedalboard(self.banks_controller.banks[0].pedalboards[0])
 
-    def test_current_patch(self):
-        currentBank = self.controller.currentBank
-        currentPatch = self.controller.currentPatch
+    @property
+    def bank_with_pedalboard(self):
+        bank = Bank('A bank')
+        pedalboard = Pedalboard('A pedalboard')
+        bank.append(pedalboard)
 
-        self.assertIsNotNone(currentPatch)
+        return bank
+
+    def test_current_pedalboard(self):
+        current_bank = self.controller.current_bank
+        current_pedalboard = self.controller.current_pedalboard
+
+        self.assertIsNotNone(current_pedalboard)
         self.assertEqual(
-            currentBank.patches[0],
-            currentPatch
+            current_bank.pedalboards[0],
+            current_pedalboard
         )
 
     def test_current_bank(self):
-        currentBank = self.controller.currentBank
-        self.assertIsNotNone(self.controller.currentBank)
+        current_bank = self.controller.current_bank
+
+        self.assertIsNotNone(self.controller.current_bank)
         self.assertEqual(
-            self.banksController.banks.all[0],
-            currentBank
+            self.banks_controller.banks[0],
+            current_bank
         )
 
-    def test_toggle_status_effects(self):
-        effects = self.controller.currentPatch.effects
-
-        for index in range(len(effects)):
-            effect = effects[index]
-            actived = effect['status']
-
-            self.controller.toggleStatusEffect(index)
-            self.assertEqual(not actived, effect['status'])
-
-            # Changing to original state
-            self.controller.toggleStatusEffect(index)
-
-    def test_toggle_status_index_out_effect(self):
-        with self.assertRaises(IndexError):
-            self.controller.toggleStatusEffect(5000)
-
-    def test_set_effect_param(self):
-        effectIndex = 0
-        paramIndex = 0
-        effect = self.controller.currentPatch.effects[effectIndex]
-
-        param = effect.params[paramIndex]
-
-        originalValue = param['value']
-        newValue = originalValue+1
-
-        self.controller.setEffectParam(effectIndex, paramIndex, newValue)
-
-        self.assertEqual(newValue, param['value'])
-        self.controller.setEffectParam(effectIndex, paramIndex, originalValue)
-
-    '''
-    def test_set_effect_param_invalid_value_min(self):
-        self.fail("Not implemented")
-
-    def test_set_effect_param_invalid_value_max(self):
-        self.fail("Not implemented")
-    '''
-
-    def test_set_param_of_index_out_effect(self):
-        with self.assertRaises(IndexError):
-            self.controller.setEffectParam(5000, 0, 0)
-
-    def test_set_param_of_index_out_param(self):
-        with self.assertRaises(IndexError):
-            self.controller.setEffectParam(0, 5000, 0)
-
-    def test_is_current_patch(self):
-        currentPatch = self.controller.currentPatch
-
-        anotherBank = self.banksController.banks.all[-1]
-        anotherPatch = anotherBank.patches[0]
-
-        self.assertTrue(self.controller.isCurrentPatch(currentPatch))
-        self.assertFalse(self.controller.isCurrentPatch(anotherPatch))
-
     def test_is_current_bank(self):
-        currentBank = self.controller.currentBank
-        anotherBank = self.banksController.banks.all[-1]
+        bank = self.bank_with_pedalboard
+        self.banks_controller.create(bank)
 
-        self.assertTrue(self.controller.isCurrentBank(currentBank))
-        self.assertFalse(self.controller.isCurrentBank(anotherBank))
+        current_bank = self.controller.current_bank
+        another_bank = self.banks_controller.banks[-1]
 
-    def test_to_before_patch(self):
-        totalPatches = len(self.controller.currentBank.patches)
-        for idPatch in reversed(range(totalPatches)):
-            self.controller.toBeforePatch()
-            self.assertEqual(idPatch, self.controller.patchNumber)
+        self.assertTrue(self.controller.is_current_bank(current_bank))
+        self.assertFalse(self.controller.is_current_bank(another_bank))
 
-    def test_next_patch(self):
-        totalPatches = len(self.controller.currentBank.patches)
-        for idPatch in range(totalPatches):
-            self.assertEqual(idPatch, self.controller.patchNumber)
-            self.controller.toNextPatch()
+        self.banks_controller.delete(bank)
 
-        self.assertEqual(0, self.controller.patchNumber)
+    def test_is_current_pedalboard(self):
+        bank = self.bank_with_pedalboard
+        self.banks_controller.create(bank)
 
-    def test_set_patch(self):
-        firstPatch = self.controller.currentPatch
+        current_pedalboard = self.controller.current_pedalboard
 
-        self.controller.setPatch(1)
-        self.assertEqual(1, self.controller.patchNumber)
+        another_bank = self.banks_controller.banks[-1]
+        another_pedalboard = another_bank.pedalboards[0]
 
-        self.assertNotEqual(firstPatch, self.controller.currentPatch)
+        self.assertTrue(self.controller.is_current_pedalboard(current_pedalboard))
+        self.assertFalse(self.controller.is_current_pedalboard(another_pedalboard))
 
-    def test_set_index_out_patch(self):
-        with self.assertRaises(IndexError):
-            self.controller.setPatch(5000)
+        self.banks_controller.delete(bank)
+
+    def test_to_before_pedalboard(self):
+        observer = MagicMock()
+        self.notifier.register(observer)
+
+        pedalboard = Pedalboard('Other pedalboard')
+        self.controller.current_bank.append(pedalboard)
+
+        total_pedalboards = len(self.controller.current_bank.pedalboards)
+        for id_pedalboard in reversed(range(total_pedalboards)):
+            self.controller.to_before_pedalboard()
+            self.assertEqual(id_pedalboard, self.controller.pedalboard_number)
+            observer.on_current_pedalboard_changed.assert_called_with(self.controller.current_pedalboard, None)
+
+        for id_pedalboard in reversed(range(total_pedalboards)):
+            self.controller.to_before_pedalboard(self.TOKEN)
+            self.assertEqual(id_pedalboard, self.controller.pedalboard_number)
+            observer.on_current_pedalboard_changed.assert_called_with(self.controller.current_pedalboard, self.TOKEN)
+
+        self.assertEqual(0, self.controller.pedalboard_number)
+
+        self.controller.current_bank.pedalboards.remove(pedalboard)
+
+        self.notifier.unregister(observer)
+
+    def test_to_next_pedalboard(self):
+        observer = MagicMock()
+        self.notifier.register(observer)
+
+        pedalboard = Pedalboard('Other pedalboard')
+        self.controller.current_bank.append(pedalboard)
+
+        total_pedalboards = len(self.controller.current_bank.pedalboards)
+        pedalboard_initial_index = self.controller.pedalboard_number
+        for id_pedalboard in range(total_pedalboards):
+            self.assertEqual(id_pedalboard + pedalboard_initial_index, self.controller.pedalboard_number)
+            self.controller.to_next_pedalboard()
+            observer.on_current_pedalboard_changed.assert_called_with(self.controller.current_pedalboard, None)
+
+        for id_pedalboard in range(total_pedalboards):
+            self.assertEqual(id_pedalboard, self.controller.pedalboard_number)
+            self.controller.to_next_pedalboard(self.TOKEN)
+            observer.on_current_pedalboard_changed.assert_called_with(self.controller.current_pedalboard, self.TOKEN)
+
+        self.assertEqual(0, self.controller.pedalboard_number)
+
+        self.controller.current_bank.pedalboards.remove(pedalboard)
+
+        self.notifier.unregister(observer)
+
+    def test_set_pedalboard(self):
+        observer = MagicMock()
+        self.notifier.register(observer)
+
+        pedalboard = Pedalboard('Other pedalboard')
+        self.controller.current_bank.append(pedalboard)
+
+        original_pedalboard = self.controller.current_pedalboard
+
+        self.controller.set_pedalboard(pedalboard)
+        self.assertEqual(pedalboard.bank.pedalboards.index(pedalboard), self.controller.pedalboard_number)
+        observer.on_current_pedalboard_changed.assert_called_with(pedalboard, None)
+
+        self.assertNotEqual(original_pedalboard, self.controller.current_pedalboard)
+        self.assertEqual(pedalboard, self.controller.current_pedalboard)
+
+        self.controller.set_pedalboard(original_pedalboard, self.TOKEN)
+        self.assertEqual(0, self.controller.pedalboard_number)
+        observer.on_current_pedalboard_changed.assert_called_with(original_pedalboard, self.TOKEN)
+
+        self.controller.current_bank.pedalboards.remove(pedalboard)
+
+        self.notifier.unregister(observer)
+
+    def test_set_pedalboard_other_bank(self):
+        observer = MagicMock()
+        self.notifier.register(observer)
+
+        bank = self.bank_with_pedalboard
+        self.banks_controller.create(bank)
+
+        original_pedalboard = self.controller.current_pedalboard
+        original_bank_number = self.controller.bank_number
+
+        self.controller.set_pedalboard(bank.pedalboards[0])
+        self.assertEqual(0, self.controller.pedalboard_number)
+        self.assertEqual(self.banks_controller.banks.index(bank), self.controller.bank_number)
+        observer.on_current_pedalboard_changed.assert_called_with(bank.pedalboards[0], None)
+
+        self.assertNotEqual(original_pedalboard, self.controller.current_pedalboard)
+        self.assertEqual(bank.pedalboards[0], self.controller.current_pedalboard)
+        self.assertEqual(len(self.banks_controller.banks) - 1, self.controller.bank_number)
+
+        self.controller.set_pedalboard(original_pedalboard, self.TOKEN)
+        self.assertEqual(0, self.controller.pedalboard_number)
+        self.assertEqual(original_bank_number, self.controller.bank_number)
+        observer.on_current_pedalboard_changed.assert_called_with(original_pedalboard, self.TOKEN)
+
+        self.banks_controller.delete(bank)
+        self.notifier.unregister(observer)
+
+    def test_set_pedalboard_current_pedalboard(self):
+        observer = MagicMock()
+        self.notifier.register(observer)
+
+        self.controller.set_pedalboard(self.controller.current_pedalboard)
+        observer.on_current_pedalboard_changed.assert_not_called()
+
+        self.notifier.unregister(observer)
+
+    def test_set_pedalboard_not_added(self):
+        bank = self.bank_with_pedalboard
+        with self.assertRaises(ValueError):
+            self.controller.set_pedalboard(bank.pedalboards[0])
 
     def test_before_bank(self):
-        banks = self.banksController.banks.all
-        for bank in reversed(banks):
-            self.controller.toBeforeBank()
-            self.assertEqual(bank, self.controller.currentBank)
+        observer = MagicMock()
+        self.notifier.register(observer)
+
+        bank = self.bank_with_pedalboard
+        self.banks_controller.create(bank)
+
+        for b in reversed(self.banks_controller.banks):
+            self.controller.to_before_bank()
+            self.assertEqual(b, self.controller.current_bank)
+            observer.on_current_pedalboard_changed.assert_called_with(b.pedalboards[0], None)
+
+        for b in reversed(self.banks_controller.banks):
+            self.controller.to_before_bank(self.TOKEN)
+            self.assertEqual(b, self.controller.current_bank)
+            observer.on_current_pedalboard_changed.assert_called_with(b.pedalboards[0], self.TOKEN)
+
+        self.banks_controller.delete(bank)
+        self.notifier.unregister(observer)
 
     def test_next_bank(self):
-        banks = self.banksController.banks.all
-        for bank in banks:
-            self.assertEqual(bank, self.controller.currentBank)
-            self.controller.toNextBank()
+        observer = MagicMock()
+        self.notifier.register(observer)
 
-        self.assertEqual(banks[0], self.controller.currentBank)
+        bank = self.bank_with_pedalboard
+        self.banks_controller.create(bank)
+
+        self.controller.to_before_bank()
+        for b in self.banks_controller.banks:
+            self.controller.to_next_bank()
+            self.assertEqual(b, self.controller.current_bank)
+            observer.on_current_pedalboard_changed.assert_called_with(b.pedalboards[0], None)
+
+        for b in self.banks_controller.banks:
+            self.controller.to_next_bank(self.TOKEN)
+            self.assertEqual(b, self.controller.current_bank)
+            observer.on_current_pedalboard_changed.assert_called_with(b.pedalboards[0], self.TOKEN)
+
+        self.controller.to_next_bank()
+
+        self.banks_controller.delete(bank)
+        self.notifier.unregister(observer)
 
     def test_set_bank(self):
-        firstBank = self.controller.currentBank
+        observer = MagicMock()
+        self.notifier.register(observer)
 
-        self.controller.setBank(1)
-        self.assertEqual(1, self.controller.bankNumber)
+        bank = self.bank_with_pedalboard
+        index = self.banks_controller.create(bank)
 
-        self.assertNotEqual(firstBank, self.controller.currentBank)
+        first_bank = self.controller.current_bank
 
-    def test_setting_bank_patch_will_be_first(self):
-        self.controller.setBank(1)
-        self.assertEqual(1, self.controller.bankNumber)
-        self.assertEqual(0, self.controller.patchNumber)
+        self.controller.set_bank(bank)
+        self.assertEqual(index, self.controller.bank_number)
+        self.assertNotEqual(first_bank, self.controller.current_bank)
+        observer.on_current_pedalboard_changed.assert_called_with(bank.pedalboards[0], None)
 
-    def test_set_index_out_bank(self):
-        with self.assertRaises(IndexError):
-            self.controller.setBank(5000)
+        # Pedalboard will be the first
+        self.assertEqual(index, self.controller.bank_number)
+        self.assertEqual(0, self.controller.pedalboard_number)
+
+        self.controller.set_bank(first_bank, self.TOKEN)
+        observer.on_current_pedalboard_changed.assert_called_with(first_bank.pedalboards[0], self.TOKEN)
+
+        self.banks_controller.delete(bank)
+        self.notifier.unregister(observer)
+
+    def test_set_bank_not_added(self):
+        bank = self.bank_with_pedalboard
+        with self.assertRaises(ValueError):
+            self.controller.set_bank(bank)
+
+    def test_set_bank_current_bank(self):
+        observer = MagicMock()
+        self.notifier.register(observer)
+
+        self.controller.set_bank(self.controller.current_bank)
+        observer.on_current_pedalboard_changed.assert_not_called()
+
+        self.notifier.unregister(observer)

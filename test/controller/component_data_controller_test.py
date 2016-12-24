@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from controller.ComponentDataController import ComponentDataController
+from application.controller.component_data_controller import ComponentDataController
 
 from test.controller.controller_test import ControllerTest
 
