@@ -144,8 +144,8 @@ class PedalboardController(Controller):
 
         bank_a.pedalboards[index_a], bank_b.pedalboards[index_b] = bank_b.pedalboards[index_b], bank_a.pedalboards[index_a]
 
-        self.notifier.pedalboard_updated(pedalboard_a, UpdateType.UPDATED, token=token)
-        self.notifier.pedalboard_updated(pedalboard_b, UpdateType.UPDATED, token=token)
+        self._notify_change(pedalboard_a, UpdateType.UPDATED, token=token)
+        self._notify_change(pedalboard_b, UpdateType.UPDATED, token=token)
 
         # FIXME - Persistence
         # self.dao.save(bank_a)

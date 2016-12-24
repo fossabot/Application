@@ -28,7 +28,7 @@ class BanksController(Controller):
         self.notifier = None
 
     def configure(self):
-        # To fix Cyclic dependece
+        # To fix Cyclic dependence
         from application.controller.current_controller import CurrentController
         self.current = self.app.controller(CurrentController)
 
