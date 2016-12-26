@@ -122,5 +122,5 @@ Contents:
    :maxdepth: 2
 
    application
-   controllers
-   models
+   component
+   controller
