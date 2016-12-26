@@ -51,7 +51,7 @@ class PedalboardController(Controller):
         self._save(pedalboard)
         self._notify_change(pedalboard, UpdateType.CREATED, token)
 
-    def update(self, pedalboard, token=None):
+    def update(self, pedalboard, token=None, reload=True):
         """
         Notify all observers that the :class:`Pedalboard` object has updated
         and persists the new state.
@@ -63,13 +63,14 @@ class PedalboardController(Controller):
 
         :param Pedalboard pedalboard: Pedalboard to be updated
         :param string token: Request token identifier
+        :param bool reload: If it's the current pedalboard, is necessary reload the plugins?
         """
         if pedalboard.bank not in self.banks.banks:
             raise PedalboardError('Bank of pedalboard {} not added in banks manager'.format(pedalboard))
 
         self._save(pedalboard)
 
-        if self.current.is_current_pedalboard(pedalboard):
+        if self.current.is_current_pedalboard(pedalboard) and reload:
             self.current.reload_current_pedalboard()
 
         self._notify_change(pedalboard, UpdateType.UPDATED, token)
