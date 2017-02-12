@@ -30,9 +30,9 @@ class NotificationController(Controller):
         """
         self.observers.remove(observer)
 
-    def is_requisitor(self, observer, token):
+    def is_requester(self, observer, token):
         """
-        Verify if the observer is the requisitor change (if observer contains
+        Verify if the observer is the requester change (if observer contains
         same token that token informed)
 
         :param UpdatesObserver observer:
@@ -52,7 +52,7 @@ class NotificationController(Controller):
         :param string token: Request token identifier
         """
         for observer in self.observers:
-            if not self.is_requisitor(observer, token):
+            if not self.is_requester(observer, token):
                 observer.on_current_pedalboard_changed(pedalboard, token)
 
     def bank_updated(self, bank, update_type, token=None, **kwargs):
@@ -64,7 +64,7 @@ class NotificationController(Controller):
         :param string token: Request token identifier
         """
         for observer in self.observers:
-            if not self.is_requisitor(observer, token):
+            if not self.is_requester(observer, token):
                 observer.on_bank_updated(bank, update_type, token, **kwargs)
 
     def pedalboard_updated(self, pedalboard, update_type, token=None, **kwargs):
@@ -76,7 +76,7 @@ class NotificationController(Controller):
         :param string token: Request token identifier
         """
         for observer in self.observers:
-            if not self.is_requisitor(observer, token):
+            if not self.is_requester(observer, token):
                 observer.on_pedalboard_updated(pedalboard, update_type, token, **kwargs)
 
     def effect_updated(self, effect, update_type, token=None, **kwargs):
@@ -88,7 +88,7 @@ class NotificationController(Controller):
         :param string token: Request token identifier
         """
         for observer in self.observers:
-            if not self.is_requisitor(observer, token):
+            if not self.is_requester(observer, token):
                 observer.on_effect_updated(effect, update_type, token, **kwargs)
 
     def effect_status_toggled(self, effect, token=None):
@@ -99,7 +99,7 @@ class NotificationController(Controller):
         :param string token: Request token identifier
         """
         for observer in self.observers:
-            if not self.is_requisitor(observer, token):
+            if not self.is_requester(observer, token):
                 observer.on_effect_status_toggled(effect, token)
 
     def param_value_changed(self, param, token=None, **kwargs):
@@ -110,7 +110,7 @@ class NotificationController(Controller):
         :param string token: Request token identifier
         """
         for observer in self.observers:
-            if not self.is_requisitor(observer, token):
+            if not self.is_requester(observer, token):
                 observer.on_param_value_changed(param, token, **kwargs)
 
     def connection_updated(self, connection, update_type, token=None):
@@ -122,5 +122,5 @@ class NotificationController(Controller):
         :param token: Request token identifier
         """
         for observer in self.observers:
-            if not self.is_requisitor(observer, token):
+            if not self.is_requester(observer, token):
                 observer.on_connection_updated(connection, update_type, token)
