@@ -113,14 +113,15 @@ class NotificationController(Controller):
             if not self.is_requester(observer, token):
                 observer.on_param_value_changed(param, token, **kwargs)
 
-    def connection_updated(self, connection, update_type, token=None):
+    def connection_updated(self, pedalboard, connection, update_type, token=None):
         """
         Notify :class:`Connection` addictions and removals.
 
-        :param connection: Connection added or removed
-        :param update_type: Change type
-        :param token: Request token identifier
+        :param Pedalboard pedalboard: Pedalboard where has added or removed a connection
+        :param Connection connection: Connection added or removed
+        :param UpdateType update_type: Change type
+        :param string token: Request token identifier
         """
         for observer in self.observers:
             if not self.is_requester(observer, token):
-                observer.on_connection_updated(connection, update_type, token)
+                observer.on_connection_updated(pedalboard, connection, update_type, token)

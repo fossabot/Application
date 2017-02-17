@@ -81,30 +81,29 @@ class EffectController(Controller):
 
         self.notifier.effect_updated(effect, update_type, token, **kwargs)
 
-    def connected(self, connection, token=None):
+    def connected(self, pedalboard, connection, token=None):
         """
         Informs the :class:`Connection` object has ben created
 
+        :param Pedalboard pedalboard: Pedalboard where has added the connection
         :param Connection connection: Connection created
         :param string token: Request token identifier
         """
-        self._save_connection(connection)
+        self._update(pedalboard)
 
-        self.notifier.connection_updated(connection, UpdateType.CREATED, token=token)
+        self.notifier.connection_updated(pedalboard, connection, UpdateType.CREATED, token=token)
 
-    def disconnected(self, connection, token=None):
+    def disconnected(self, pedalboard, connection, token=None):
         """
         Informs the :class:`Connection` object has ben created
 
-        :param Connection connection: Connection created
+        :param Pedalboard pedalboard: Pedalboard where has removed the connection
+        :param Connection connection: Connection removed
         :param string token: Request token identifier
         """
-        self._save_connection(connection)
+        self._update(pedalboard)
 
-        self.notifier.connection_updated(connection, UpdateType.DELETED, token=token)
-
-    def _save_connection(self, connection):
-        self._update(connection.input.effect.pedalboard)
+        self.notifier.connection_updated(pedalboard, connection, UpdateType.DELETED, token=token)
 
     def _update(self, pedalboard):
         bank = pedalboard.bank
