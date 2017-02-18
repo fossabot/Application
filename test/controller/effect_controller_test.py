@@ -106,11 +106,11 @@ class EffectControllerTest(ControllerTest):
         connection2 = Connection(reverb.outputs[1], reverb2.inputs[0])
         pedalboard.connections.append(connection2)
 
-        self.effects.connected(connection1)
-        self.observer.on_connection_updated.assert_called_with(connection1, UpdateType.CREATED, None)
+        self.effects.connected(pedalboard, connection1)
+        self.observer.on_connection_updated.assert_called_with(pedalboard, connection1, UpdateType.CREATED, None)
 
-        self.effects.connected(connection2, self.TOKEN)
-        self.observer.on_connection_updated.assert_called_with(connection2, UpdateType.CREATED, self.TOKEN)
+        self.effects.connected(pedalboard, connection2, self.TOKEN)
+        self.observer.on_connection_updated.assert_called_with(pedalboard, connection2, UpdateType.CREATED, self.TOKEN)
 
         self.banks.delete(bank)
 
@@ -128,12 +128,12 @@ class EffectControllerTest(ControllerTest):
         pedalboard.connections.append(connection2)
 
         pedalboard.connections.remove(connection1)
-        self.effects.disconnected(connection1)
-        self.observer.on_connection_updated.assert_called_with(connection1, UpdateType.DELETED, None)
+        self.effects.disconnected(pedalboard, connection1)
+        self.observer.on_connection_updated.assert_called_with(pedalboard, connection1, UpdateType.DELETED, None)
 
         pedalboard.connections.remove(connection2)
-        self.effects.disconnected(connection2, self.TOKEN)
-        self.observer.on_connection_updated.assert_called_with(connection2, UpdateType.DELETED, self.TOKEN)
+        self.effects.disconnected(pedalboard, connection2, self.TOKEN)
+        self.observer.on_connection_updated.assert_called_with(pedalboard, connection2, UpdateType.DELETED, self.TOKEN)
 
         self.banks.delete(bank)
 
