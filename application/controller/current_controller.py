@@ -182,7 +182,7 @@ class CurrentController(Controller):
         self._load_device_pedalboard(pedalboard)  # throwable. need be first
 
         bank_number = self.banks_controller.banks.index(pedalboard.bank)
-        pedalboard_number = pedalboard.bank.pedalboards.index(pedalboard)
+        pedalboard_number = pedalboard.index
 
         self.bank_number = bank_number
         self.pedalboard_number = pedalboard_number
@@ -194,3 +194,18 @@ class CurrentController(Controller):
 
     def _load_device_pedalboard(self, pedalboard):
         self.device_controller.pedalboard = pedalboard
+
+    '''
+    def remove_current(self, token=None):
+        """
+        That not exists any pedalboard running
+        :param string token: Request token identifier
+        """
+        self.device_controller.pedalboard = None
+        self.bank_number = None
+        self.pedalboard_number = None
+
+        self._save_current()
+
+        self.notifier.current_pedalboard_changed(self.current_pedalboard, token)
+    '''

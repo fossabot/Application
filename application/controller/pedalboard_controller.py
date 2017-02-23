@@ -113,6 +113,7 @@ class PedalboardController(Controller):
         if pedalboard.bank not in self.banks.banks:
             raise PedalboardError('Bank of pedalboard {} not added in banks manager'.format(pedalboard))
 
+        # Get next pedalboard if the removed is the current pedalboard
         next_pedalboard = None
         if self.current.is_current_pedalboard(pedalboard):
             self.current.to_next_pedalboard()
@@ -120,12 +121,19 @@ class PedalboardController(Controller):
 
         bank = pedalboard.bank
 
-        pedalboard_index = pedalboard.bank.pedalboards.index(pedalboard)
+        # Remove
+        pedalboard_index = pedalboard.index
         del pedalboard.bank.pedalboards[pedalboard_index]
         self._notify_change(pedalboard, UpdateType.DELETED, token, index=pedalboard_index, origin=bank)
 
+        # Update current pedalboard
+        #only_pedalboard_bank_has_removed = len(bank.pedalboards) == 0
+        #if only_pedalboard_bank_has_removed:
+        #    self.current.remove_current(token=token)
+
+        #elif next_pedalboard is not None:
         if next_pedalboard is not None:
-            self.current.pedalboard_number = next_pedalboard.bank.pedalboards.index(next_pedalboard)
+            self.current.pedalboard_number = next_pedalboard.index
 
         self.dao.save(bank, self.banks.banks.index(bank))
 
@@ -140,8 +148,8 @@ class PedalboardController(Controller):
         bank_a = pedalboard_a.bank
         bank_b = pedalboard_b.bank
 
-        index_a = bank_a.pedalboards.index(pedalboard_a)
-        index_b = bank_b.pedalboards.index(pedalboard_b)
+        index_a = bank_a.index
+        index_b = bank_b.index
 
         bank_a.pedalboards[index_a], bank_b.pedalboards[index_b] = bank_b.pedalboards[index_b], bank_a.pedalboards[index_a]
 
@@ -161,7 +169,7 @@ class PedalboardController(Controller):
 
     def _notify_change(self, pedalboard, update_type, token=None, **kwargs):
         if 'index' not in kwargs:
-            kwargs['index'] = pedalboard.bank.pedalboards.index(pedalboard)
+            kwargs['index'] = pedalboard.index
         if 'origin' not in kwargs:
             kwargs['origin'] = pedalboard.bank
 

@@ -133,7 +133,7 @@ class CurrentControllerTest(ControllerTest):
         original_pedalboard = self.controller.current_pedalboard
 
         self.controller.set_pedalboard(pedalboard)
-        self.assertEqual(pedalboard.bank.pedalboards.index(pedalboard), self.controller.pedalboard_number)
+        self.assertEqual(pedalboard.index, self.controller.pedalboard_number)
         observer.on_current_pedalboard_changed.assert_called_with(pedalboard, None)
 
         self.assertNotEqual(original_pedalboard, self.controller.current_pedalboard)

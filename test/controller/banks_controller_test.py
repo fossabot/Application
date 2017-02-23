@@ -109,7 +109,7 @@ class BanksControllerTest(ControllerTest):
         self.assertEqual(self.current.current_pedalboard, new_pedalboard)
         self.assertEqual(self.current.current_bank, new_pedalboard.bank)
 
-        self.assertEqual(self.current.pedalboard_number, new_pedalboard.bank.pedalboards.index(new_pedalboard))
+        self.assertEqual(self.current.pedalboard_number, new_pedalboard.index)
         self.assertEqual(self.current.bank_number, self.controller.banks.index(new_pedalboard.bank))
 
         self.current.set_pedalboard(original_current_pedalboard)
@@ -186,7 +186,7 @@ class BanksControllerTest(ControllerTest):
         self.assertEqual(self.current.current_pedalboard, current_pedalboard2)
         self.assertEqual(self.current.current_bank, current_pedalboard2.bank)
 
-        self.assertEqual(self.current.pedalboard_number, current_pedalboard2.bank.pedalboards.index(current_pedalboard2))
+        self.assertEqual(self.current.pedalboard_number, current_pedalboard2.index)
         self.assertEqual(self.current.bank_number, self.controller.banks.index(current_pedalboard2.bank))
 
         self.current.set_pedalboard(original_current_pedalboard)
@@ -249,7 +249,7 @@ class BanksControllerTest(ControllerTest):
         self.assertEqual(self.current.current_pedalboard, current_pedalboard)
         self.assertEqual(self.current.current_bank, current_pedalboard.bank)
 
-        self.assertEqual(self.current.pedalboard_number, current_pedalboard.bank.pedalboards.index(current_pedalboard))
+        self.assertEqual(self.current.pedalboard_number, current_pedalboard.index)
         self.assertEqual(self.current.bank_number, self.controller.banks.index(current_pedalboard.bank))
 
         self.controller.delete(bank, bank2)
@@ -259,7 +259,7 @@ class BanksControllerTest(ControllerTest):
         self.assertEqual(self.current.current_bank, current_pedalboard2.bank)
         self.assertEqual(self.current.current_pedalboard, current_pedalboard2)
 
-        self.assertEqual(self.current.pedalboard_number, current_pedalboard2.bank.pedalboards.index(current_pedalboard2))
+        self.assertEqual(self.current.pedalboard_number, current_pedalboard2.index)
         self.assertEqual(self.current.bank_number, self.controller.banks.index(current_pedalboard2.bank))
 
         self.current.set_pedalboard(original_current_pedalboard)
@@ -348,7 +348,7 @@ class BanksControllerTest(ControllerTest):
         self.assertEqual(self.current.current_pedalboard, current_pedalboard)
         self.assertEqual(self.current.current_bank, current_pedalboard.bank)
 
-        self.assertEqual(self.current.pedalboard_number, current_pedalboard.bank.pedalboards.index(current_pedalboard))
+        self.assertEqual(self.current.pedalboard_number, current_pedalboard.index)
         self.assertEqual(self.current.bank_number, self.controller.banks.index(current_pedalboard.bank))
 
         self.controller.swap(bank, bank2)
@@ -364,7 +364,7 @@ class BanksControllerTest(ControllerTest):
         self.assertEqual(self.current.current_pedalboard, current_pedalboard)
         self.assertEqual(self.current.current_bank, current_pedalboard.bank)
 
-        self.assertEqual(self.current.pedalboard_number, current_pedalboard.bank.pedalboards.index(current_pedalboard))
+        self.assertEqual(self.current.pedalboard_number, current_pedalboard.index)
         self.assertEqual(self.current.bank_number, self.controller.banks.index(current_pedalboard.bank))
 
         self.current.set_pedalboard(original_current_pedalboard)

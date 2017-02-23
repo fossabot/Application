@@ -128,7 +128,7 @@ class PedalboardControllerTest(ControllerTest):
         self.assertEqual(self.current.current_pedalboard, pedalboard)
         self.assertEqual(self.current.current_bank, pedalboard.bank)
 
-        self.assertEqual(self.current.pedalboard_number, pedalboard.bank.pedalboards.index(pedalboard))
+        self.assertEqual(self.current.pedalboard_number, pedalboard.index)
         self.assertEqual(self.current.bank_number, self.banks.banks.index(pedalboard.bank))
 
         pedalboard.name = 'test_update_current_pedalboard3'
@@ -138,7 +138,7 @@ class PedalboardControllerTest(ControllerTest):
         self.assertEqual(self.current.current_pedalboard, pedalboard)
         self.assertEqual(self.current.current_bank, pedalboard.bank)
 
-        self.assertEqual(self.current.pedalboard_number, pedalboard.bank.pedalboards.index(pedalboard))
+        self.assertEqual(self.current.pedalboard_number, pedalboard.index)
         self.assertEqual(self.current.bank_number, self.banks.banks.index(pedalboard.bank))
 
         self.current.set_pedalboard(original_pedalboard)
@@ -257,7 +257,7 @@ class PedalboardControllerTest(ControllerTest):
         self.assertEqual(self.current.current_pedalboard, pedalboard2)
         self.assertEqual(self.current.current_bank, pedalboard2.bank)
 
-        self.assertEqual(self.current.pedalboard_number, pedalboard2.bank.pedalboards.index(pedalboard2))
+        self.assertEqual(self.current.pedalboard_number, pedalboard2.index)
         self.assertEqual(self.current.bank_number, self.banks.banks.index(pedalboard2.bank))
 
         self.current.set_pedalboard(original_pedalboard)

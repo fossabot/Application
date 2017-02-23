@@ -75,7 +75,7 @@ class EffectController(Controller):
 
     def _notify_change(self, effect, update_type, token, **kwargs):
         if 'index' not in kwargs:
-            kwargs['index'] = effect.pedalboard.effects.index(effect)
+            kwargs['index'] = effect.index
         if 'origin' not in kwargs:
             kwargs['origin'] = effect.pedalboard
 
