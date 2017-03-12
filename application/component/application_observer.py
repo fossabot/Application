@@ -1,4 +1,4 @@
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 
 
 class ApplicationObserver(metaclass=ABCMeta):
@@ -25,3 +25,7 @@ class ApplicationObserver(metaclass=ABCMeta):
     def __init__(self):
         super(ApplicationObserver, self).__init__()
         self.token = None
+
+    @abstractmethod
+    def on_current_pedalboard_changed(self, pedalboard, token=None):
+        pass

@@ -3,7 +3,7 @@ from application.controller.controller import Controller
 
 class NotificationController(Controller):
     """
-    Notifies request changes to all :class:`UpdatesObserver` registered
+    Notifies request changes to all :class:`ApplicationObserver` registered
     than not contains the same request _token_.
     """
 
@@ -18,7 +18,7 @@ class NotificationController(Controller):
         """
         Register an observer
 
-        :param Notification observer: An observer that will be received the changes
+        :param ApplicationObserver observer: An observer that will be received the changes
         """
         self.observers.append(observer)
 
@@ -26,7 +26,7 @@ class NotificationController(Controller):
         """
         Unregister an observer
         
-        :param Notification observer: An observer that not will be more received the changes
+        :param ApplicationObserver observer: An observer that not will be more received the changes
         """
         self.observers.remove(observer)
 
@@ -35,7 +35,7 @@ class NotificationController(Controller):
         Verify if the observer is the requester change (if observer contains
         same token that token informed)
 
-        :param UpdatesObserver observer:
+        :param ApplicationObserver observer:
         :param string token: Request token identifier
         :return: The requisiton is realized by observer?
         """
