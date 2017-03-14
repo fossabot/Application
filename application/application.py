@@ -103,6 +103,10 @@ class Application(object):
         """
         Start this API, initializing the components.
         """
+        current_pedalboard = self.controller(CurrentController).current_pedalboard
+        self._log('Load current pedalboard -', current_pedalboard)
+        self.mod_host.pedalboard = current_pedalboard
+
         for component in self.components:
             component.init()
             self._log('Load component -', component.__class__.__name__)

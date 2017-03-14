@@ -37,7 +37,7 @@ class NotificationController(Controller):
 
         :param ApplicationObserver observer:
         :param string token: Request token identifier
-        :return: The requisiton is realized by observer?
+        :return: The requisition is realized by observer?
         """
         return observer.token is not None and observer.token == token
 

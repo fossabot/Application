@@ -43,7 +43,7 @@ class EffectController(Controller):
         :param Effect effect: Effect created and added in your Pedalboard
         :param string token: Request token identifier
         """
-        self._update(effect.pedalboard)
+        self._save(effect.pedalboard)
         self._notify_change(effect, UpdateType.CREATED, token)
 
     def delete(self, effect, token=None):
@@ -58,7 +58,7 @@ class EffectController(Controller):
         self._notify_change(effect, UpdateType.DELETED, token)
         pedalboard.effects.remove(effect)
 
-        self._update(pedalboard)
+        self._save(pedalboard)
 
     def toggle_status(self, effect, token=None):
         """
@@ -70,7 +70,7 @@ class EffectController(Controller):
         """
         effect.toggle()
 
-        self._update(effect.pedalboard)
+        self._save(effect.pedalboard)
         self.notifier.effect_status_toggled(effect, token)
 
     def _notify_change(self, effect, update_type, token, **kwargs):
@@ -89,7 +89,7 @@ class EffectController(Controller):
         :param Connection connection: Connection created
         :param string token: Request token identifier
         """
-        self._update(pedalboard)
+        self._save(pedalboard)
 
         self.notifier.connection_updated(pedalboard, connection, UpdateType.CREATED, token=token)
 
@@ -101,14 +101,11 @@ class EffectController(Controller):
         :param Connection connection: Connection removed
         :param string token: Request token identifier
         """
-        self._update(pedalboard)
+        self._save(pedalboard)
 
         self.notifier.connection_updated(pedalboard, connection, UpdateType.DELETED, token=token)
 
-    def _update(self, pedalboard):
+    def _save(self, pedalboard):
         bank = pedalboard.bank
         index = self.banks.banks.index(bank)
         self.dao.save(bank, index)
-
-        if self.current.is_current_pedalboard(pedalboard):
-            self.device.pedalboard = pedalboard
