@@ -74,12 +74,10 @@ class EffectController(Controller):
         self.notifier.effect_status_toggled(effect, token)
 
     def _notify_change(self, effect, update_type, token, **kwargs):
-        if 'index' not in kwargs:
-            kwargs['index'] = effect.index
-        if 'origin' not in kwargs:
-            kwargs['origin'] = effect.pedalboard
+        index = kwargs.pop('index', effect.index)
+        origin = kwargs.pop('origin', effect.pedalboard)
 
-        self.notifier.effect_updated(effect, update_type, token, **kwargs)
+        self.notifier.effect_updated(effect, update_type, index=index, origin=origin, token=token, **kwargs)
 
     def connected(self, pedalboard, connection, token=None):
         """
@@ -91,11 +89,11 @@ class EffectController(Controller):
         """
         self._save(pedalboard)
 
-        self.notifier.connection_updated(pedalboard, connection, UpdateType.CREATED, token=token)
+        self.notifier.connection_updated(connection, UpdateType.CREATED, pedalboard=pedalboard, token=token)
 
     def disconnected(self, pedalboard, connection, token=None):
         """
-        Informs the :class:`Connection` object has ben created
+        Informs the :class:`Connection` object has ben removed
 
         :param Pedalboard pedalboard: Pedalboard where has removed the connection
         :param Connection connection: Connection removed
@@ -103,7 +101,7 @@ class EffectController(Controller):
         """
         self._save(pedalboard)
 
-        self.notifier.connection_updated(pedalboard, connection, UpdateType.DELETED, token=token)
+        self.notifier.connection_updated(connection, UpdateType.DELETED, pedalboard=pedalboard, token=token)
 
     def _save(self, pedalboard):
         bank = pedalboard.bank

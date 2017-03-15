@@ -1,7 +1,8 @@
 from abc import ABCMeta, abstractmethod
+from pluginsmanager.model.updates_observer import UpdatesObserver
 
 
-class ApplicationObserver(metaclass=ABCMeta):
+class ApplicationObserver(UpdatesObserver, metaclass=ABCMeta):
     """
     The :class:`ApplicationObserver` extends :class:`UpdatesObserver`.
     It is an abstract class definition for treatment of changes in some class model.

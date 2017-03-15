@@ -38,11 +38,11 @@ class PedalboardControllerTest(ControllerTest):
         self.banks.create(bank)
 
         self.controller.created(pedalboard)
-        observer.on_pedalboard_updated.assert_called_with(pedalboard, UpdateType.CREATED, None, index=0, origin=bank)
+        observer.on_pedalboard_updated.assert_called_with(pedalboard, UpdateType.CREATED, token=None, index=0, origin=bank)
 
         bank.append(pedalboard2)
         self.controller.created(pedalboard2, self.TOKEN)
-        observer.on_pedalboard_updated.assert_called_with(pedalboard2, UpdateType.CREATED, self.TOKEN, index=1, origin=bank)
+        observer.on_pedalboard_updated.assert_called_with(pedalboard2, UpdateType.CREATED, token=self.TOKEN, index=1, origin=bank)
 
         self.controller.delete(pedalboard)
         self.controller.delete(pedalboard2)
@@ -80,11 +80,11 @@ class PedalboardControllerTest(ControllerTest):
         pedalboard.name = 'test_update_pedalboard2'
         self.controller.update(pedalboard)
 
-        observer.on_pedalboard_updated.assert_called_with(pedalboard, UpdateType.UPDATED, None, index=0, origin=bank)
+        observer.on_pedalboard_updated.assert_called_with(pedalboard, UpdateType.UPDATED, token=None, index=0, origin=bank)
 
         pedalboard.name = 'test_update_pedalboard3'
         self.controller.update(pedalboard, self.TOKEN)
-        observer.on_pedalboard_updated.assert_called_with(pedalboard, UpdateType.UPDATED, self.TOKEN, index=0, origin=bank)
+        observer.on_pedalboard_updated.assert_called_with(pedalboard, UpdateType.UPDATED, token=self.TOKEN, index=0, origin=bank)
 
         self.controller.delete(pedalboard)
         self.banks.delete(bank)
@@ -123,7 +123,7 @@ class PedalboardControllerTest(ControllerTest):
         pedalboard.name = 'test_update_current_pedalboard2'
         self.controller.update(pedalboard)
 
-        observer.on_pedalboard_updated.assert_called_with(pedalboard, UpdateType.UPDATED, None, index=0, origin=bank)
+        observer.on_pedalboard_updated.assert_called_with(pedalboard, UpdateType.UPDATED, token=None, index=0, origin=bank)
 
         self.assertEqual(self.current.current_pedalboard, pedalboard)
         self.assertEqual(self.current.current_bank, pedalboard.bank)
@@ -133,7 +133,7 @@ class PedalboardControllerTest(ControllerTest):
 
         pedalboard.name = 'test_update_current_pedalboard3'
         self.controller.update(pedalboard, self.TOKEN)
-        observer.on_pedalboard_updated.assert_called_with(pedalboard, UpdateType.UPDATED, self.TOKEN, index=0, origin=bank)
+        observer.on_pedalboard_updated.assert_called_with(pedalboard, UpdateType.UPDATED, token=self.TOKEN, index=0, origin=bank)
 
         self.assertEqual(self.current.current_pedalboard, pedalboard)
         self.assertEqual(self.current.current_bank, pedalboard.bank)
@@ -158,10 +158,10 @@ class PedalboardControllerTest(ControllerTest):
         self.banks.create(bank)
 
         self.controller.replace(pedalboard, pedalboard2)
-        observer.on_pedalboard_updated.assert_called_with(pedalboard2, UpdateType.UPDATED, None, index=0, origin=bank)
+        observer.on_pedalboard_updated.assert_called_with(pedalboard2, UpdateType.UPDATED, token=None, index=0, origin=bank)
 
         self.controller.replace(pedalboard2, pedalboard3, self.TOKEN)
-        observer.on_pedalboard_updated.assert_called_with(pedalboard3, UpdateType.UPDATED, self.TOKEN, index=0, origin=bank)
+        observer.on_pedalboard_updated.assert_called_with(pedalboard3, UpdateType.UPDATED, token=self.TOKEN, index=0, origin=bank)
 
         self.controller.delete(pedalboard3)
         self.banks.delete(bank)
@@ -211,9 +211,9 @@ class PedalboardControllerTest(ControllerTest):
         self.controller.created(pedalboard2)
 
         self.controller.delete(pedalboard)
-        observer.on_pedalboard_updated.assert_called_with(pedalboard, UpdateType.DELETED, None, index=0, origin=bank)
+        observer.on_pedalboard_updated.assert_called_with(pedalboard, UpdateType.DELETED, token=None, index=0, origin=bank)
         self.controller.delete(pedalboard2, self.TOKEN)
-        observer.on_pedalboard_updated.assert_called_with(pedalboard2, UpdateType.DELETED, self.TOKEN, index=0, origin=bank)
+        observer.on_pedalboard_updated.assert_called_with(pedalboard2, UpdateType.DELETED, token=self.TOKEN, index=0, origin=bank)
 
         self.banks.delete(bank)
         self.notifier.unregister(observer)

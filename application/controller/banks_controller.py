@@ -48,18 +48,21 @@ class BanksController(Controller):
 
         :param Bank bank: Bank that will be added
         :param string token: Request token identifier
+
+        :return int: Bank index
         """
         if bank in self.manager.banks:
             raise BankError('Bank {} already added in banks manager'.format(bank))
 
         self.manager.append(bank)
 
-        self._notify_change(bank, UpdateType.CREATED, token)
+        index = len(self.banks) - 1
+        self._notify_change(bank, UpdateType.CREATED, token, index=index)
 
         bank.original_name = bank.name
-        self.dao.save(bank, len(self.banks) - 1)
+        self.dao.save(bank, index)
 
-        return len(self.banks) - 1
+        return index
 
     def update(self, bank, token=None):
         """
@@ -146,13 +149,15 @@ class BanksController(Controller):
             self.current.to_next_bank()
             next_bank = self.current.current_bank
 
+        manager = bank.manager
+        index = self.banks.index(bank)
         self.dao.delete(bank)
         self.manager.banks.remove(bank)
 
         if next_bank is not None:
-            self.current.bank_number = self.manager.banks.index(next_bank)
+            self.current.bank_number = self.banks.index(next_bank)
 
-        self._notify_change(bank, UpdateType.DELETED, token)
+        self._notify_change(bank, UpdateType.DELETED, token, index=index, manager=manager)
 
     def swap(self, bank_a, bank_b, token=None):
         """
@@ -192,5 +197,8 @@ class BanksController(Controller):
         self._notify_change(bank_a, UpdateType.UPDATED, token)
         self._notify_change(bank_b, UpdateType.UPDATED, token)
 
-    def _notify_change(self, bank, update_type, token=None):
-        self.notifier.bank_updated(bank, update_type, token)
+    def _notify_change(self, bank, update_type, token=None, index=None, manager=None):
+        manager = manager if manager is not None else bank.manager
+        index = index if index is not None else bank.index
+
+        self.notifier.bank_updated(bank, update_type, index=index, origin=manager, token=token)

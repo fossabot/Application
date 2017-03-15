@@ -168,9 +168,7 @@ class PedalboardController(Controller):
         self.dao.save(bank, self.banks.banks.index(bank))
 
     def _notify_change(self, pedalboard, update_type, token=None, **kwargs):
-        if 'index' not in kwargs:
-            kwargs['index'] = pedalboard.index
-        if 'origin' not in kwargs:
-            kwargs['origin'] = pedalboard.bank
+        index = kwargs.pop('index') if 'index' in kwargs else pedalboard.index
+        origin = kwargs.pop('origin') if 'origin' in kwargs else pedalboard.bank
 
-        self.notifier.pedalboard_updated(pedalboard, update_type, token, **kwargs)
+        self.notifier.pedalboard_updated(pedalboard, update_type, index=index, origin=origin, token=token, **kwargs)

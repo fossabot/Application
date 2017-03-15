@@ -33,12 +33,15 @@ class BanksControllerTest(ControllerTest):
 
         bank = Bank('test_create_bank')
         index = self.controller.create(bank)
-        observer.on_bank_updated.assert_called_with(bank, UpdateType.CREATED, None)
+        print(index)
+        print(bank.index)
+        print(bank.manager.banks)
+        observer.on_bank_updated.assert_called_with(bank, UpdateType.CREATED, index=index, origin=bank.manager, token=None)
         self.assertEqual(index, self.controller.banks.index(bank))
 
         bank2 = Bank('test_create_bank_2')
         index2 = self.controller.create(bank2, self.TOKEN)
-        observer.on_bank_updated.assert_called_with(bank2, UpdateType.CREATED, self.TOKEN)
+        observer.on_bank_updated.assert_called_with(bank2, UpdateType.CREATED, index=index2, origin=bank2.manager, token=self.TOKEN)
         self.assertEqual(index2, self.controller.banks.index(bank2))
 
         self.notifier.unregister(observer)
@@ -71,11 +74,11 @@ class BanksControllerTest(ControllerTest):
 
         bank.name = 'test_update_bank_new'
         self.controller.update(bank)
-        observer.on_bank_updated.assert_called_with(bank, UpdateType.UPDATED, None)
+        observer.on_bank_updated.assert_called_with(bank, UpdateType.UPDATED, index=bank.index, origin=bank.manager, token=None)
 
         bank.name = 'test_update_bank_new_new'
         self.controller.update(bank, self.TOKEN)
-        observer.on_bank_updated.assert_called_with(bank, UpdateType.UPDATED, self.TOKEN)
+        observer.on_bank_updated.assert_called_with(bank, UpdateType.UPDATED, index=bank.index, origin=bank.manager, token=self.TOKEN)
 
         self.controller.delete(bank)
         self.notifier.unregister(observer)
@@ -131,10 +134,10 @@ class BanksControllerTest(ControllerTest):
 
         self.controller.create(bank)
         self.controller.replace(bank, bank2)
-        observer.on_bank_updated.assert_any_call(bank2, UpdateType.UPDATED, None)
+        observer.on_bank_updated.assert_any_call(bank2, UpdateType.UPDATED, index=bank2.index, origin=bank2.manager, token=None)
 
         self.controller.replace(bank2, bank3, self.TOKEN)
-        observer.on_bank_updated.assert_any_call(bank3, UpdateType.UPDATED, self.TOKEN)
+        observer.on_bank_updated.assert_any_call(bank3, UpdateType.UPDATED, index=bank3.index, origin=bank3.manager, token=self.TOKEN)
 
         self.controller.delete(bank3)
         self.notifier.unregister(observer)
@@ -222,13 +225,13 @@ class BanksControllerTest(ControllerTest):
         self.controller.delete(bank)
         self.assertEqual(total, len(self.controller.banks))
 
-        observer.on_bank_updated.assert_called_with(bank, UpdateType.DELETED, None)
+        observer.on_bank_updated.assert_called_with(bank, UpdateType.DELETED, index=bank.index, origin=self.controller.manager, token=None)
 
         bank2 = Bank('test_delete_bank')
         self.controller.create(bank2)
         self.controller.delete(bank2, self.TOKEN)
 
-        observer.on_bank_updated.assert_called_with(bank2, UpdateType.DELETED, self.TOKEN)
+        observer.on_bank_updated.assert_called_with(bank2, UpdateType.DELETED, index=bank2.index, origin=self.controller.manager, token=self.TOKEN)
         self.notifier.unregister(observer)
 
     def test_delete_current_bank(self):
@@ -293,15 +296,15 @@ class BanksControllerTest(ControllerTest):
         self.assertEqual(bank2, self.controller.banks[index2])
 
         self.controller.swap(bank, bank2)
-        observer.on_bank_updated.assert_any_call(bank, UpdateType.UPDATED, None)
-        observer.on_bank_updated.assert_any_call(bank2, UpdateType.UPDATED, None)
+        observer.on_bank_updated.assert_any_call(bank, UpdateType.UPDATED, index=bank.index, origin=bank.manager, token=None)
+        observer.on_bank_updated.assert_any_call(bank2, UpdateType.UPDATED, index=bank2.index, origin=bank2.manager, token=None)
 
         self.assertEqual(bank, self.controller.banks[index2])
         self.assertEqual(bank2, self.controller.banks[index])
 
         self.controller.swap(bank, bank2, self.TOKEN)
-        observer.on_bank_updated.assert_any_call(bank, UpdateType.UPDATED, self.TOKEN)
-        observer.on_bank_updated.assert_any_call(bank2, UpdateType.UPDATED, self.TOKEN)
+        observer.on_bank_updated.assert_any_call(bank, UpdateType.UPDATED, index=bank.index, origin=bank.manager, token=self.TOKEN)
+        observer.on_bank_updated.assert_any_call(bank2, UpdateType.UPDATED, index=bank2.index, origin=bank2.manager, token=self.TOKEN)
 
         self.assertEqual(bank, self.controller.banks[index])
         self.assertEqual(bank2, self.controller.banks[index2])

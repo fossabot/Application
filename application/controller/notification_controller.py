@@ -55,41 +55,47 @@ class NotificationController(Controller):
             if not self.is_requester(observer, token):
                 observer.on_current_pedalboard_changed(pedalboard, token)
 
-    def bank_updated(self, bank, update_type, token=None, **kwargs):
+    def bank_updated(self, bank, update_type, index, origin, token=None):
         """
         Notify changes in :class:`Bank`.
 
         :param Bank bank: Bank changed.
         :param UpdateType update_type: Change type
         :param string token: Request token identifier
+        :param int index: Bank index (or old index if update_type == UpdateType.DELETED)
+        :param BanksManager origin: BanksManager that the bank is (or has) contained
         """
         for observer in self.observers:
             if not self.is_requester(observer, token):
-                observer.on_bank_updated(bank, update_type, token, **kwargs)
+                observer.on_bank_updated(bank, update_type, index=index, origin=origin, token=token)
 
-    def pedalboard_updated(self, pedalboard, update_type, token=None, **kwargs):
+    def pedalboard_updated(self, pedalboard, update_type, index, origin, token=None):
         """
         Notify changes in :class:`Pedalboard`.
 
         :param Pedalboard pedalboard: Pedalboard changed
         :param UpdateType update_type: Change type
+        :param int index: Pedalboard index (or old index if update_type == UpdateType.DELETED)
+        :param Bank origin: Bank that the pedalboard is (or has) contained
         :param string token: Request token identifier
         """
         for observer in self.observers:
             if not self.is_requester(observer, token):
-                observer.on_pedalboard_updated(pedalboard, update_type, token, **kwargs)
+                observer.on_pedalboard_updated(pedalboard, update_type, index=index, origin=origin, token=token)
 
-    def effect_updated(self, effect, update_type, token=None, **kwargs):
+    def effect_updated(self, effect, update_type, index, origin, token=None):
         """
         Notify changes in :class:`Effect`.
 
         :param Effect effect: Effect changed
         :param UpdateType update_type: Change type
+        :param int index: Effect index (or old index if update_type == UpdateType.DELETED)
+        :param Pedalboard origin: Pedalboard that the effect is (or has) contained
         :param string token: Request token identifier
         """
         for observer in self.observers:
             if not self.is_requester(observer, token):
-                observer.on_effect_updated(effect, update_type, token, **kwargs)
+                observer.on_effect_updated(effect, update_type, index=index, origin=origin, token=token)
 
     def effect_status_toggled(self, effect, token=None):
         """
@@ -113,15 +119,15 @@ class NotificationController(Controller):
             if not self.is_requester(observer, token):
                 observer.on_param_value_changed(param, token, **kwargs)
 
-    def connection_updated(self, pedalboard, connection, update_type, token=None):
+    def connection_updated(self, connection, update_type, pedalboard, token=None):
         """
         Notify :class:`Connection` addictions and removals.
 
-        :param Pedalboard pedalboard: Pedalboard where has added or removed a connection
         :param Connection connection: Connection added or removed
         :param UpdateType update_type: Change type
+        :param Pedalboard pedalboard: Pedalboard that the connection is (or has) contained
         :param string token: Request token identifier
         """
         for observer in self.observers:
             if not self.is_requester(observer, token):
-                observer.on_connection_updated(pedalboard, connection, update_type, token)
+                observer.on_connection_updated(connection, update_type, pedalboard=pedalboard, token=token)
