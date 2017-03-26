@@ -12,8 +12,11 @@ class Database(object):
 
     @staticmethod
     def save(url, data):
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(Database._save(url, data))
+        try:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(Database._save(url, data))
+        except AssertionError:
+            Database._save(url, data)
 
     @staticmethod
     @asyncio.coroutine
@@ -24,8 +27,11 @@ class Database(object):
 
     @staticmethod
     def delete(url):
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(Database._delete(url))
+        try:
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(Database._delete(url))
+        except AssertionError:
+            Database._delete(url)
 
     @staticmethod
     @asyncio.coroutine
