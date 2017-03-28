@@ -12,12 +12,7 @@ install:
   - pip3 install coveralls
 
 script:
-  - cd ..
-  - git clone https://github.com/PedalPi/PluginsManager pluginsmanager --depth=1
-  - cd pluginsmanager
   - python setup.py develop
-  - cd ..
-  - cd Application
   - coverage3 run --source=application setup.py test
 
 after_success:
