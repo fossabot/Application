@@ -1,6 +1,8 @@
 *.pyc
-PedalPi_Application.egg-info
+*.egg-info
+htmlcov
 .coverage
-htmlcov/
 docs/build
 .eggs
+dist/
+build/
