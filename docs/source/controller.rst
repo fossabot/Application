@@ -1,6 +1,29 @@
 PedalPi - Application - Controller
 ==================================
 
+The Plugins manager observer problem
+------------------------------------
+
+FIXME - Explain **token**
+
+`pluginsmanager`_ can notifies they changes, but in a case that many
+uses the plugins manager objects, is necessary in a change notifiers
+all except the one who caused the change.
+
+As example, a multi-effects uses `Raspberry-P1`_ for physical management and
+`WebService`_ for a controller with `Apk`_ controller. If they uses only
+`plugins manager`, a toggle status effect change in a Raspberry-P0 will
+informs WebService and unreasonably Raspberry-P1.
+
+Using the Application controllers for management and notification, the problem
+will be avoived.
+
+.. _pluginsmanager: https://github.com/PedalPi/PluginsManager
+.. _Raspberry-P1: https://github.com/PedalPi/Raspberry-P1
+.. _WebService: https://github.com/PedalPi/WebService
+.. _Apk: https://github.com/PedalPi/Apk
+.. _mod-host: https://github.com/moddevices/mod-host
+
 
 Controller
 ----------

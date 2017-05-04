@@ -26,7 +26,7 @@ setup(
     name='PedalPi-Application',
     version='0.2.0',
 
-    description='',
+    description='Framework for manager the Pedal Pi',
     long_description=readme(),
 
     url='https://github.com/PedalPi/Application',

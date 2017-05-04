@@ -1,5 +1,5 @@
 PedalPi - Application
 =====================
 
-.. autoclass:: Application.Application
+.. autoclass:: application.application.Application
   :members:
