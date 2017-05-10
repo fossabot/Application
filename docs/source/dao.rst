@@ -28,6 +28,13 @@ CurrentDao
    :members:
    :special-members:
 
+PluginsDao
+----------
+
+.. autoclass:: application.dao.plugins_dao.PluginsDaO
+   :members:
+   :special-members:
+
 Database
 --------
 

@@ -17,7 +17,6 @@ import os
 from distutils.dir_util import copy_tree
 from pathlib import Path
 
-
 from application.controller.banks_controller import BanksController
 from application.controller.current_controller import CurrentController
 from application.controller.component_data_controller import ComponentDataController
@@ -90,9 +89,9 @@ class Application(object):
         if not os.listdir(path):
             default_path_data = os.path.dirname(os.path.abspath(__file__)) / Path('../test') / 'data'
             copy_tree(str(default_path_data), str(os.path.abspath(path)))
-            self._log('Data - Create initial data')
+            self.log('Data - Create initial data')
 
-        self._log('Data - Loads', os.path.abspath(path))
+        self.log('Data - Loads', os.path.abspath(path))
         return path
 
     def _load_controllers(self):
@@ -118,7 +117,7 @@ class Application(object):
     def _configure_controllers(self, controllers):
         for controller in list(controllers.values()):
             controller.configure()
-            self._log('Load controller -', controller.__class__.__name__)
+            self.log('Load controller -', controller.__class__.__name__)
 
     def register(self, component):
         """
@@ -134,12 +133,12 @@ class Application(object):
         Start this API, initializing the components.
         """
         current_pedalboard = self.controller(CurrentController).current_pedalboard
-        self._log('Load current pedalboard - ', '"' + current_pedalboard.name + '"')
+        self.log('Load current pedalboard - ', '"' + current_pedalboard.name + '"')
         self.mod_host.pedalboard = current_pedalboard
 
         for component in self.components:
             component.init()
-            self._log('Load component -', component.__class__.__name__)
+            self.log('Load component -', component.__class__.__name__)
 
     def controller(self, controller):
         """
@@ -159,5 +158,5 @@ class Application(object):
         """
         return dao(self.path_data)
 
-    def _log(self, *args, **kwargs):
+    def log(self, *args, **kwargs):
         print('[' + time.strftime('%Y-%m-%d %H:%M:%S') + ']', *args, **kwargs)

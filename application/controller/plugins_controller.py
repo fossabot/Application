@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from application.controller.controller import Controller
-
 from enum import Enum
+from shutil import copy2
+
+from application.controller.controller import Controller
+from application.dao.plugins_dao import PluginsDao
 
 from pluginsmanager.model.lv2.lv2_effect_builder import Lv2EffectBuilder
 
@@ -35,7 +37,24 @@ class PluginsController(Controller):
         self.lv2_builder = None
 
     def configure(self):
-        self.lv2_builder = Lv2EffectBuilder()
+        self.lv2_builder = self._configure_lv2_plugins_data()
+
+    @property
+    def _dao(self):
+        return self.app.dao(PluginsDao)
+
+    def _configure_lv2_plugins_data(self):
+        if not self._dao.exists_data:
+            try:
+                self.reload_lv2_plugins_data()
+                self.app.log("Lv2Plugins data - Loaded lv2 plugins data installed")
+            except:
+                self.app.log("Lv2Plugins data - It's not possible reload lv2 plugins data")
+                self.app.log("                  Please install lilv")
+                self.app.log("Lv2Plugins data - Using PluginsManager default lv2 plugins data")
+                copy2(Lv2EffectBuilder.plugins_json_file, self._dao.data_path)
+
+        return Lv2EffectBuilder(plugins_json='data/plugins_lv2.json')
 
     def by(self, technology):
         """
@@ -50,4 +69,38 @@ class PluginsController(Controller):
             return []
 
     def lv2_effect(self, lv2_uri):
+        """
+        Generates a lv2 effect based in lv2_uri.
+
+        For a effect is effectively generate, it's necessary that is installed in operational system and
+        the metadata has loaded.
+
+        For check the installed plugins, use ``lv2ls``::
+
+            sudo apt-get install lilv-utils
+            lv2ls
+
+        For check the plugins with metadata loaded, uses::
+
+            >>> plugin = 'http://guitarix.sourceforge.net/plugins/gx_scream_#_scream_'
+            >>> plugin in plugins_controller.lv2_builder.plugins
+            >>> True
+
+        For force reload plugins data, uses::
+
+            >>> plugins_controller.reload_lv2_plugins_data
+
+        For reload the lv2_plugins_aata, it's necessary the installation of lilv.
+        Check `Lv2EffectBuilder.lv2_plugins_data()`_ method documentation for details.
+
+        .. _Lv2EffectBuilder.lv2_plugins_data(): http://pedalpi-pluginsmanager.readthedocs.io/model_lv2.html#pluginsmanager.model.lv2.lv2_effect_builder.Lv2EffectBuilder.lv2_plugins_data
+
+        :param lv2_uri: String thats identifier a effect. Example: `http://guitarix.sourceforge.net/plugins/gx_scream_#_scream_`
+
+        :return: :class:`Lv2Effect`
+        """
         return self.lv2_builder.build(lv2_uri)
+
+    def reload_lv2_plugins_data(self):
+        plugins_data = self.lv2_builder.lv2_plugins_data()
+        self._dao.save(plugins_data)

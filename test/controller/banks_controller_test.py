@@ -47,9 +47,6 @@ class BanksControllerTest(ControllerTest):
 
         bank = Bank('test_create_bank')
         index = self.controller.create(bank)
-        print(index)
-        print(bank.index)
-        print(bank.manager.banks)
         observer.on_bank_updated.assert_called_with(bank, UpdateType.CREATED, index=index, origin=bank.manager, token=None)
         self.assertEqual(index, self.controller.banks.index(bank))
 
