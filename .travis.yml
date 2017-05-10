@@ -3,10 +3,11 @@ language: python
 python:
   - "3.4"
   - "3.5"
-  - "3.6-dev"
+  - "3.6"
+  - "3.7-dev"
   - "nightly"
-
-sudo: required
+  - "pypy3"
+  - "pypy-5.3.1"
 
 install:
   - pip3 install coveralls
