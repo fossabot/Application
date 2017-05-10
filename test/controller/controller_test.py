@@ -22,7 +22,7 @@ class ControllerTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.application = Application(data_pedalboard='test/data/', test=True)
+        cls.application = Application(path_data='test/data/', test=True)
 
     @classmethod
     def controller(cls, controller):

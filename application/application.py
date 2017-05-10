@@ -13,6 +13,10 @@
 # limitations under the License.
 
 import time
+import os
+from distutils.dir_util import copy_tree
+from pathlib import Path
+
 
 from application.controller.banks_controller import BanksController
 from application.controller.current_controller import CurrentController
@@ -54,17 +58,17 @@ class Application(object):
 
     For more details see the Controllers extended classes.
 
-    :param string data_pedalboard: Uri where the data will be persisted
+    :param string path_data: Path where the data will be persisted
     :param string address: `mod-host`_ address
     :param bool test: If ``test == True``, the connection with mod-host will be simulated
 
     .. _mod-host: https://github.com/moddevices/mod-host
     """
 
-    def __init__(self, data_pedalboard="data/", address="localhost", test=False):
+    def __init__(self, path_data="data/", address="localhost", test=False):
         self.mod_host = self._initialize(address, test)
 
-        self.data_pedalboard = data_pedalboard
+        self.path_data = self._initialize_data(path_data)
         self.components = []
         self.controllers = self._load_controllers()
 
@@ -78,6 +82,18 @@ class Application(object):
             mod_host.connect()
 
         return mod_host
+
+    def _initialize_data(self, path):
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        if not os.listdir(path):
+            default_path_data = os.path.dirname(os.path.abspath(__file__)) / Path('../test') / 'data'
+            copy_tree(str(default_path_data), str(os.path.abspath(path)))
+            self._log('Data - Create initial data')
+
+        self._log('Data - Loads', os.path.abspath(path))
+        return path
 
     def _load_controllers(self):
         controllers = {}
@@ -141,7 +157,7 @@ class Application(object):
         :param dao: Class identifier
         :return: Dao instance
         """
-        return dao(self.data_pedalboard)
+        return dao(self.path_data)
 
     def _log(self, *args, **kwargs):
         print('[' + time.strftime('%Y-%m-%d %H:%M:%S') + ']', *args, **kwargs)
