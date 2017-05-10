@@ -278,44 +278,77 @@ class PedalboardControllerTest(ControllerTest):
         self.banks.delete(bank)
         self.notifier.unregister(observer)
 
-    @unittest.skip("Not implemented")
-    def test_swap(self):
+    def test_move(self):
         observer = MagicMock()
         self.notifier.register(observer)
 
-        observer = MagicMock()
-        self.notifier.register(observer)
+        bank = Bank('test_move - bank')
+        self.banks.create(bank)
 
-        bank_a = Bank('test_swap - bank')
-        pedalboard_a = Pedalboard('test_delete_pedalboard 1')
-        pedalboard_a2 = Pedalboard('test_delete_pedalboard 2')
+        bank.append(Pedalboard('Pedalboard 1'))
+        bank.append(Pedalboard('Pedalboard 2'))
+        bank.append(Pedalboard('Pedalboard 3'))
+        bank.append(Pedalboard('Pedalboard 4'))
 
-        bank_a.append(pedalboard_a)
-        bank_a.append(pedalboard_a2)
+        pedalboard_moved = bank.pedalboards[-1]
 
-        bank_b = Bank('test_swap - bank 2')
-        pedalboard_b = Pedalboard('test_delete_pedalboard 1')
+        new_index = 1
+        self.controller.move(pedalboard_moved, new_index)
 
-        bank_b.append(pedalboard_b)
+        self.assertEqual(bank.pedalboards[new_index], pedalboard_moved)
 
-        self.controller.swap(pedalboard_a2, pedalboard_b)
+        observer.on_pedalboard_updated.assert_any_call(
+            pedalboard_moved,
+            UpdateType.UPDATED,
+            index=new_index,
+            origin=pedalboard_moved.bank,
+            token=None
+        )
 
-        self.assertEqual(bank_a.pedalboards[1], pedalboard_b)
-        self.assertEqual(bank_b.pedalboards[0], pedalboard_a2)
+        # Token test
+        new_index = 3
+        self.controller.move(pedalboard_moved, new_index, token=self.TOKEN)
 
-        observer.on_pedalboard_updated.assert_any_call(pedalboard_b, UpdateType.UPDATED, None)
-        observer.on_pedalboard_updated.assert_any_call(pedalboard_a2, UpdateType.UPDATED, None)
+        self.assertEqual(bank.pedalboards[new_index], pedalboard_moved)
 
-        self.controller.swap(pedalboard_a2, pedalboard_b, self.TOKEN)
+        observer.on_pedalboard_updated.assert_any_call(
+            pedalboard_moved,
+            UpdateType.UPDATED,
+            index=new_index,
+            origin=pedalboard_moved.bank,
+            token=self.TOKEN
+        )
 
-        self.assertEqual(bank_a.pedalboards[1], pedalboard_a2)
-        self.assertEqual(bank_b.pedalboards[0], pedalboard_b)
-
-        observer.on_pedalboard_updated.assert_any_call(pedalboard_b, UpdateType.UPDATED, self.TOKEN)
-        observer.on_pedalboard_updated.assert_any_call(pedalboard_a2, UpdateType.UPDATED, self.TOKEN)
-
+        self.banks.delete(bank)
         self.notifier.unregister(observer)
 
-    @unittest.skip("Not implemented")
-    def test_swap_current_pedalboard(self):
-        ...
+    def test_move_current_pedalboard(self):
+        original_current_pedalboard = self.current.current_pedalboard
+
+        observer = MagicMock()
+        self.notifier.register(observer)
+
+        bank = Bank('test_move - bank')
+        self.banks.create(bank)
+
+        bank.append(Pedalboard('Pedalboard 1'))
+        bank.append(Pedalboard('Pedalboard 2'))
+        bank.append(Pedalboard('Pedalboard 3'))
+        bank.append(Pedalboard('Pedalboard 4'))
+
+        pedalboard_moved = bank.pedalboards[-1]
+        new_index = 1
+
+        self.current.set_pedalboard(pedalboard_moved)
+
+        self.assertEqual(self.current.bank_number, pedalboard_moved.bank.index)
+        self.assertEqual(self.current.pedalboard_number, pedalboard_moved.index)
+
+        self.controller.move(pedalboard_moved, new_index)
+
+        self.assertEqual(self.current.bank_number, pedalboard_moved.bank.index)
+        self.assertEqual(self.current.pedalboard_number, pedalboard_moved.index)
+
+        self.current.set_pedalboard(original_current_pedalboard)
+        self.banks.delete(bank)
+        self.notifier.unregister(observer)
