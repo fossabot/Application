@@ -31,7 +31,7 @@ CurrentDao
 PluginsDao
 ----------
 
-.. autoclass:: application.dao.plugins_dao.PluginsDaO
+.. autoclass:: application.dao.plugins_dao.PluginsDao
    :members:
    :special-members:
 

@@ -1,22 +1,96 @@
 PedalPi - Application - Controller
 ==================================
 
-The Plugins manager observer problem
-------------------------------------
+Token
+-----
 
-FIXME - Explain **token**
+`pluginsmanager`_ can notifies they changes. As an example, if a connection
+between effects is created, plugins manager notifies its observers about the change.
 
-`pluginsmanager`_ can notifies they changes, but in a case that many
-uses the plugins manager objects, is necessary in a change notifiers
-all except the one who caused the change.
+This is how :class:`ModHost` and :class:`Autosaver` know when a change occurs.
+
+These observers work passively: they only receive updates, not using the `pluginsmanager`_
+api to change the state of the application.
+
+Man-Machine Interfaces are usually active: they need to change the state of the application.
+As an example, a button that leaves bypass an effect.
+They also need to receive notifications, so that the information presented
+to the user can be updated in accordance with changes made by other interfaces.
+
+In these cases, is necessary in a change notifiers all except the one who caused the change.
 
 As example, a multi-effects uses `Raspberry-P1`_ for physical management and
 `WebService`_ for a controller with `Apk`_ controller. If they uses only
-`plugins manager`, a toggle status effect change in a Raspberry-P0 will
+`pluginsmanager`, a toggle status effect change in a Raspberry-P1 will
 informs WebService and unreasonably Raspberry-P1.
 
-Using the Application controllers for management and notification, the problem
-will be avoived.
+`pluginsmanager`_ has a solution to this problem::
+
+    >>> class MyAwesomeObserver(UpdatesObserver):
+
+    >>>     def __init__(self, message):
+    >>>         self.message = message
+    >>>
+    >>>     def on_bank_updated(self, bank, update_type, **kwargs):
+    >>>         print(self.message)
+    >>>
+    >>>
+    >>> observer1 = MyAwesomeObserver("Hi! I am observer1")
+    >>> observer2 = MyAwesomeObserver("Hi! I am observer2")
+    >>>
+    >>> manager = BanksManager()
+    >>> manager.register(observer1)
+    >>> manager.register(observer2)
+    >>>
+    >>> bank = Bank('Bank 1')
+    >>> manager.banks.append(bank)
+    "Hi! I am observer1"
+    "Hi! I am observer2"
+    >>> with observer1:
+    >>>     del manager.banks[0]
+    "Hi! I am observer2"
+    >>> with observer2:
+    >>>     manager.banks.append(bank)
+    "Hi! I am observer1"
+
+However, it is not reliable since it is not thread safe.
+
+Application uses an explicit way of reporting notifications
+via `tokens` - unique strings that identify observers.
+Your API provides methods that change the state of the application
+that receive a token as a parameter.
+A change with an informed token is not propagated to an observer who has this token::
+
+    >>> class MyAwesomeObserver(ApplicationObserver):
+    >>>     def __init__(self, application, token, name):
+    >>>         super(ActionsFacade, self).__init__()
+    >>>         self._token = token
+    >>>         self.name = name
+    >>>
+    >>>     @property
+    >>>     def token(self):
+    >>>         return self._token
+    >>>
+    >>>     def on_effect_status_toggled(self, effect, **kwargs):
+    >>>         print(self.name)
+    >>>
+    >>>     ...
+    >>>
+    >>> observer1 = MyAwesomeObserver('observer-1', 'Observer 1 method called!')
+    >>> observer2 = MyAwesomeObserver('observer-2', 'Observer 2 method called!')
+    >>>
+    >>> notification_controller = application.controller(NotificationController)
+    >>> notification_controller.register(observer1)
+    >>> notification_controller.register(observer2)
+    >>>
+    >>> effects_controller = application.controller(EffectController)
+    >>> effects_controller.toggle_status(reverb)
+    'Observer 1 method called!'
+    'Observer 2 method called!'
+    >>> effects_controller.toggle_status(reverb, observer1.token)
+    'Observer 2 method called!'
+    >>> effects_controller.toggle_status(reverb, observer2.token)
+    'Observer 1 method called!'
 
 .. _pluginsmanager: https://github.com/PedalPi/PluginsManager
 .. _Raspberry-P1: https://github.com/PedalPi/Raspberry-P1

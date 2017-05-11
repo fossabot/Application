@@ -54,7 +54,7 @@ class PluginsController(Controller):
                 self.app.log("Lv2Plugins data - Using PluginsManager default lv2 plugins data")
                 copy2(Lv2EffectBuilder.plugins_json_file, self._dao.data_path)
 
-        return Lv2EffectBuilder(plugins_json='data/plugins_lv2.json')
+        return Lv2EffectBuilder(plugins_json=self._dao.data_path)
 
     def by(self, technology):
         """

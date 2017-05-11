@@ -39,7 +39,11 @@ class ApplicationObserver(UpdatesObserver, metaclass=ABCMeta):
 
     def __init__(self):
         super(ApplicationObserver, self).__init__()
-        self.token = None
+
+    @property
+    @abstractmethod
+    def token(self):
+        return None
 
     @abstractmethod
     def on_current_pedalboard_changed(self, pedalboard, token=None):
