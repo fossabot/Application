@@ -43,6 +43,12 @@ class ApplicationObserver(UpdatesObserver, metaclass=ABCMeta):
     @property
     @abstractmethod
     def token(self):
+        """
+        Observer token identifier.
+        :return: string for token identifier
+                 or None if is not necessary identify the observer
+                 (it will receive all notification)
+        """
         return None
 
     @abstractmethod
