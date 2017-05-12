@@ -138,7 +138,7 @@ class Application(object):
         Start this API, initializing the components.
         """
         current_pedalboard = self.controller(CurrentController).current_pedalboard
-        self.log('Load current pedalboard - ', '"' + current_pedalboard.name + '"')
+        self.log('Load current pedalboard -', '"' + current_pedalboard.name + '"')
         self.mod_host.pedalboard = current_pedalboard
 
         for component in self.components:
