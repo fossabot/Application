@@ -43,8 +43,16 @@ setup(
         'application',
         'application/component',
         'application/controller',
-        'application/dao'
+        'application/dao',
+
+        'application/data',
+        'application/data/banks',
+        'application/data/components',
+        'application/data/current',
     ],
+    package_data={
+        'application/data': ['*.json', '*/*.json'],
+    },
     install_requires=['PedalPi-PluginsManager'],
 
     test_suite='test',
@@ -57,6 +65,7 @@ setup(
         'Topic :: Multimedia :: Sound/Audio',
         'Programming Language :: Python :: 3'
     ],
+    keywords='pedal-pi mod-host lv2 audio plugins-manager',
 
     platforms='Linux',
 )

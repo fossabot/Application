@@ -59,11 +59,14 @@ Create the script file that contains the code to run the application (as example
 
 .. code-block:: python
 
-    from application.Application import Application
+    from application.application import Application
 
-    application = Application(data_pedalboard="data/", address='localhost')
+    application = Application(path_data="data/", address='localhost')
 
     application.start()
+
+    from signal import pause
+    pause()
 
 Download, compile and install `mod-host`_. Mod-host is a *LV2 host for Jack controllable via socket or command line*.
 It is developed by `Mod Devices`_, a company that also develops professional equipment for musicians.

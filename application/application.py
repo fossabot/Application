@@ -14,7 +14,7 @@
 
 import time
 import os
-from distutils.dir_util import copy_tree
+from shutil import copytree
 from pathlib import Path
 
 from application.controller.banks_controller import BanksController
@@ -84,15 +84,20 @@ class Application(object):
 
     def _initialize_data(self, path):
         if not os.path.exists(path):
-            os.makedirs(path)
+            default_path_data = os.path.dirname(os.path.abspath(__file__)) / Path('data')
 
-        if not os.listdir(path):
-            default_path_data = os.path.dirname(os.path.abspath(__file__)) / Path('../test') / 'data'
-            copy_tree(str(default_path_data), str(os.path.abspath(path)))
+            ignore_files = lambda d, files: [f for f in files if (Path(d) / Path(f)).is_file() and f.endswith('.py')]
+            copytree(str(default_path_data), str(os.path.abspath(path)), ignore=ignore_files)
+
             self.log('Data - Create initial data')
 
         self.log('Data - Loads', os.path.abspath(path))
         return path
+
+    def _teste(self, d, files):
+        for f in files:
+            print(f)
+        return
 
     def _load_controllers(self):
         controllers = {}
