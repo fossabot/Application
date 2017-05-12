@@ -3,16 +3,18 @@ language: python
 python:
   - "3.4"
   - "3.5"
-  - "3.6-dev"
+  - "3.6"
+  - "3.7-dev"
   - "nightly"
 
 sudo: required
 
 install:
+  - sudo apt-get install -y lilv-utils calf-plugins guitarix --no-install-recommends
   - pip3 install coveralls
 
 script:
-  - python setup.py develop
+  - pip3 install .
   - coverage3 run --source=application setup.py test
 
 after_success:

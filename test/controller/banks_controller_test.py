@@ -1,3 +1,17 @@
+# Copyright 2017 SrMouraSilva
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from application.controller.banks_controller import BanksController, BankError
 from application.controller.current_controller import CurrentController
 from application.controller.notification_controller import NotificationController
@@ -33,9 +47,6 @@ class BanksControllerTest(ControllerTest):
 
         bank = Bank('test_create_bank')
         index = self.controller.create(bank)
-        print(index)
-        print(bank.index)
-        print(bank.manager.banks)
         observer.on_bank_updated.assert_called_with(bank, UpdateType.CREATED, index=index, origin=bank.manager, token=None)
         self.assertEqual(index, self.controller.banks.index(bank))
 

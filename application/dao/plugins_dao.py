@@ -12,27 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from pathlib import Path
 from application.dao.database import Database
 
 
-class CurrentDao(object):
+class PluginsDao(object):
+    """
+    Persists and loads Lv2Plugins data
+    """
 
     def __init__(self, data_path):
-        self.data_path = data_path + 'current/'
+        self._data_path = data_path
+
+    @property
+    def data_path(self):
+        return self._data_path + "plugins_lv2.json"
 
     def load(self):
-        return self._read_file()
+        return Database.read(self.data_path)
 
-    def save(self, bank_index, pedalboard_index):
-        json = {
-            "bank": bank_index,
-            "pedalboard": pedalboard_index
-        }
+    def save(self, data):
+        Database.save(self.data_path, data)
 
-        Database.save(self._url(), json)
-
-    def _read_file(self):
-        return Database.read(self._url())
-
-    def _url(self):
-        return self.data_path + "current.json"
+    @property
+    def exists_data(self):
+        return Path(self.data_path).exists()

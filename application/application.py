@@ -1,4 +1,21 @@
+# Copyright 2017 SrMouraSilva
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import time
+import os
+from shutil import copytree
+from pathlib import Path
 
 from application.controller.banks_controller import BanksController
 from application.controller.current_controller import CurrentController
@@ -40,17 +57,17 @@ class Application(object):
 
     For more details see the Controllers extended classes.
 
-    :param string data_pedalboard: Uri where the data will be persisted
+    :param string path_data: Path where the data will be persisted
     :param string address: `mod-host`_ address
     :param bool test: If ``test == True``, the connection with mod-host will be simulated
 
     .. _mod-host: https://github.com/moddevices/mod-host
     """
 
-    def __init__(self, data_pedalboard="data/", address="localhost", test=False):
+    def __init__(self, path_data="data/", address="localhost", test=False):
         self.mod_host = self._initialize(address, test)
 
-        self.data_pedalboard = data_pedalboard
+        self.path_data = self._initialize_data(path_data)
         self.components = []
         self.controllers = self._load_controllers()
 
@@ -64,6 +81,23 @@ class Application(object):
             mod_host.connect()
 
         return mod_host
+
+    def _initialize_data(self, path):
+        if not os.path.exists(path):
+            default_path_data = os.path.dirname(os.path.abspath(__file__)) / Path('data')
+
+            ignore_files = lambda d, files: [f for f in files if (Path(d) / Path(f)).is_file() and f.endswith('.py')]
+            copytree(str(default_path_data), str(os.path.abspath(path)), ignore=ignore_files)
+
+            self.log('Data - Create initial data')
+
+        self.log('Data - Loads', os.path.abspath(path))
+        return path
+
+    def _teste(self, d, files):
+        for f in files:
+            print(f)
+        return
 
     def _load_controllers(self):
         controllers = {}
@@ -88,7 +122,7 @@ class Application(object):
     def _configure_controllers(self, controllers):
         for controller in list(controllers.values()):
             controller.configure()
-            self._log('Load controller -', controller.__class__.__name__)
+            self.log('Load controller -', controller.__class__.__name__)
 
     def register(self, component):
         """
@@ -104,12 +138,12 @@ class Application(object):
         Start this API, initializing the components.
         """
         current_pedalboard = self.controller(CurrentController).current_pedalboard
-        self._log('Load current pedalboard -', current_pedalboard)
+        self.log('Load current pedalboard -', '"' + current_pedalboard.name + '"')
         self.mod_host.pedalboard = current_pedalboard
 
         for component in self.components:
             component.init()
-            self._log('Load component -', component.__class__.__name__)
+            self.log('Load component -', component.__class__.__name__)
 
     def controller(self, controller):
         """
@@ -127,7 +161,7 @@ class Application(object):
         :param dao: Class identifier
         :return: Dao instance
         """
-        return dao(self.data_pedalboard)
+        return dao(self.path_data)
 
-    def _log(self, *args, **kwargs):
+    def log(self, *args, **kwargs):
         print('[' + time.strftime('%Y-%m-%d %H:%M:%S') + ']', *args, **kwargs)

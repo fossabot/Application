@@ -1,3 +1,17 @@
+# Copyright 2017 SrMouraSilva
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 from application.dao.bank_dao import BankDao
 
 from application.controller.controller import Controller
@@ -137,31 +151,36 @@ class PedalboardController(Controller):
 
         self.dao.save(bank, self.banks.banks.index(bank))
 
-    def swap(self, pedalboard_a, pedalboard_b, token=None):
+    def move(self, pedalboard, new_position, token=None):
         """
-        Swap pedalboard_a with pedalboard_b.
+        Move the pedalboard from the current position in your bank.pedalboards list for the new position::
 
-        :param Pedalboard pedalboard_a: Pedalboard to be swapped with pedalboard_b
-        :param Pedalboard pedalboard_b: Pedalboard to be swapped with pedalboard_a
+            >>> # Move the last pedalboard for second position
+            >>> bank.pedalboards
+            [pedalboard a, pedalboard b, pedalboard c, pedalboard d]
+            >>> pedalboard_d = bank.pedalboards[-1]
+            >>> pedalboard_d
+            pedalboard_d
+            >>> pedalboard_controller.move(pedalboard_d, 1)
+            >>> bank.pedalboards
+            [pedalboard a, pedalboard d, pedalboard b, pedalboard c]
+
+        :param Pedalboard pedalboard: Pedalboard that will be the position in your bank changed
+        :param int new_position: New index position of the pedalboard
         :param string token: Request token identifier
         """
-        bank_a = pedalboard_a.bank
-        bank_b = pedalboard_b.bank
+        current_pedalboard = self.current.current_pedalboard
 
-        index_a = bank_a.index
-        index_b = bank_b.index
+        pedalboards = pedalboard.bank.pedalboards
+        pedalboards.insert(new_position, pedalboards.pop(pedalboard.index))
 
-        bank_a.pedalboards[index_a], bank_b.pedalboards[index_b] = bank_b.pedalboards[index_b], bank_a.pedalboards[index_a]
+        self._notify_change(pedalboard, UpdateType.UPDATED, token=token)
+        self._save(pedalboard)
 
-        self._notify_change(pedalboard_a, UpdateType.UPDATED, token=token)
-        self._notify_change(pedalboard_b, UpdateType.UPDATED, token=token)
-
-        # FIXME - Persistence
-        # self.dao.save(bank_a)
-        # self.dao.save(bank_b)
-
-        # FIXME - Update if is current pedalboard
-        # if pedalboard_a or pedalboard_b is current pedalboard, needs update bank index and current pedalboard index
+        # Save the current pedalboard data
+        # The current pedalboard index changes then changes the pedalboard order
+        if current_pedalboard.bank == pedalboard.bank:
+            self.current._set_current(current_pedalboard, notify=False)
 
     def _save(self, pedalboard):
         bank = pedalboard.bank
