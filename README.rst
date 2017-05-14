@@ -108,7 +108,7 @@ Finally, start the application
 Extending
 ---------
 
-It's possible add or extends the Pedal Pi with addiction of :class:`Component`. A component can
+It's possible add or extends the Pedal Pi with addiction of `Component`. A component can
 provides a Human Machine Interface (HMI) - like `Raspberry P0`_ - or even have an opening for other software
 to consume the features of the Pedal Pi - like `WebService`_ plugin.
 
@@ -121,10 +121,9 @@ To add a component in your configuration file, download it and register it befor
     pip3 install PedalPi-<component name>
 
 .. code-block:: python
-   :emphasize-lines: 5, 6
 
     from application.Application import Application
-    application = Application(data_pedalboard="data/", address='localhost')
+    application = Application(path_data="data/", address='localhost')
 
     # Loading component
     from raspberry_p0.raspberry_p0 import RaspberryP0
@@ -150,12 +149,12 @@ machine to perform the processing and another to provide the control services.
 For example, you have a **Raspberry Pi B+** and a **PC**.
  * The PC in http://10.0.0.100 will process the audio, then it will execute `jack` process,
    `mod-host` process and the audio interface will be connected to it.
- * The *RPi* will executes :class:`Application` with :class:`Component`, like `Raspberry P0 component`_.
+ * The *RPi* will executes `Application` with `Component`, like `Raspberry P0 component`_.
    Raspberry P0 disposes a simple current pedalboard control.
 
 .. code-block:: python
 
-    application = Application(data_pedalboard="data/", address='10.0.0.100')
+    application = Application(path_data="data/", address='10.0.0.100')
 
 .. _Raspberry P0 component: https://github.com/PedalPi/Raspberry-P0
 .. _TCP: https://en.wikipedia.org/wiki/Transmission_Control_Protocol

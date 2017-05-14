@@ -24,13 +24,12 @@ def readme():
 
 setup(
     name='PedalPi-Application',
-    version='0.2.0',
+    version='0.2.1',
 
     description='Framework for manager the Pedal Pi',
     long_description=readme(),
 
     url='https://github.com/PedalPi/Application',
-    download_url='https://github.com/PedalPi/Application/tarball/v0.2.0',
 
     author='Paulo Mateus Moura da Silva (SrMouraSilva)',
     author_email='mateus.moura@hotmail.com',

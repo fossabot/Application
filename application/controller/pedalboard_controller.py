@@ -172,9 +172,13 @@ class PedalboardController(Controller):
         current_pedalboard = self.current.current_pedalboard
 
         pedalboards = pedalboard.bank.pedalboards
-        pedalboards.insert(new_position, pedalboards.pop(pedalboard.index))
 
-        self._notify_change(pedalboard, UpdateType.UPDATED, token=token)
+        self._notify_change(pedalboard, UpdateType.DELETED, token=token)
+        pedalboards.pop(pedalboard.index)
+
+        pedalboards.insert(new_position, pedalboard)
+        self._notify_change(pedalboard, UpdateType.CREATED, token=token)
+
         self._save(pedalboard)
 
         # Save the current pedalboard data

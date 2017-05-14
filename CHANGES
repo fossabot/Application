@@ -1,3 +1,9 @@
+Version 0.2.1 - released 04/14/17
+=================================
+ - 21fdb32 Issue #30 - Fix move pedalboard notification
+ - Fix Readme: Pipy render README.rst
+ - fbb9908 - Add Licenses in __init__.py files
+
 Version 0.2.0 - released 04/05/17
 =================================
  - Initial release

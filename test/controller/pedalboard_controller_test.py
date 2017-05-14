@@ -292,6 +292,7 @@ class PedalboardControllerTest(ControllerTest):
 
         pedalboard_moved = bank.pedalboards[-1]
 
+        old_index = pedalboard_moved.index
         new_index = 1
         self.controller.move(pedalboard_moved, new_index)
 
@@ -299,13 +300,22 @@ class PedalboardControllerTest(ControllerTest):
 
         observer.on_pedalboard_updated.assert_any_call(
             pedalboard_moved,
-            UpdateType.UPDATED,
+            UpdateType.DELETED,
+            index=old_index,
+            origin=pedalboard_moved.bank,
+            token=None
+        )
+
+        observer.on_pedalboard_updated.assert_any_call(
+            pedalboard_moved,
+            UpdateType.CREATED,
             index=new_index,
             origin=pedalboard_moved.bank,
             token=None
         )
 
         # Token test
+        old_index = new_index
         new_index = 3
         self.controller.move(pedalboard_moved, new_index, token=self.TOKEN)
 
@@ -313,7 +323,15 @@ class PedalboardControllerTest(ControllerTest):
 
         observer.on_pedalboard_updated.assert_any_call(
             pedalboard_moved,
-            UpdateType.UPDATED,
+            UpdateType.DELETED,
+            index=old_index,
+            origin=pedalboard_moved.bank,
+            token=self.TOKEN
+        )
+
+        observer.on_pedalboard_updated.assert_any_call(
+            pedalboard_moved,
+            UpdateType.CREATED,
             index=new_index,
             origin=pedalboard_moved.bank,
             token=self.TOKEN
