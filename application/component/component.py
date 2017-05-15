@@ -29,6 +29,14 @@ class Component(metaclass=ABCMeta):
         """
         pass
 
+    def close(self):
+        """
+        Method called when the application is requested to quit.
+        Classes components must implement to safely finish their
+        activities.
+        """
+        pass
+
     def controller(self, controller):
         return self.application.controller(controller)
 

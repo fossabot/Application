@@ -14,6 +14,7 @@
 
 import time
 import os
+import atexit
 from shutil import copytree
 from pathlib import Path
 
@@ -144,6 +145,16 @@ class Application(object):
         for component in self.components:
             component.init()
             self.log('Load component -', component.__class__.__name__)
+
+        self.log('Components loaded')
+        atexit.register(self.stop)
+
+    def stop(self):
+        for component in self.components:
+            component.close()
+            self.log('Stopping component -', component.__class__.__name__)
+
+        atexit.unregister(self.stop)
 
     def controller(self, controller):
         """
