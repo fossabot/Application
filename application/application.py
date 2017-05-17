@@ -32,6 +32,11 @@ from pluginsmanager.mod_host.mod_host import ModHost
 
 from unittest.mock import MagicMock
 
+import logging
+import sys
+
+logging.basicConfig(format='[%(asctime)s] %(levelname)s - %(message)s', stream=sys.stdout, level=logging.DEBUG)
+
 
 class Application(object):
     """
@@ -92,7 +97,7 @@ class Application(object):
 
             self.log('Data - Create initial data')
 
-        self.log('Data - Loads', os.path.abspath(path))
+        self.log('Data - Loads {}', os.path.abspath(path))
         return path
 
     def _load_controllers(self):
@@ -118,7 +123,7 @@ class Application(object):
     def _configure_controllers(self, controllers):
         for controller in list(controllers.values()):
             controller.configure()
-            self.log('Load controller -', controller.__class__.__name__)
+            self.log('Load controller - {}', controller.__class__.__name__)
 
     def register(self, component):
         """
@@ -134,12 +139,12 @@ class Application(object):
         Start this API, initializing the components.
         """
         current_pedalboard = self.controller(CurrentController).current_pedalboard
-        self.log('Load current pedalboard - "{}"'.format(current_pedalboard.name))
+        self.log('Load current pedalboard - "{}"', current_pedalboard.name)
         self.mod_host.pedalboard = current_pedalboard
 
         for component in self.components:
             component.init()
-            self.log('Load component -', component.__class__.__name__)
+            self.log('Load component - {}', component.__class__.__name__)
 
         self.log('Components loaded')
         atexit.register(self.stop)
@@ -147,11 +152,11 @@ class Application(object):
     def stop(self):
         for component in self.components:
             component.close()
-            self.log('Stopping component -', component.__class__.__name__)
+            self.log('Stopping component - {}', component.__class__.__name__)
 
         for controller in self.controllers.values():
             controller.close()
-            self.log('Stopping controller -', controller.__class__.__name__)
+            self.log('Stopping controller - {}', controller.__class__.__name__)
 
         atexit.unregister(self.stop)
 
@@ -173,5 +178,6 @@ class Application(object):
         """
         return dao(self.path_data)
 
-    def log(self, *args, **kwargs):
-        print('[' + time.strftime('%Y-%m-%d %H:%M:%S') + ']', *args, **kwargs)
+    def log(self, message, *args, **kwargs):
+        logging.info(message.format(*args, **kwargs))
+        #print('[' + time.strftime('%Y-%m-%d %H:%M:%S') + ']', *args, **kwargs)
