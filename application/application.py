@@ -95,11 +95,6 @@ class Application(object):
         self.log('Data - Loads', os.path.abspath(path))
         return path
 
-    def _teste(self, d, files):
-        for f in files:
-            print(f)
-        return
-
     def _load_controllers(self):
         controllers = {}
 
@@ -139,7 +134,7 @@ class Application(object):
         Start this API, initializing the components.
         """
         current_pedalboard = self.controller(CurrentController).current_pedalboard
-        self.log('Load current pedalboard -', '"' + current_pedalboard.name + '"')
+        self.log('Load current pedalboard - "{}"'.format(current_pedalboard.name))
         self.mod_host.pedalboard = current_pedalboard
 
         for component in self.components:
@@ -153,6 +148,10 @@ class Application(object):
         for component in self.components:
             component.close()
             self.log('Stopping component -', component.__class__.__name__)
+
+        for controller in self.controllers.values():
+            controller.close()
+            self.log('Stopping controller -', controller.__class__.__name__)
 
         atexit.unregister(self.stop)
 

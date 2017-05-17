@@ -31,6 +31,9 @@ class DeviceController(Controller):
 
         banks_controller.manager.register(self.mod_host)
 
+    def close(self):
+        self.mod_host.close()
+
     @property
     def mod_host(self):
         return self.app.mod_host
