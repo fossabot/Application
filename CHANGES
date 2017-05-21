@@ -1,6 +1,8 @@
 Version 0.3.0 - released 05//17
 =================================
  - Issue #29 - Secure components close
+ - Issue #30 - Replace print log to logging
+
 
 Version 0.2.1 - released 04/14/17
 =================================
