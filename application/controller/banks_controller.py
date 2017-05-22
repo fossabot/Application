@@ -26,7 +26,8 @@ class BankError(Exception):
 
 class BanksController(Controller):
     """
-    Manage :class:`Bank`, creating new, updating or deleting.
+    Notify all observers that a :class:`.Bank` has been created, updated, removed.
+    Also makes changes to the current pedalboard when the current pedalboard bank is affected.
     """
 
     def __init__(self, application):
@@ -51,11 +52,18 @@ class BanksController(Controller):
         """
         Notify all observers that a new :class:`.Bank` has been created.
 
+        .. note::
+
+            The bank needs be added in a :class:`.BanksManager` before.
+
+            >>> banks_manager.append(bank)
+            >>> banks_controller.created(bank)
+
         :param Bank bank: Bank added
         :param string token: Request token identifier
         """
         if bank not in self.manager.banks:
-            raise BankError('Bank {} not added in banks manager'.format(bank))
+            raise BankError('Bank {} has not added in banks manager'.format(bank))
 
         self._notify_change(bank, UpdateType.CREATED, token, index=len(self.banks) - 1)
 
@@ -65,7 +73,7 @@ class BanksController(Controller):
 
         .. note::
 
-            If a swap is realized, call this method twice::
+            If a swap is realized, call this method for all the involved banks::
 
                 >>> bank[1], bank[3] = bank[3], bank[1]
                 >>> banks_controller.updated(bank[1], TOKEN)
@@ -81,7 +89,7 @@ class BanksController(Controller):
         :param string token: Request token identifier
         """
         if bank not in self.manager.banks:
-            raise BankError('Bank {} not added in banks manager'.format(bank))
+            raise BankError('Bank {} has not added in banks manager'.format(bank))
 
         if self.current.is_current_bank(bank):
             self.current.reload_current_pedalboard()
@@ -96,12 +104,20 @@ class BanksController(Controller):
             If the Bank deleted contains the current pedalboard,
             another pedalboard will be loaded and it will be the new current pedalboard.
 
+        .. note::
+
+            The bank needs be removed of the :class:`.BanksManager` before.
+
+            >>> index = bank.index
+            >>> banks_manager.banks.remove(bank)
+            >>> banks_controller.deleted(bank, index)
+
         :param Bank bank: Removed bank
         :param int old_index: Bank index before it is removed
         :param string token: Request token identifier
         """
         if bank in self.banks:
-            raise BankError('Bank {} wasn\'t deleted or banks manager'.format(bank))
+            raise BankError('Bank {} wasn\'t deleted for banks manager'.format(bank))
 
         next_bank = None
         if bank == self.current.current_bank:
