@@ -12,27 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from application.dao.database import Database
+from pathlib import Path
+from pluginsmanager.observer.autosaver.persistence import Persistence
 
 
 class CurrentDao(object):
 
     def __init__(self, data_path):
-        self.data_path = data_path + 'current/'
+        self.data_path = data_path / Path('current/')
+        self.path = self.data_path / Path('current.json')
 
     def load(self):
-        return self._read_file()
+        return Persistence.read(self.path)
 
     def save(self, bank_index, pedalboard_index):
-        json = {
+        data = {
             "bank": bank_index,
             "pedalboard": pedalboard_index
         }
 
-        Database.save(self._url(), json)
-
-    def _read_file(self):
-        return Database.read(self._url())
-
-    def _url(self):
-        return self.data_path + "current.json"
+        Persistence.save(self.path, data)

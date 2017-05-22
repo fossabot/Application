@@ -2,7 +2,10 @@ Version 0.3.0 - released 05//17
 =================================
  - Issue #29 - Secure components close
  - Issue #30 - Replace print log to logging
-
+ - **Breaking change**: Issue #39 - Change save method to pluginsmanager (v0.5.0) Autosaver
+   - Removed BanksDao -> Using now pluginsmanager Autosaver
+   - Removed Database -> Using now pluginsmanager Persistence
+   - BanksController changes your API
 
 Version 0.2.1 - released 04/14/17
 =================================

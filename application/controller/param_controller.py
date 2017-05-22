@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from application.dao.bank_dao import BankDao
+#from application.dao.bank_dao import BankDao
+from unittest.mock import MagicMock
+BankDao = MagicMock()
 
 from application.controller.controller import Controller
 from application.controller.banks_controller import BanksController
