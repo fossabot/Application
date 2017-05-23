@@ -59,7 +59,7 @@ class BanksController(Controller):
             >>> banks_manager.append(bank)
             >>> banks_controller.created(bank)
 
-        :param Bank bank: Bank added
+        :param Bank bank: Bank created and added in banks manager
         :param string token: Request token identifier
         """
         if bank not in self.manager.banks:

@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from application.controller.controller import Controller
-from application.controller.banks_controller import BanksController
 from application.controller.current_controller import CurrentController
 from application.controller.notification_controller import NotificationController
 
@@ -32,12 +31,10 @@ class PedalboardController(Controller):
 
     def __init__(self, application):
         super(PedalboardController, self).__init__(application)
-        self.banks = None
         self.current = None
         self.notifier = None
 
     def configure(self):
-        self.banks = self.app.controller(BanksController)
         self.current = self.app.controller(CurrentController)
         self.notifier = self.app.controller(NotificationController)
 
@@ -52,7 +49,7 @@ class PedalboardController(Controller):
             >>> bank.append(pedalboard)
             >>> pedalboard_controller.created(pedalboard)
 
-        :param Pedalboard pedalboard: Pedalboard created
+        :param Pedalboard pedalboard: Pedalboard created and added in your bank
         :param string token: Request token identifier
         """
         if pedalboard.bank is None:
@@ -106,7 +103,7 @@ class PedalboardController(Controller):
             >>> bank.pedalboards.remove(pedalboard)
             >>> pedalboard_controller.deleted(pedalboard, index, bank)
 
-        :param Pedalboard pedalboard: Pedalboard to be removed
+        :param Pedalboard pedalboard: Removed pedalboard
         :param old_index: Pedalboard index before it is removed
         :param old_bank: Bank where the pedalboard belonged
         :param string token: Request token identifier
@@ -150,7 +147,7 @@ class PedalboardController(Controller):
             self.current._set_current(current_pedalboard, notify=False)
 
     def _notify_change(self, pedalboard, update_type, token=None, **kwargs):
-        index = kwargs.pop('index') if 'index' in kwargs else pedalboard.index
-        origin = kwargs.pop('origin') if 'origin' in kwargs else pedalboard.bank
+        index = kwargs.pop('index', pedalboard.index)
+        origin = kwargs.pop('origin', pedalboard.bank)
 
         self.notifier.pedalboard_updated(pedalboard, update_type, index=index, origin=origin, token=token, **kwargs)
