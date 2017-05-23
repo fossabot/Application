@@ -23,7 +23,6 @@ from pluginsmanager.model.pedalboard import Pedalboard
 from pluginsmanager.model.connection import Connection
 from pluginsmanager.model.update_type import UpdateType
 
-import unittest
 from unittest.mock import MagicMock
 
 

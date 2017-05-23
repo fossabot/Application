@@ -28,7 +28,7 @@ class PedalboardConnectionError(Exception):
 
 class EffectController(Controller):
     """
-    Notify all observers that a :class:`.Effect` has been created, updated, removed.
+    Notify all observers that a :class:`.Effect` has been created, removed.
     """
 
     def __init__(self, application):

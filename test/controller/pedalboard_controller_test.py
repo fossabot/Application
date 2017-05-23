@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from application.controller.current_controller import CurrentController
-from application.controller.banks_controller import BanksController
 from application.controller.pedalboard_controller import PedalboardController, PedalboardError
 
 from application.controller.notification_controller import NotificationController
@@ -36,7 +35,6 @@ class PedalboardControllerTest(ControllerTest):
 
         self.controller = controller(PedalboardController)
         self.current = controller(CurrentController)
-        self.banks = controller(BanksController)
         self.notifier = controller(NotificationController)
 
     def test_created_pedalboard(self):
