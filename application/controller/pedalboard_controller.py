@@ -81,7 +81,7 @@ class PedalboardController(Controller):
         if pedalboard.bank is None:
             raise PedalboardError('Pedalboard {} has not added in any bank'.format(pedalboard))
 
-        if self.current.is_current_pedalboard(pedalboard) and reload:
+        if self.current.pedalboard == pedalboard and reload:
             self.current.reload_current_pedalboard()
 
         self._notify_change(pedalboard, UpdateType.UPDATED, token)
@@ -111,7 +111,7 @@ class PedalboardController(Controller):
         if pedalboard.bank is not None:
             raise PedalboardError('Pedalboard {} wasn\'t deleted for your bank'.format(pedalboard))
 
-        if self.current.is_current_pedalboard(pedalboard):
+        if self.current.pedalboard == pedalboard:
             self.current.to_next_pedalboard()  # ERROR
 
         self._notify_change(pedalboard, UpdateType.DELETED, token, index=old_index, origin=old_bank)

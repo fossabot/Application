@@ -49,7 +49,7 @@ class ApplicationObserver(UpdatesObserver, metaclass=ABCMeta):
         :return: string for token identifier or None if is not necessary identify the observer
                  (it will receive all notification)
         """
-        return None
+        pass
 
     @abstractmethod
     def on_current_pedalboard_changed(self, pedalboard, token=None):

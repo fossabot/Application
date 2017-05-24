@@ -27,3 +27,7 @@ class ControllerTest(unittest.TestCase):
     @classmethod
     def controller(cls, controller):
         return cls.application.controller(controller)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.application.stop()

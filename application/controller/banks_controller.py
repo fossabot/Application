@@ -91,7 +91,8 @@ class BanksController(Controller):
         if bank not in self.manager.banks:
             raise BankError('Bank {} has not added in banks manager'.format(bank))
 
-        if self.current.is_current_bank(bank):
+        if bank == self.current.bank:
+            # ERROR - Pedalboard antigo perdido :/
             self.current.reload_current_pedalboard()
 
         self._notify_change(bank, UpdateType.UPDATED, token)
@@ -101,6 +102,7 @@ class BanksController(Controller):
         Notify all observers that the :class:`.Bank` object has deleted.
 
         .. note::
+
             If the Bank deleted contains the current pedalboard,
             another pedalboard will be loaded and it will be the new current pedalboard.
 
@@ -119,13 +121,8 @@ class BanksController(Controller):
         if bank in self.banks:
             raise BankError('Bank {} wasn\'t deleted for banks manager'.format(bank))
 
-        next_bank = None
-        if bank == self.current.current_bank:
+        if bank == self.current.bank:
             self.current.to_next_bank()
-            next_bank = self.current.current_bank
-
-        if next_bank is not None:
-            self.current.bank_number = next_bank.index
 
         self._notify_change(bank, UpdateType.DELETED, token, index=old_index)
 

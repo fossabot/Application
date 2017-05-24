@@ -22,7 +22,6 @@ from pluginsmanager.model.bank import Bank
 from pluginsmanager.model.pedalboard import Pedalboard
 from pluginsmanager.model.update_type import UpdateType
 
-import unittest
 from unittest.mock import MagicMock
 
 
@@ -107,7 +106,7 @@ class BanksControllerTest(ControllerTest):
 
     def test_updated_current_bank(self):
         # Configure
-        original_current_pedalboard = self.current.current_pedalboard
+        original_current_pedalboard = self.current.pedalboard
 
         bank = Bank('test_updated_current_bank 1')
         pedalboard1 = Pedalboard('test_updated_current_bank pedalboard')
@@ -127,36 +126,21 @@ class BanksControllerTest(ControllerTest):
         # Apply
         current_pedalboard = pedalboard1
         self.current.set_pedalboard(current_pedalboard)
-        self.assertEqual(self.current.current_pedalboard, pedalboard1)
-        self.assertEqual(self.current.current_bank, bank)
+        self.assertEqual(self.current.pedalboard, pedalboard1)
+        self.assertEqual(self.current.bank, bank)
 
         self.manager.banks[bank.index] = bank2
-        self.assertEqual(self.current.current_pedalboard, pedalboard1)
-        self.assertEqual(self.current.current_bank, bank)
+        self.assertEqual(self.current.pedalboard, pedalboard1)
+        self.assertEqual(self.current.bank, bank)
 
         # Only changes current pedalboard after notify current bank has updated
         self.controller.updated(bank)
-        self.assertEqual(self.current.current_pedalboard, pedalboard3)
-        self.assertEqual(self.current.current_bank, bank2)
+        self.assertEqual(self.current.pedalboard, pedalboard3)
+        self.assertEqual(self.current.bank, bank2)
 
         # Tear down
         self.current.set_pedalboard(original_current_pedalboard)
         self.controller.delete(bank2)
-
-    @unittest.skip('NOT IMPLEMENTED EMPTY CASES')
-    def test_replaced_current_empty_bank(self):
-        bank = Bank('test_replace_current_bank 1')
-        bank.append(Pedalboard('test_replace_bank_error pedalboard'))
-
-        bank2 = Bank('test_replace_current_bank 2')
-
-        current_pedalboard = bank.pedalboards[0]
-
-        self.controller.created(bank)
-        self.current.set_pedalboard(current_pedalboard)
-
-        self.manager.banks[bank.index] = bank2
-        # Test current_pedalboard
 
     def test_deleted_bank(self):
         # Configure
@@ -205,7 +189,7 @@ class BanksControllerTest(ControllerTest):
 
     def test_deleted_current_bank(self):
         # Configure
-        original_current_pedalboard = self.current.current_pedalboard
+        original_current_pedalboard = self.current.pedalboard
 
         bank = Bank('test_deleted_current_bank 1')
         pedalboard1 = Pedalboard('test_deleted_current_bank pedalboard')
@@ -225,18 +209,19 @@ class BanksControllerTest(ControllerTest):
         # Apply
         current_pedalboard = pedalboard1
         self.current.set_pedalboard(current_pedalboard)
-        self.assertEqual(self.current.current_pedalboard, pedalboard1)
-        self.assertEqual(self.current.current_bank, bank)
+        self.assertEqual(self.current.pedalboard, pedalboard1)
+        self.assertEqual(self.current.bank, bank)
 
+        old_index = bank.index
         self.manager.banks.remove(bank)
-        self.assertEqual(self.current.current_pedalboard, pedalboard1)
-        self.assertEqual(self.current.current_bank, bank)
+        self.assertEqual(self.current.pedalboard, pedalboard1)
+        self.assertEqual(self.current.bank, bank)
 
         # Only changes current pedalboard after notify current bank has updated
-        self.controller.deletedd(bank)
-        self.assertEqual(self.current.current_pedalboard, pedalboard3)
-        self.assertEqual(self.current.current_bank, bank2)
+        self.controller.deleted(bank, old_index)
+        self.assertEqual(self.current.pedalboard, pedalboard3)
+        self.assertEqual(self.current.bank, bank2)
 
         # Tear down
         self.current.set_pedalboard(original_current_pedalboard)
-        self.controller.delete(bank2)
+        self.manager.banks.remove(bank2)

@@ -32,3 +32,6 @@ class CurrentDao(object):
         }
 
         Persistence.save(self.path, data)
+
+    def save_empty(self):
+        Persistence.save(self.path, {})
