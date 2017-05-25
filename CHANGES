@@ -5,7 +5,8 @@ Version 0.3.0 - released 05//17
  - **Breaking change**: Issue #39 - Change save method to pluginsmanager (v0.5.0) Autosaver
    - Removed BanksDao -> Using now pluginsmanager Autosaver
    - Removed Database -> Using now pluginsmanager Persistence
-   - BanksController, PedalboardController, EffectController, ParamController changes your API
+   - BanksController, PedalboardController, EffectController, ParamController,
+     CurrentController changes your API
 
 Version 0.2.1 - released 04/14/17
 =================================

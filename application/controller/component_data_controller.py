@@ -76,7 +76,15 @@ class ComponentDataController(Controller):
 
     def __getitem__(self, key):
         """
-        Returns the data for the informed `key`
+        Returns the data for the informed `key`::
+
+            >>> component_data_controller[key]
+            {'any key': 'any data'}
+
+        If no data was saved for this key, an empty dictionary is returned::
+
+            >>> component_data_controller['a crazy key']
+            {}
 
         :param string key:
         :return dict: Content if exist for key informed, else empty `dict`
@@ -88,7 +96,9 @@ class ComponentDataController(Controller):
 
     def __setitem__(self, key, value):
         """
-        Change the `key` identifier content to `value`
+        Change the `key` identifier content to `value`::
+
+            >>> component_data_controller[key] = {'any key': 'any data'}
 
         :param string key: Identifier
         :param value: Data will be persisted
@@ -99,7 +109,9 @@ class ComponentDataController(Controller):
 
     def __delitem__(self, key):
         """
-        Remove all `item` identifier content
+        Remove all `item` identifier content::
+
+            >>> del component_data_controller[key]
 
         :param string key: Identifier
         """

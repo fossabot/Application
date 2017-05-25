@@ -117,11 +117,10 @@ class BanksControllerTest(ControllerTest):
         bank2 = Bank('test_updated_current_bank 2')
         pedalboard3 = Pedalboard('test_updated_current_bank pedalboard3')
         pedalboard4 = Pedalboard('test_updated_current_bank pedalboard4')
-        bank.append(pedalboard3)
-        bank.append(pedalboard4)
+        bank2.append(pedalboard3)
+        bank2.append(pedalboard4)
 
         self.manager.append(bank)
-        self.controller.created(bank)
 
         # Apply
         current_pedalboard = pedalboard1
@@ -134,13 +133,13 @@ class BanksControllerTest(ControllerTest):
         self.assertEqual(self.current.bank, bank)
 
         # Only changes current pedalboard after notify current bank has updated
-        self.controller.updated(bank)
+        self.controller.updated(bank2, current_bank=True)
         self.assertEqual(self.current.pedalboard, pedalboard3)
         self.assertEqual(self.current.bank, bank2)
 
         # Tear down
         self.current.set_pedalboard(original_current_pedalboard)
-        self.controller.delete(bank2)
+        self.manager.banks.remove(bank2)
 
     def test_deleted_bank(self):
         # Configure
@@ -188,7 +187,6 @@ class BanksControllerTest(ControllerTest):
         self.notifier.unregister(observer)
 
     def test_deleted_current_bank(self):
-        # Configure
         original_current_pedalboard = self.current.pedalboard
 
         bank = Bank('test_deleted_current_bank 1')
@@ -200,8 +198,8 @@ class BanksControllerTest(ControllerTest):
         bank2 = Bank('test_deleted_current_bank 2')
         pedalboard3 = Pedalboard('test_deleted_current_bank pedalboard3')
         pedalboard4 = Pedalboard('test_deleted_current_bank pedalboard4')
-        bank.append(pedalboard3)
-        bank.append(pedalboard4)
+        bank2.append(pedalboard3)
+        bank2.append(pedalboard4)
 
         self.manager.append(bank)
         self.manager.append(bank2)

@@ -31,12 +31,12 @@ class PedalboardController(Controller):
 
     def __init__(self, application):
         super(PedalboardController, self).__init__(application)
-        self.current = None
-        self.notifier = None
+        self._current = None
+        self._notifier = None
 
     def configure(self):
-        self.current = self.app.controller(CurrentController)
-        self.notifier = self.app.controller(NotificationController)
+        self._current = self.app.controller(CurrentController)
+        self._notifier = self.app.controller(NotificationController)
 
     def created(self, pedalboard, token=None):
         """
@@ -81,8 +81,8 @@ class PedalboardController(Controller):
         if pedalboard.bank is None:
             raise PedalboardError('Pedalboard {} has not added in any bank'.format(pedalboard))
 
-        if self.current.pedalboard == pedalboard and reload:
-            self.current.reload_current_pedalboard()
+        if self._current.pedalboard == pedalboard and reload:
+            self._current.set_pedalboard(pedalboard, notify=False, force=True)
 
         self._notify_change(pedalboard, UpdateType.UPDATED, token)
 
@@ -111,10 +111,11 @@ class PedalboardController(Controller):
         if pedalboard.bank is not None:
             raise PedalboardError('Pedalboard {} wasn\'t deleted for your bank'.format(pedalboard))
 
-        if self.current.pedalboard == pedalboard:
-            self.current.to_next_pedalboard()  # ERROR
-
         self._notify_change(pedalboard, UpdateType.DELETED, token, index=old_index, origin=old_bank)
+
+        if self._current.pedalboard == pedalboard:
+            pedalboard = old_bank.pedalboards[self._current.next_bank_index(old_index-1)]
+            self._current.set_pedalboard(pedalboard)
 
     def moved(self, pedalboard, old_index, token=None):
         """
@@ -136,18 +137,16 @@ class PedalboardController(Controller):
         :param int old_index: Original (old) index position of the pedalboard
         :param string token: Request token identifier
         """
-        current_pedalboard = self.current.current_pedalboard
-
         self._notify_change(pedalboard, UpdateType.DELETED, token=token, index=old_index)
         self._notify_change(pedalboard, UpdateType.CREATED, token=token)
 
         # Save the current pedalboard data
         # The current pedalboard index changes then changes the pedalboard order
-        if current_pedalboard.bank == pedalboard.bank:
-            self.current._set_current(current_pedalboard, notify=False)
+        if self._current.pedalboard == pedalboard:
+            self._current.set_pedalboard(pedalboard, token=token, force=True)
 
     def _notify_change(self, pedalboard, update_type, token=None, **kwargs):
-        index = kwargs.pop('index', pedalboard.index)
-        origin = kwargs.pop('origin', pedalboard.bank)
+        index = kwargs.pop('index') if 'index' in kwargs else pedalboard.index
+        origin = kwargs.pop('origin') if 'origin' in kwargs else pedalboard.bank
 
-        self.notifier.pedalboard_updated(pedalboard, update_type, index=index, origin=origin, token=token, **kwargs)
+        self._notifier.pedalboard_updated(pedalboard, update_type, index=index, origin=origin, token=token, **kwargs)

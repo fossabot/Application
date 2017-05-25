@@ -57,29 +57,36 @@ class CurrentController(Controller):
         """
         return self._pedalboard
 
-    def set_pedalboard(self, pedalboard, token=None, notify=True):
+    def set_pedalboard(self, pedalboard, token=None, notify=True, force=False):
         """
-        Set the current :class:`Pedalboard` for the pedalboard
-        only if the ``pedalboard != current_pedalboard``
+        Set the current :class:`.Pedalboard` for the pedalboard
+        only if the ``pedalboard != current_pedalboard or force``
 
-        .. note::
+        Is also possible unload the current pedalboard data with replacing it for ``None``::
 
-            If you needs removes the current pedalboard replacing it for ``None``
-            use :meth:`.remove_current` instead.
+            >>> current_controller.set_pedalboard(None)
+
+        .. warning::
+
+            Changing the current pedalboard to Nonw, will not be able to call
+            methods to change the pedalboard based in the current, like
+            :meth:`.to_before_pedalboard`, :meth:`.to_next_pedalboard`,
+            :meth:`.to_before_bank` and :meth:`.to_next_bank`
 
         :param Pedalboard pedalboard: New current pedalboard
         :param string token: Request token identifier
         :param bool notify: If false, not notify change for :class:`.UpdatesObserver`
                             instances registered in :class:`.Application`
+        :param bool force: Force set pedalboard
         """
         if pedalboard is not None and pedalboard.bank is None:
             raise CurrentPedalboardError('Pedalboard {} has not added in any bank'.format(pedalboard))
 
-        if pedalboard == self.pedalboard:
+        if pedalboard == self.pedalboard and not force:
             return
 
         self._pedalboard = pedalboard
-        self._device_controller.pedalboard = pedalboard  # throwable. need be first
+        self._device_controller.pedalboard = pedalboard
         self._save_current_pedalboard()
 
         if notify:
@@ -90,18 +97,21 @@ class CurrentController(Controller):
         """
         Get the :class:`.Bank` of the current :class:`.Pedalboard`
         """
-        return self._pedalboard.bank
+        return self.pedalboard.bank if self.pedalboard is not None else None
 
     # ************************
     # Persistance
     # ************************
     def _load_current_pedalboard(self):
         data = self._dao.load()
-        if 'bank' in data and 'pedalboard' in data:
-            bank, pedalboard = data["bank"], data["pedalboard"]
-            return self._manager.banks[bank].pedalboards[pedalboard]
-        else:
-            return None
+        if not data.empty:
+            bank, pedalboard = data.bank, data.pedalboard
+            try:
+                return self._manager.banks[bank].pedalboards[pedalboard]
+            except IndexError:
+                return None
+
+        return None
 
     def _save_current_pedalboard(self):
         if self.pedalboard is None:
@@ -117,10 +127,14 @@ class CurrentController(Controller):
     # ************************
     def to_before_pedalboard(self, token=None):
         """
-        Change the current :class:`Pedalboard` for the previous pedalboard.
+        Change the current :class:`.Pedalboard` for the previous pedalboard.
 
         If the current pedalboard is the first in the current :class:`Bank`,
         the current pedalboard is will be the **last of the current Bank**.
+
+        .. warning::
+
+            If the current :attr:`.pedalboard` is ``None``, a :class:`.CurrentPedalboardError` is raised.
 
         :param string token: Request token identifier
         """
@@ -135,10 +149,14 @@ class CurrentController(Controller):
 
     def to_next_pedalboard(self, token=None):
         """
-        Change the current :class:`Pedalboard` for the next pedalboard.
+        Change the current :class:`.Pedalboard` for the next pedalboard.
 
-        If the current pedalboard is the last in the current :class:`Bank`,
+        If the current pedalboard is the last in the current :class:`.Bank`,
         the current pedalboard is will be the **first of the current Bank**
+
+        .. warning::
+
+            If the current :attr:`.pedalboard` is ``None``, a :class:`.CurrentPedalboardError` is raised.
 
         :param string token: Request token identifier
         """
@@ -156,7 +174,12 @@ class CurrentController(Controller):
         Change the current :class:`Bank` for the before bank. If the current
         bank is the first, the current bank is will be the last bank.
 
-        The current pedalboard will be the first of the new current bank.
+        The current pedalboard will be the first pedalboard of the new current bank
+        **if it contains any pedalboard**, else will be ``None``.
+
+        .. warning::
+
+            If the current :attr:`.pedalboard` is ``None``, a :class:`.CurrentPedalboardError` is raised.
 
         :param string token: Request token identifier
         """
@@ -174,25 +197,40 @@ class CurrentController(Controller):
         Change the current :class:`Bank` for the next bank. If the current
         bank is the last, the current bank is will be the first bank.
 
-        The current pedalboard will be the first of the new current bank.
+        The current pedalboard will be the first pedalboard of the new current bank
+        **if it contains any pedalboard**, else will be ``None``.
+
+        .. warning::
+
+            If the current :attr:`.pedalboard` is ``None``, a :class:`.CurrentPedalboardError` is raised.
 
         :param string token: Request token identifier
         """
         if self.pedalboard is None:
             raise CurrentPedalboardError('The current pedalboard is None')
 
-        next_index = self.bank.index + 1
-        if next_index == len(self._manager.banks):
-            next_index = 0
+        next_index = self.next_bank_index(self.bank.index)
 
         self.set_bank(self._manager.banks[next_index], token=token)
+
+    def next_bank_index(self, current_index):
+        next_index = current_index + 1
+        if next_index == len(self._manager.banks):
+            return 0
+
+        return next_index
 
     def set_bank(self, bank, token=None, notify=True):
         """
         Set the current :class:`Bank` for the bank
         only if the ``bank != current_bank``
 
-        The current pedalboard will be changed for the first pedalboard's bank
+        The current pedalboard will be the first pedalboard of the new current bank
+        **if it contains any pedalboard**, else will be ``None``.
+
+        .. warning::
+
+            If the current :attr:`.pedalboard` is ``None``, a :class:`.CurrentPedalboardError` is raised.
 
         :param Bank bank: Bank that will be the current
         :param string token: Request token identifier

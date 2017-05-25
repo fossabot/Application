@@ -18,7 +18,7 @@ from application.controller.controller import Controller
 class NotificationController(Controller):
     """
     Notifies request changes to all :class:`ApplicationObserver` registered
-    than not contains the same request _token_.
+    than not contains the same request *token*.
     """
 
     def __init__(self, app):
@@ -60,7 +60,7 @@ class NotificationController(Controller):
     ########################
     def current_pedalboard_changed(self, pedalboard, token=None):
         """
-        Notify current pedalboard change.
+        Notify **current pedalboard** change.
 
         :param Pedalboard pedalboard: New current pedalboard
         :param string token: Request token identifier
@@ -71,7 +71,7 @@ class NotificationController(Controller):
 
     def bank_updated(self, bank, update_type, index, origin, token=None):
         """
-        Notify changes in :class:`Bank`.
+        Notify changes in :class:`.Bank`.
 
         :param Bank bank: Bank changed.
         :param UpdateType update_type: Change type
@@ -85,7 +85,7 @@ class NotificationController(Controller):
 
     def pedalboard_updated(self, pedalboard, update_type, index, origin, token=None):
         """
-        Notify changes in :class:`Pedalboard`.
+        Notify changes in :class:`.Pedalboard`.
 
         :param Pedalboard pedalboard: Pedalboard changed
         :param UpdateType update_type: Change type
@@ -99,7 +99,7 @@ class NotificationController(Controller):
 
     def effect_updated(self, effect, update_type, index, origin, token=None):
         """
-        Notify changes in :class:`Effect`.
+        Notify changes in :class:`.Effect`.
 
         :param Effect effect: Effect changed
         :param UpdateType update_type: Change type
@@ -113,7 +113,7 @@ class NotificationController(Controller):
 
     def effect_status_toggled(self, effect, token=None):
         """
-        Notify :class:`Effect` status toggled.
+        Notify :class:`.Effect` status toggled.
 
         :param Effect effect: Effect when status has been toggled
         :param string token: Request token identifier
@@ -124,7 +124,7 @@ class NotificationController(Controller):
 
     def param_value_changed(self, param, token=None, **kwargs):
         """
-        Notify :class:`Param` value change.
+        Notify :class:`.Param` value change.
 
         :param Param param: Param with value changed
         :param string token: Request token identifier
@@ -135,7 +135,7 @@ class NotificationController(Controller):
 
     def connection_updated(self, connection, update_type, pedalboard, token=None):
         """
-        Notify :class:`Connection` addictions and removals.
+        Notify :class:`.Connection` addictions and removals.
 
         :param Connection connection: Connection added or removed
         :param UpdateType update_type: Change type

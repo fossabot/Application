@@ -52,11 +52,11 @@ class Application(object):
         >>> application = Application()
         >>> current_controller = application.controller(CurrentController)
 
-        >>> print(current_controller.current_pedalboard)
+        >>> print(current_controller.pedalboard)
         <Pedalboard object as Shows with 2 effects at 0x7fa3bcb49be0>
 
         >>> current_controller.to_next_pedalboard()
-        >>> current_controller.current_pedalboard
+        >>> current_controller.pedalboard
         <Pedalboard object as Shows 2 with 1 effects at 0x7fa3bbcdecf8>
 
     For more details see the Controllers extended classes.
@@ -139,8 +139,13 @@ class Application(object):
         """
         Start this API, initializing the components.
         """
-        current_pedalboard = self.controller(CurrentController).current_pedalboard
-        self.log('Load current pedalboard - "{}"', current_pedalboard.name)
+        current_pedalboard = self.controller(CurrentController).pedalboard
+        if current_pedalboard is None:
+            self.log('Not exists any current pedalboard.')
+            self.log('Use CurrentController to set the current pedalboard')
+        else:
+            self.log('Load current pedalboard - "{}"', current_pedalboard.name)
+
         self.mod_host.pedalboard = current_pedalboard
 
         for component in self.components:

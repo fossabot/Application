@@ -23,7 +23,8 @@ class CurrentDao(object):
         self.path = self.data_path / Path('current.json')
 
     def load(self):
-        return Persistence.read(self.path)
+        data = Persistence.read(self.path)
+        return CurrentData(data)
 
     def save(self, bank_index, pedalboard_index):
         data = {
@@ -35,3 +36,16 @@ class CurrentDao(object):
 
     def save_empty(self):
         Persistence.save(self.path, {})
+
+
+class CurrentData(object):
+
+    def __init__(self, data):
+        self._data = data
+
+    @property
+    def empty(self):
+        return self._data == {}
+
+    def __getattr__(self, name):
+        return self._data[name]

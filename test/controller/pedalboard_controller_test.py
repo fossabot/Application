@@ -12,18 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from unittest.mock import MagicMock, call
+
+from application.controller.banks_controller import BanksController
 from application.controller.current_controller import CurrentController
-from application.controller.pedalboard_controller import PedalboardController, PedalboardError
-
 from application.controller.notification_controller import NotificationController
-
-from test.controller.controller_test import ControllerTest
-
+from application.controller.pedalboard_controller import PedalboardController, PedalboardError
 from pluginsmanager.model.bank import Bank
 from pluginsmanager.model.pedalboard import Pedalboard
 from pluginsmanager.model.update_type import UpdateType
-
-from unittest.mock import MagicMock, call
+from test.controller.controller_test import ControllerTest
 
 
 class PedalboardControllerTest(ControllerTest):
@@ -36,6 +34,8 @@ class PedalboardControllerTest(ControllerTest):
         self.controller = controller(PedalboardController)
         self.current = controller(CurrentController)
         self.notifier = controller(NotificationController)
+
+        self.manager = controller(BanksController).manager
 
     def test_created_pedalboard(self):
         observer = MagicMock()
@@ -92,7 +92,7 @@ class PedalboardControllerTest(ControllerTest):
         observer = MagicMock()
         self.notifier.register(observer)
 
-        pedalboard = Pedalboard('test_update_current_pedalboard')
+        pedalboard = Pedalboard('test_updated_current_pedalboard')
 
         with self.assertRaises(PedalboardError):
             self.controller.updated(pedalboard)
@@ -101,44 +101,38 @@ class PedalboardControllerTest(ControllerTest):
 
         self.notifier.unregister(observer)
 
-    def test_update_current_pedalboard(self):
+    def test_updated_current_pedalboard(self):
         observer = MagicMock()
         self.notifier.register(observer)
-        original_pedalboard = self.current.current_pedalboard
+        original_pedalboard = self.current.pedalboard
 
-        bank = Bank('test_update_current_pedalboard - bank')
-        pedalboard = Pedalboard('test_update_current_pedalboard')
+        bank = Bank('test_updated_current_pedalboard - bank')
+        pedalboard = Pedalboard('test_updated_current_pedalboard')
 
-        self.banks.create(bank)
+        self.manager.append(bank)
 
         bank.append(pedalboard)
         self.controller.created(pedalboard)
 
         self.current.set_pedalboard(pedalboard)
 
-        pedalboard.name = 'test_update_current_pedalboard2'
-        self.controller.update(pedalboard)
+        pedalboard.name = 'test_updated_current_pedalboard2'
+        self.controller.updated(pedalboard)
 
         observer.on_pedalboard_updated.assert_called_with(pedalboard, UpdateType.UPDATED, token=None, index=0, origin=bank)
 
-        self.assertEqual(self.current.current_pedalboard, pedalboard)
-        self.assertEqual(self.current.current_bank, pedalboard.bank)
+        self.assertEqual(self.current.pedalboard, pedalboard)
+        self.assertEqual(self.current.bank, pedalboard.bank)
 
-        self.assertEqual(self.current.pedalboard_number, pedalboard.index)
-        self.assertEqual(self.current.bank_number, self.banks.banks.index(pedalboard.bank))
-
-        pedalboard.name = 'test_update_current_pedalboard3'
-        self.controller.update(pedalboard, self.TOKEN)
+        pedalboard.name = 'test_updated_current_pedalboard3'
+        self.controller.updated(pedalboard, self.TOKEN)
         observer.on_pedalboard_updated.assert_called_with(pedalboard, UpdateType.UPDATED, token=self.TOKEN, index=0, origin=bank)
 
-        self.assertEqual(self.current.current_pedalboard, pedalboard)
-        self.assertEqual(self.current.current_bank, pedalboard.bank)
-
-        self.assertEqual(self.current.pedalboard_number, pedalboard.index)
-        self.assertEqual(self.current.bank_number, self.banks.banks.index(pedalboard.bank))
+        self.assertEqual(self.current.pedalboard, pedalboard)
+        self.assertEqual(self.current.bank, pedalboard.bank)
 
         self.current.set_pedalboard(original_pedalboard)
-        self.banks.delete(bank)
+        self.manager.banks.remove(bank)
         self.notifier.unregister(observer)
 
     def test_deleted_pedalboard(self):
@@ -185,13 +179,13 @@ class PedalboardControllerTest(ControllerTest):
         observer = MagicMock()
         self.notifier.register(observer)
 
-        original_pedalboard = self.current.current_pedalboard
+        original_pedalboard = self.current.pedalboard
 
         bank = Bank('test_deleted_pedalboard - bank')
         pedalboard = Pedalboard('test_deleted_pedalboard')
         pedalboard2 = Pedalboard('test_deleted_pedalboard2')
 
-        self.banks.create(bank)
+        self.manager.append(bank)
 
         bank.append(pedalboard)
         bank.append(pedalboard2)
@@ -200,16 +194,15 @@ class PedalboardControllerTest(ControllerTest):
         self.controller.created(pedalboard2)
 
         self.current.set_pedalboard(pedalboard)
-        self.controller.delete(pedalboard)
+        old_index = pedalboard.index
+        bank.pedalboards.remove(pedalboard)
+        self.controller.deleted(pedalboard, old_index=old_index, old_bank=bank)
 
-        self.assertEqual(self.current.current_pedalboard, pedalboard2)
-        self.assertEqual(self.current.current_bank, pedalboard2.bank)
-
-        self.assertEqual(self.current.pedalboard_number, pedalboard2.index)
-        self.assertEqual(self.current.bank_number, self.banks.banks.index(pedalboard2.bank))
+        self.assertEqual(self.current.pedalboard, pedalboard2)
+        self.assertEqual(self.current.bank, pedalboard2.bank)
 
         self.current.set_pedalboard(original_pedalboard)
-        self.banks.delete(bank)
+        self.manager.banks.remove(bank)
         self.notifier.unregister(observer)
 
     def test_moved(self):
@@ -260,12 +253,13 @@ class PedalboardControllerTest(ControllerTest):
         self.notifier.unregister(observer)
 
     def test_moved_current_pedalboard(self):
-        original_current_pedalboard = self.current.current_pedalboard
+        original_current_pedalboard = self.current.pedalboard
 
         observer = MagicMock()
         self.notifier.register(observer)
 
         bank = Bank('test_moved - bank')
+        self.manager.append(bank)
 
         bank.append(Pedalboard('Pedalboard 1'))
         bank.append(Pedalboard('Pedalboard 2'))
@@ -277,14 +271,14 @@ class PedalboardControllerTest(ControllerTest):
 
         self.current.set_pedalboard(pedalboard_moved)
 
-        self.assertEqual(self.current.bank_number, pedalboard_moved.bank.index)
-        self.assertEqual(self.current.pedalboard_number, pedalboard_moved.index)
+        self.assertEqual(self.current.bank, bank)
+        self.assertEqual(self.current.pedalboard, pedalboard_moved)
 
-        self.controller.move(pedalboard_moved, new_index)
+        self.controller.moved(pedalboard_moved, new_index)
 
-        self.assertEqual(self.current.bank_number, pedalboard_moved.bank.index)
-        self.assertEqual(self.current.pedalboard_number, pedalboard_moved.index)
+        self.assertEqual(self.current.bank, bank)
+        self.assertEqual(self.current.pedalboard, pedalboard_moved)
 
         self.current.set_pedalboard(original_current_pedalboard)
-        self.banks.delete(bank)
+        self.manager.banks.remove(bank)
         self.notifier.unregister(observer)

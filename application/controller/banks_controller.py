@@ -34,15 +34,15 @@ class BanksController(Controller):
         super(BanksController, self).__init__(application)
 
         self.manager = self.app.autosaver.load(DeviceController.sys_effect)
-        self.current = None
-        self.notifier = None
+        self._current = None
+        self._notifier = None
 
     def configure(self):
         # To fix Cyclic dependence
         from application.controller.current_controller import CurrentController
 
-        self.current = self.app.controller(CurrentController)
-        self.notifier = self.app.controller(NotificationController)
+        self._current = self.app.controller(CurrentController)
+        self._notifier = self.app.controller(NotificationController)
 
     @property
     def banks(self):
@@ -67,7 +67,7 @@ class BanksController(Controller):
 
         self._notify_change(bank, UpdateType.CREATED, token, index=len(self.banks) - 1)
 
-    def updated(self, bank, token=None):
+    def updated(self, bank, token=None, current_bank=False):
         """
         Notify all observers that the :class:`.Bank` object has updated.
 
@@ -91,9 +91,12 @@ class BanksController(Controller):
         if bank not in self.manager.banks:
             raise BankError('Bank {} has not added in banks manager'.format(bank))
 
-        if bank == self.current.bank:
-            # ERROR - Pedalboard antigo perdido :/
-            self.current.reload_current_pedalboard()
+        if bank == self._current.bank:
+            self._current.reload_current_pedalboard()
+
+        elif current_bank:
+            pedalboard_index = self._current.pedalboard.index
+            self._current.set_pedalboard(bank.pedalboards[pedalboard_index])
 
         self._notify_change(bank, UpdateType.UPDATED, token)
 
@@ -121,12 +124,13 @@ class BanksController(Controller):
         if bank in self.banks:
             raise BankError('Bank {} wasn\'t deleted for banks manager'.format(bank))
 
-        if bank == self.current.bank:
-            self.current.to_next_bank()
-
         self._notify_change(bank, UpdateType.DELETED, token, index=old_index)
+
+        if bank == self._current.bank:
+            new_bank = self.banks[self._current.next_bank_index(old_index - 1)]
+            self._current.set_bank(new_bank)
 
     def _notify_change(self, bank, update_type, token=None, index=None):
         index = index if index is not None else bank.index
 
-        self.notifier.bank_updated(bank, update_type, index=index, origin=self.manager, token=token)
+        self._notifier.bank_updated(bank, update_type, index=index, origin=self.manager, token=token)
