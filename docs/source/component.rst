@@ -17,3 +17,11 @@ ApplicationObserver
    :members:
    :special-members:
    :exclude-members: __weakref__
+
+CurrentPedalboardObserver
+-------------------------
+
+.. autoclass:: application.component.current_pedalboard_observer.CurrentPedalboardObserver
+   :members:
+   :special-members:
+   :exclude-members: __weakref__

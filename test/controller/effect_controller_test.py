@@ -21,7 +21,7 @@ from test.controller.controller_test import ControllerTest
 from pluginsmanager.model.bank import Bank
 from pluginsmanager.model.pedalboard import Pedalboard
 from pluginsmanager.model.connection import Connection
-from pluginsmanager.model.update_type import UpdateType
+from pluginsmanager.observer.update_type import UpdateType
 
 from unittest.mock import MagicMock
 

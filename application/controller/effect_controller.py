@@ -15,7 +15,7 @@
 from application.controller.controller import Controller
 from application.controller.notification_controller import NotificationController
 
-from pluginsmanager.model.update_type import UpdateType
+from pluginsmanager.observer.update_type import UpdateType
 
 
 class EffectError(Exception):

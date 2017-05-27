@@ -20,7 +20,7 @@ from application.controller.notification_controller import NotificationControlle
 from application.controller.pedalboard_controller import PedalboardController, PedalboardError
 from pluginsmanager.model.bank import Bank
 from pluginsmanager.model.pedalboard import Pedalboard
-from pluginsmanager.model.update_type import UpdateType
+from pluginsmanager.observer.update_type import UpdateType
 from test.controller.controller_test import ControllerTest
 
 

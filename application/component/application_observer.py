@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from abc import ABCMeta, abstractmethod
-from pluginsmanager.model.updates_observer import UpdatesObserver
+from pluginsmanager.observer.updates_observer import UpdatesObserver
 
 
 class ApplicationObserver(UpdatesObserver, metaclass=ABCMeta):
@@ -40,23 +40,11 @@ class ApplicationObserver(UpdatesObserver, metaclass=ABCMeta):
     def __init__(self):
         super(ApplicationObserver, self).__init__()
 
-    @property
     @abstractmethod
-    def token(self):
-        """
-        Observer token identifier.
-
-        :return: string for token identifier or None if is not necessary identify the observer
-                 (it will receive all notification)
-        """
-        pass
-
-    @abstractmethod
-    def on_current_pedalboard_changed(self, pedalboard, token=None):
+    def on_current_pedalboard_changed(self, pedalboard, **kwargs):
         """
         Called when the current pedalboard is changed
 
         :param Pedalboard pedalboard: New current pedalboard
-        :param string token: Request token identifier
         """
         pass

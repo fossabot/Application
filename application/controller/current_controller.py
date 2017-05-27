@@ -220,7 +220,7 @@ class CurrentController(Controller):
 
         return next_index
 
-    def set_bank(self, bank, token=None, notify=True):
+    def set_bank(self, bank, token=None, notify=True, try_preserve_index=False):
         """
         Set the current :class:`Bank` for the bank
         only if the ``bank != current_bank``
@@ -236,6 +236,12 @@ class CurrentController(Controller):
         :param string token: Request token identifier
         :param bool notify: If false, not notify change for :class:`UpdatesObserver`
                             instances registered in :class:`Application`
+        :param bool try_preserve_index: Tries to preserve the index of the current pedalboard
+                                        when changing the bank. That is, if the current pedalboard is the fifth,
+                                        when updating the bank, it will attempt to place the fifth pedalboard
+                                        of the new bank as the current one. If it does not get
+                                        (``len(bank.pedalboards) < 6``) the current pedalboard will be the
+                                        first pedalboard.
         """
         if bank not in self._manager:
             raise CurrentPedalboardError('Bank {} has not added in banks manager'.format(bank))
@@ -244,6 +250,14 @@ class CurrentController(Controller):
             return
 
         if bank.pedalboards:
-            self.set_pedalboard(bank.pedalboards[0], token, notify)
+            pedalboard = self._equivalent_pedalboard(bank) if try_preserve_index else bank.pedalboards[0]
+            self.set_pedalboard(pedalboard, token, notify)
         else:
             self.set_pedalboard(None, token, notify)
+
+    def _equivalent_pedalboard(self, other_bank):
+        index = self.pedalboard.index
+        try:
+            return other_bank.pedalboards[index]
+        except IndexError:
+            return other_bank.pedalboards[0]
