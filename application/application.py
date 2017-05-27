@@ -186,4 +186,3 @@ class Application(object):
 
     def log(self, message, *args, **kwargs):
         logging.info(message.format(*args, **kwargs))
-        #print('[' + time.strftime('%Y-%m-%d %H:%M:%S') + ']', *args, **kwargs)

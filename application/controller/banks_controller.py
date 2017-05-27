@@ -67,7 +67,7 @@ class BanksController(Controller):
 
         self._notify_change(bank, UpdateType.CREATED, token, index=len(self.banks) - 1)
 
-    def updated(self, bank, token=None, current_bank=False):
+    def updated(self, bank, token=None):
         """
         Notify all observers that the :class:`.Bank` object has updated.
 
@@ -94,7 +94,7 @@ class BanksController(Controller):
         if bank == self._current.bank:
             self._current.reload_current_pedalboard()
 
-        elif current_bank:
+        elif bank.index == self._current.bank.index:
             pedalboard_index = self._current.pedalboard.index
             self._current.set_pedalboard(bank.pedalboards[pedalboard_index])
 

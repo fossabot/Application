@@ -135,6 +135,44 @@ class PedalboardControllerTest(ControllerTest):
         self.manager.banks.remove(bank)
         self.notifier.unregister(observer)
 
+    def test_updated_current_pedalboard_set_all_data(self):
+        """Not change only the pedalboard data, changes the pedalboard object"""
+        observer = MagicMock()
+        self.notifier.register(observer)
+        original_pedalboard = self.current.pedalboard
+
+        bank = Bank('test_updated_current_pedalboard_set_all_data - bank')
+        pedalboard = Pedalboard('test_updated_current_pedalboard_set_all_data')
+
+        self.manager.append(bank)
+
+        bank.append(pedalboard)
+        self.controller.created(pedalboard)
+
+        self.current.set_pedalboard(pedalboard)
+
+        new_pedalboard = Pedalboard('test_updated_current_pedalboard_set_all_data new pedalboard')
+        bank.pedalboards[pedalboard.index] = new_pedalboard
+        self.controller.updated(new_pedalboard)
+
+        observer.on_pedalboard_updated.assert_called_with(new_pedalboard, UpdateType.UPDATED, token=None,
+                                                          index=new_pedalboard.index, origin=bank)
+
+        self.assertEqual(self.current.pedalboard, new_pedalboard)
+        self.assertEqual(self.current.bank, new_pedalboard.bank)
+
+        bank.pedalboards[new_pedalboard.index] = pedalboard
+        self.controller.updated(pedalboard, self.TOKEN)
+        observer.on_pedalboard_updated.assert_called_with(pedalboard, UpdateType.UPDATED, token=self.TOKEN,
+                                                          index=pedalboard.index, origin=bank)
+
+        self.assertEqual(self.current.pedalboard, pedalboard)
+        self.assertEqual(self.current.bank, pedalboard.bank)
+
+        self.current.set_pedalboard(original_pedalboard)
+        self.manager.banks.remove(bank)
+        self.notifier.unregister(observer)
+
     def test_deleted_pedalboard(self):
         observer = MagicMock()
         self.notifier.register(observer)
