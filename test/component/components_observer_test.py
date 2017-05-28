@@ -12,42 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from unittest.mock import MagicMock
-
 from application.component.components_observer import ComponentsObserver
-from application.component.application_observer import ApplicationObserver
+from test.mock_observer import MockObserver
 from pluginsmanager.banks_manager import BanksManager
 from pluginsmanager.model.bank import Bank
 from pluginsmanager.model.pedalboard import Pedalboard
 from pluginsmanager.observer.update_type import UpdateType
 from test.controller.controller_test import ControllerTest
-
-
-class MockObserver(ApplicationObserver):
-
-    def __init__(self):
-        super().__init__()
-
-    def on_current_pedalboard_changed(self, pedalboard, **kwargs):
-        pass
-
-    def on_effect_status_toggled(self, effect, **kwargs):
-        pass
-
-    def on_connection_updated(self, connection, update_type, pedalboard, **kwargs):
-        pass
-
-    def on_bank_updated(self, bank, update_type, index, origin, **kwargs):
-        pass
-
-    def on_pedalboard_updated(self, pedalboard, update_type, index, origin, **kwargs):
-        pass
-
-    def on_param_value_changed(self, param, **kwargs):
-        pass
-
-    def on_effect_updated(self, effect, update_type, index, origin, **kwargs):
-        pass
 
 
 class ComponentsObserverTest(ControllerTest):
@@ -64,7 +35,6 @@ class ComponentsObserverTest(ControllerTest):
 
     def test_notification(self):
         observer = MockObserver()
-        observer.on_bank_updated = MagicMock()
 
         manager = BanksManager()
         components_observer = ComponentsObserver(manager)
@@ -79,7 +49,6 @@ class ComponentsObserverTest(ControllerTest):
 
     def test_notification_scope(self):
         observer = MockObserver()
-        observer.on_bank_updated = MagicMock()
 
         manager = BanksManager()
         components_observer = ComponentsObserver(manager)

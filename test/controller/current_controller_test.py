@@ -13,20 +13,18 @@
 # limitations under the License.
 
 import unittest
-from unittest.mock import MagicMock
 
 from application.controller.current_controller import CurrentController, CurrentPedalboardError
 from pluginsmanager.model.bank import Bank
 from pluginsmanager.model.pedalboard import Pedalboard
 from test.controller.controller_test import ControllerTest
+from test.mock_observer import MockObserver
 
 
 class CurrentControllerTest(ControllerTest):
     @classmethod
     def setUpClass(cls):
         super(CurrentControllerTest, cls).setUpClass()
-        cls.TOKEN = 'EFFECT_TOKEN'
-
         cls._current = cls.controller(CurrentController)
 
         cls.manager = cls.application.manager
@@ -34,7 +32,7 @@ class CurrentControllerTest(ControllerTest):
     def setUp(self):
         self._current.set_pedalboard(self._first_pedalboard)
 
-        self.observer = MagicMock()
+        self.observer = MockObserver()
         self.application.components_observer.register(self.observer)
 
     def tearDown(self):
@@ -101,14 +99,11 @@ class CurrentControllerTest(ControllerTest):
 
         self._current.set_pedalboard(pedalboard)
         self.assertEqual(pedalboard, self._current.pedalboard)
-        self.observer.on_current_pedalboard_changed.assert_called_with(pedalboard, token=None)
+        self.observer.on_current_pedalboard_changed.assert_called_with(pedalboard)
 
         self.assertNotEqual(original_pedalboard, self._current.pedalboard)
 
-        self._current.set_pedalboard(original_pedalboard, self.TOKEN)
-        self.assertEqual(original_pedalboard, self._current.pedalboard)
-        self.observer.on_current_pedalboard_changed.assert_called_with(original_pedalboard, token=self.TOKEN)
-
+        self._current.set_pedalboard(original_pedalboard)
         self._current.bank.pedalboards.remove(pedalboard)
 
     def test_set_pedalboard_other_bank(self):
@@ -121,12 +116,12 @@ class CurrentControllerTest(ControllerTest):
         self._current.set_pedalboard(bank.pedalboards[0])
         self.assertEqual(bank.pedalboards[0], self._current.pedalboard)
         self.assertEqual(bank, self._current.bank)
-        self.observer.on_current_pedalboard_changed.assert_called_with(bank.pedalboards[0], token=None)
+        self.observer.on_current_pedalboard_changed.assert_called_with(bank.pedalboards[0])
 
-        self._current.set_pedalboard(original_pedalboard, self.TOKEN)
+        self._current.set_pedalboard(original_pedalboard)
         self.assertEqual(original_pedalboard, self._current.pedalboard)
         self.assertEqual(original_bank, self._current.bank)
-        self.observer.on_current_pedalboard_changed.assert_called_with(original_pedalboard, token=self.TOKEN)
+        self.observer.on_current_pedalboard_changed.assert_called_with(original_pedalboard)
 
         self.manager.banks.remove(bank)
 
@@ -143,13 +138,13 @@ class CurrentControllerTest(ControllerTest):
     def test_set_none_pedalboard(self):
         original_pedalboard = self._current.pedalboard
         self._current.set_pedalboard(None)
-        self.observer.on_current_pedalboard_changed.assert_called_with(None, token=None)
+        self.observer.on_current_pedalboard_changed.assert_called_with(None)
 
         # Don't notify if not changes
-        self._current.set_pedalboard(original_pedalboard, token=self.TOKEN)
+        self._current.set_pedalboard(original_pedalboard)
 
-        self._current.set_pedalboard(None, token=self.TOKEN)
-        self.observer.on_current_pedalboard_changed.assert_called_with(None, token=self.TOKEN)
+        self._current.set_pedalboard(None)
+        self.observer.on_current_pedalboard_changed.assert_called_with(None)
 
     def test_to_before_pedalboard(self):
         pedalboard = Pedalboard('Other pedalboard')
@@ -158,12 +153,7 @@ class CurrentControllerTest(ControllerTest):
         for pedalboard in reversed(self._current.bank.pedalboards):
             self._current.to_before_pedalboard()
             self.assertEqual(pedalboard, self._current.pedalboard)
-            self.observer.on_current_pedalboard_changed.assert_called_with(pedalboard, token=None)
-
-        for pedalboard in reversed(self._current.bank.pedalboards):
-            self._current.to_before_pedalboard(self.TOKEN)
-            self.assertEqual(pedalboard, self._current.pedalboard)
-            self.observer.on_current_pedalboard_changed.assert_called_with(pedalboard, token=self.TOKEN)
+            self.observer.on_current_pedalboard_changed.assert_called_with(pedalboard)
 
         self.assertEqual(0, self._current.pedalboard.index)
         self._current.bank.pedalboards.remove(pedalboard)
@@ -190,13 +180,7 @@ class CurrentControllerTest(ControllerTest):
         for pedalboard in self._current.bank.pedalboards:
             self._current.to_next_pedalboard()
             self.assertEqual(pedalboard, self._current.pedalboard)
-            self.observer.on_current_pedalboard_changed.assert_called_with(pedalboard, token=None)
-
-        self._current.set_pedalboard(last_pedalboard)
-        for pedalboard in self._current.bank.pedalboards:
-            self._current.to_next_pedalboard(self.TOKEN)
-            self.assertEqual(pedalboard, self._current.pedalboard)
-            self.observer.on_current_pedalboard_changed.assert_called_with(pedalboard, token=self.TOKEN)
+            self.observer.on_current_pedalboard_changed.assert_called_with(pedalboard)
 
         self._current.bank.pedalboards.remove(last_pedalboard)
 
@@ -210,12 +194,7 @@ class CurrentControllerTest(ControllerTest):
         for bank in reversed(self.manager.banks):
             self._current.to_before_bank()
             self.assertEqual(bank, self._current.bank)
-            self.observer.on_current_pedalboard_changed.assert_called_with(bank.pedalboards[0], token=None)
-
-        for bank in reversed(self.manager.banks):
-            self._current.to_before_bank(self.TOKEN)
-            self.assertEqual(bank, self._current.bank)
-            self.observer.on_current_pedalboard_changed.assert_called_with(bank.pedalboards[0], token=self.TOKEN)
+            self.observer.on_current_pedalboard_changed.assert_called_with(bank.pedalboards[0])
 
         self.manager.banks.remove(last_bank)
 
@@ -230,12 +209,7 @@ class CurrentControllerTest(ControllerTest):
         for bank in self.manager.banks:
             self._current.to_next_bank()
             self.assertEqual(bank, self._current.bank)
-            self.observer.on_current_pedalboard_changed.assert_called_with(bank.pedalboards[0], token=None)
-
-        for bank in self.manager.banks:
-            self._current.to_next_bank(self.TOKEN)
-            self.assertEqual(bank, self._current.bank)
-            self.observer.on_current_pedalboard_changed.assert_called_with(bank.pedalboards[0], token=self.TOKEN)
+            self.observer.on_current_pedalboard_changed.assert_called_with(bank.pedalboards[0])
 
         self.manager.banks.remove(last_bank)
 
@@ -251,10 +225,12 @@ class CurrentControllerTest(ControllerTest):
         self._current.set_bank(bank)
         self.assertEqual(bank, self._current.bank)
         self.assertEqual(bank.pedalboards[0], self._current.pedalboard)
-        self.observer.on_current_pedalboard_changed.assert_called_with(bank.pedalboards[0], token=None)
+        self.observer.on_current_pedalboard_changed.assert_called_with(bank.pedalboards[0])
 
-        self._current.set_bank(first_bank, self.TOKEN)
-        self.observer.on_current_pedalboard_changed.assert_called_with(first_bank.pedalboards[0], token=self.TOKEN)
+        self.observer.reset_mock()
+        with self.observer:
+            self._current.set_bank(first_bank)
+        self.observer.on_current_pedalboard_changed.assert_not_called()
 
         self.manager.banks.remove(bank)
 
@@ -273,13 +249,13 @@ class CurrentControllerTest(ControllerTest):
         self.manager.append(bank)
 
         self._current.set_bank(bank)
-        self.observer.on_current_pedalboard_changed.assert_called_with(None, token=None)
+        self.observer.on_current_pedalboard_changed.assert_called_with(None)
 
         # Don't notify if not changes
-        self._current.set_bank(original_bank, self.TOKEN)
+        self._current.set_bank(original_bank)
 
-        self._current.set_bank(bank, self.TOKEN)
-        self.observer.on_current_pedalboard_changed.assert_called_with(None, token=self.TOKEN)
+        self._current.set_bank(bank)
+        self.observer.on_current_pedalboard_changed.assert_called_with(None)
 
         self.manager.banks.remove(bank)
 

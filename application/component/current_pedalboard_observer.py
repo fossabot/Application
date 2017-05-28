@@ -62,5 +62,5 @@ class CurrentPedalboardObserver(ApplicationObserver):
     def on_effect_updated(self, effect, update_type, index, origin, **kwargs):
         pass
 
-    def on_current_pedalboard_changed(self, pedalboard, token=None, **kwargs):
+    def on_current_pedalboard_changed(self, pedalboard, **kwargs):
         pass
