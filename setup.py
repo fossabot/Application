@@ -52,7 +52,7 @@ setup(
     package_data={
         'application/data': ['*.json', '*/*.json'],
     },
-    install_requires=['PedalPi-PluginsManager'],
+    install_requires=['PedalPi-PluginsManager>=0.5.0'],
 
     test_suite='test',
     tests_requires=['PedalPi-PluginsManager'],

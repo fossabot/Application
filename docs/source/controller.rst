@@ -108,14 +108,6 @@ Controller
    :special-members:
    :exclude-members: __weakref__
 
-BanksController
----------------
-
-.. autoclass:: application.controller.banks_controller.BanksController
-   :members:
-   :special-members:
-   :exclude-members: __weakref__
-
 ComponentDataController
 -----------------------
 
@@ -136,38 +128,6 @@ DeviceController
 ----------------
 
 .. autoclass:: application.controller.device_controller.DeviceController
-   :members:
-   :special-members:
-   :exclude-members: __weakref__
-
-EffectController
-----------------
-
-.. autoclass:: application.controller.effect_controller.EffectController
-   :members:
-   :special-members:
-   :exclude-members: __weakref__
-
-NotificationController
-----------------------
-
-.. autoclass:: application.controller.notification_controller.NotificationController
-   :members:
-   :special-members:
-   :exclude-members: __weakref__
-
-ParamController
----------------
-
-.. autoclass:: application.controller.param_controller.ParamController
-   :members:
-   :special-members:
-   :exclude-members: __weakref__
-
-PedalboardController
---------------------
-
-.. autoclass:: application.controller.pedalboard_controller.PedalboardController
    :members:
    :special-members:
    :exclude-members: __weakref__

@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pluginsmanager.observer.updates_observer import UpdatesObserver
+from application.component.application_observer import ApplicationObserver
 
 
-class ComponentsObserver(UpdatesObserver):
+class ComponentsObserver(ApplicationObserver):
 
     def __init__(self, manager):
         super(ComponentsObserver, self).__init__()
@@ -63,3 +63,8 @@ class ComponentsObserver(UpdatesObserver):
         for observer in self.observers:
             if observer != self.scope:
                 observer.on_connection_updated(connection, update_type, pedalboard=pedalboard, **kwargs)
+
+    def on_current_pedalboard_changed(self, pedalboard, **kwargs):
+        for observer in self.observers:
+            if observer != self.scope:
+                observer.on_current_pedalboard_changed(pedalboard, **kwargs)

@@ -14,8 +14,6 @@
 
 from abc import ABCMeta, abstractmethod
 
-from application.controller.notification_controller import NotificationController
-
 
 class Component(metaclass=ABCMeta):
 
@@ -50,7 +48,7 @@ class Component(metaclass=ABCMeta):
 
         :param UpdatesObserver observer:
         """
-        self.controller(NotificationController).register(observer)
+        self.application.components_observer.register(observer)
 
     def unregister_observer(self, observer):
         """
@@ -59,4 +57,4 @@ class Component(metaclass=ABCMeta):
 
         :param UpdatesObserver observer:
         """
-        self.controller(NotificationController).unregister(observer)
+        self.application.components_observer.unregister(observer)

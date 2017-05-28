@@ -12,10 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from application.controller.banks_controller import BanksController
 from application.controller.controller import Controller
 from application.controller.device_controller import DeviceController
-from application.controller.notification_controller import NotificationController
 from application.dao.current_dao import CurrentDao
 
 
@@ -33,17 +31,15 @@ class CurrentController(Controller):
         self._dao = None
         self._pedalboard = None
 
-        self._notifier = None
         self._device_controller = None
 
         self._manager = None
 
     def configure(self):
-        self._notifier = self.app.controller(NotificationController)
         self._device_controller = self.app.controller(DeviceController)
 
         self._dao = self.app.dao(CurrentDao)
-        self._manager = self.app.controller(BanksController).manager
+        self._manager = self.app.manager
 
         self._pedalboard = self._load_current_pedalboard()
 
@@ -90,7 +86,7 @@ class CurrentController(Controller):
         self._save_current_pedalboard()
 
         if notify:
-            self._notifier.current_pedalboard_changed(self.pedalboard, token)
+            self.app.components_observer.on_current_pedalboard_changed(self.pedalboard, token=token)
 
     @property
     def bank(self):

@@ -13,9 +13,7 @@
 # limitations under the License.
 
 from application.component.current_pedalboard_observer import CurrentPedalboardObserver
-from application.controller.banks_controller import BanksController
 from application.controller.current_controller import CurrentController
-from application.controller.notification_controller import NotificationController
 from pluginsmanager.model.bank import Bank
 from pluginsmanager.model.pedalboard import Pedalboard
 from test.controller.controller_test import ControllerTest
@@ -29,8 +27,7 @@ class CurrentControllerObserverTest(ControllerTest):
 
     def setUp(self):
         self._current = self.controller(CurrentController)
-        self._notifier = self.controller(NotificationController)
-        self._manager = self.controller(BanksController).manager
+        self._manager = self.application.manager
 
         self.original_current_pedalboard = self._current.pedalboard
         

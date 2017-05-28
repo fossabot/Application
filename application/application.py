@@ -80,10 +80,10 @@ class Application(object):
         self._configure_controllers(self.controllers)
 
         # Observers
-        self._components_observer = ComponentsObserver(self.manager)
+        self.components_observer = ComponentsObserver(self.manager)
         current_pedalboard_observer = CurrentPedalboardObserver(self.controller(CurrentController))
 
-        self.manager.register(self._components_observer)
+        self.manager.register(self.components_observer)
         self.manager.register(current_pedalboard_observer)
 
     def _initialize(self, address, test=False):
