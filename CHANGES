@@ -1,4 +1,4 @@
-Version 0.3.0 - released 05/??/17
+Version 0.3.0 - released 05/30/17
 =================================
  - Issue #29 - Secure components close
  - Issue #30 - Replace print log to logging
@@ -15,6 +15,7 @@ Version 0.3.0 - released 05/??/17
  - Issue #45 - Add plugins manager v0.5.0 support
 
    - Removed BanksController, PedalboardController, EffectController, ParamController, NotificationController
+   - Implemented :meth:`.Application.register_observer`, :meth:`.Application.unregister_observer`
 
 
 Version 0.2.1 - released 04/14/17
