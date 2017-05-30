@@ -1,14 +1,14 @@
 PedalPi - Application - Controller
 ==================================
 
-Token
------
+Notification scope
+------------------
 
 `pluginsmanager`_ can notifies they changes. As an example, if a connection
 between effects is created, plugins manager notifies its observers about the change.
 
-This is how :class:`pluginsmanager.mod_host.mod_host.ModHost` and :class:`pluginsmanager.observer.auto_saver.Autosaver`
-know when a change occurs.
+This is how :class:`~pluginsmanager.mod_host.mod_host.ModHost` and
+:class:`~pluginsmanager.observer.auto_saver.Autosaver` know when a change occurs.
 
 These observers work passively: they only receive updates, not using the `pluginsmanager`_
 api to change the state of the application.
@@ -25,17 +25,28 @@ As example, a multi-effects uses `Raspberry-P1`_ for physical management and
 `pluginsmanager`, a toggle status effect change in a Raspberry-P1 will
 informs WebService and unreasonably Raspberry-P1.
 
-`pluginsmanager`_ has a solution to this problem::
+A quick review will be given ahead. For more details, see the `pluginsmanager observer
+documentation`_.
 
-    >>> class MyAwesomeObserver(UpdatesObserver):
+.. _pluginsmanager observer documentation: http://pedalpi-pluginsmanager.readthedocs.io/en/latest/observer.html
 
-    >>>     def __init__(self, message):
-    >>>         self.message = message
-    >>>
-    >>>     def on_bank_updated(self, bank, update_type, **kwargs):
-    >>>         print(self.message)
-    >>>
-    >>>
+`pluginsmanager`_ has a solution to this problem. Defining a observer::
+
+
+    class MyAwesomeObserver(UpdatesObserver):
+
+        def __init__(self, message):
+            self.message = message
+
+        def on_bank_updated(self, bank, update_type, **kwargs):
+            print(self.message)
+
+        # Defining others abstract methods
+        ...
+
+
+Using::
+
     >>> observer1 = MyAwesomeObserver("Hi! I am observer1")
     >>> observer2 = MyAwesomeObserver("Hi! I am observer2")
     >>>
@@ -54,45 +65,65 @@ informs WebService and unreasonably Raspberry-P1.
     >>>     manager.banks.append(bank)
     "Hi! I am observer1"
 
-However, it is not reliable since it is not thread safe.
+Using **application**, the process changes a bit. Because pluginsmanager does not support the current
+pedalboard change notifications, clients should extend from :class:`.ApplicationObserver`,
+a specialization that adds this functionality::
 
-Application uses an explicit way of reporting notifications
-via `tokens` - unique strings that identify observers.
-Your API provides methods that change the state of the application
-that receive a token as a parameter.
-A change with an informed token is not propagated to an observer who has this token::
+    class MyAwesomeObserver(ApplicationObserver):
 
-    >>> class MyAwesomeObserver(ApplicationObserver):
-    >>>     def __init__(self, application, token, name):
-    >>>         super(ActionsFacade, self).__init__()
-    >>>         self._token = token
-    >>>         self.name = name
-    >>>
-    >>>     @property
-    >>>     def token(self):
-    >>>         return self._token
-    >>>
-    >>>     def on_effect_status_toggled(self, effect, **kwargs):
-    >>>         print(self.name)
-    >>>
-    >>>     ...
-    >>>
-    >>> observer1 = MyAwesomeObserver('observer-1', 'Observer 1 method called!')
-    >>> observer2 = MyAwesomeObserver('observer-2', 'Observer 2 method called!')
-    >>>
-    >>> notification_controller = application.controller(NotificationController)
-    >>> notification_controller.register(observer1)
-    >>> notification_controller.register(observer2)
-    >>>
-    >>> effects_controller = application.controller(EffectController)
-    >>> effects_controller.toggle_status(reverb)
-    'Observer 1 method called!'
-    'Observer 2 method called!'
-    >>> effects_controller.toggle_status(reverb, observer1.token)
-    'Observer 2 method called!'
-    >>> effects_controller.toggle_status(reverb, observer2.token)
-    'Observer 1 method called!'
+        def __init__(self, message):
+            self.message = message
 
+        def on_current_pedalboard_changed(self, pedalboard, **kwargs):
+            print('Pedalboard changed!')
+
+        def on_bank_updated(self, bank, update_type, **kwargs):
+            print(self.message)
+
+        # Defining others abstract methods
+        ...
+
+
+To correctly register ApplicationObserver, you must use :meth:`.Application.register_observer`
+(or :meth:`.Component.register_observer`)::
+
+    >>> observer1 = MyAwesomeObserver("Hi! I am observer1")
+    >>> observer2 = MyAwesomeObserver("Hi! I am observer2")
+    >>>
+    >>> application.register_observer(observer1)
+    >>> application.register_observer(observer2)
+
+.. note::
+
+    Registering directly to the pluginsmanager will result in not receiving updates
+    defined by :class:`.ApplicationObserver`
+
+Using::
+
+    >>> manager = application.manager
+    >>>
+    >>> bank = Bank('Bank 1')
+    >>> manager.banks.append(bank)
+    "Hi! I am observer1"
+    "Hi! I am observer2"
+    >>> with observer1:
+    >>>     del manager.banks[0]
+    "Hi! I am observer2"
+    >>> with observer2:
+    >>>     manager.banks.append(bank)
+    "Hi! I am observer1"
+
+.. warning::
+
+
+    The operations performed by PluginsManager **are not atomic**.
+    This architectural constraint was based on the experienced experience
+    that one user will use the system at a time.
+    In this way, try not to abuse the concurrence.
+
+    If you are having problems while doing this, `let us know`_.
+
+.. _let us know: https://github.com/PedalPi/Application/issues/
 .. _pluginsmanager: https://github.com/PedalPi/PluginsManager
 .. _Raspberry-P1: https://github.com/PedalPi/Raspberry-P1
 .. _WebService: https://github.com/PedalPi/WebService
@@ -104,14 +135,6 @@ Controller
 ----------
 
 .. autoclass:: application.controller.controller.Controller
-   :members:
-   :special-members:
-   :exclude-members: __weakref__
-
-BanksController
----------------
-
-.. autoclass:: application.controller.banks_controller.BanksController
    :members:
    :special-members:
    :exclude-members: __weakref__
@@ -136,38 +159,6 @@ DeviceController
 ----------------
 
 .. autoclass:: application.controller.device_controller.DeviceController
-   :members:
-   :special-members:
-   :exclude-members: __weakref__
-
-EffectController
-----------------
-
-.. autoclass:: application.controller.effect_controller.EffectController
-   :members:
-   :special-members:
-   :exclude-members: __weakref__
-
-NotificationController
-----------------------
-
-.. autoclass:: application.controller.notification_controller.NotificationController
-   :members:
-   :special-members:
-   :exclude-members: __weakref__
-
-ParamController
----------------
-
-.. autoclass:: application.controller.param_controller.ParamController
-   :members:
-   :special-members:
-   :exclude-members: __weakref__
-
-PedalboardController
---------------------
-
-.. autoclass:: application.controller.pedalboard_controller.PedalboardController
    :members:
    :special-members:
    :exclude-members: __weakref__

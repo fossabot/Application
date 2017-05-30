@@ -26,10 +26,7 @@ class DeviceController(Controller):
         super(DeviceController, self).__init__(application)
 
     def configure(self):
-        from application.controller.banks_controller import BanksController
-        banks_controller = self.app.controller(BanksController)
-
-        banks_controller.manager.register(self.mod_host)
+        self.app.manager.register(self.mod_host)
 
     def close(self):
         self.mod_host.close()

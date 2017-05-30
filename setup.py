@@ -24,7 +24,7 @@ def readme():
 
 setup(
     name='PedalPi-Application',
-    version='0.2.1',
+    version='0.3.0',
 
     description='Framework for manager the Pedal Pi',
     long_description=readme(),
@@ -52,7 +52,7 @@ setup(
     package_data={
         'application/data': ['*.json', '*/*.json'],
     },
-    install_requires=['PedalPi-PluginsManager'],
+    install_requires=['PedalPi-PluginsManager>=0.5.0'],
 
     test_suite='test',
     tests_requires=['PedalPi-PluginsManager'],
@@ -62,7 +62,9 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Topic :: Multimedia :: Sound/Audio',
-        'Programming Language :: Python :: 3'
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6'
     ],
     keywords='pedal-pi mod-host lv2 audio plugins-manager',
 

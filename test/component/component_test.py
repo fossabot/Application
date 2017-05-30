@@ -14,7 +14,7 @@
 
 from test.controller.controller_test import ControllerTest
 
-from application.controller.notification_controller import NotificationController
+from application.controller.current_controller import CurrentController
 from application.component.component import Component
 
 from unittest.mock import MagicMock
@@ -43,7 +43,7 @@ class ComponentTest(ControllerTest):
         component = ComponentExample(app)
         app.register(component)
 
-        self.assertEqual(app.controller(NotificationController), component.controller(NotificationController))
+        self.assertEqual(app.controller(CurrentController), component.controller(CurrentController))
 
         del app.components[0]
 
@@ -56,9 +56,9 @@ class ComponentTest(ControllerTest):
         mock = MagicMock()
         component.register_observer(mock)
 
-        self.assertEqual(app.controller(NotificationController).observers[0], mock)
+        self.assertEqual(app.components_observer.observers[0], mock)
 
         component.unregister_observer(mock)
 
-        self.assertEqual(len(app.controller(NotificationController).observers), 0)
+        self.assertEqual(len(app.components_observer.observers), 0)
         del app.components[0]

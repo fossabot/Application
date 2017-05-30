@@ -20,18 +20,14 @@ from pathlib import Path
 from shutil import copytree
 from unittest.mock import MagicMock
 
-from application.controller.banks_controller import BanksController
+from application.component.components_observer import ComponentsObserver
+from application.component.current_pedalboard_observer import CurrentPedalboardObserver
 from application.controller.component_data_controller import ComponentDataController
 from application.controller.current_controller import CurrentController
 from application.controller.device_controller import DeviceController
-from application.controller.effect_controller import EffectController
-from application.controller.notification_controller import NotificationController
-from application.controller.param_controller import ParamController
-from application.controller.pedalboard_controller import PedalboardController
 from application.controller.plugins_controller import PluginsController
-
-from pluginsmanager.mod_host.mod_host import ModHost
 from pluginsmanager.observer.autosaver.autosaver import Autosaver
+from pluginsmanager.observer.mod_host.mod_host import ModHost
 
 logging.basicConfig(format='[%(asctime)s] %(levelname)s - %(message)s', stream=sys.stdout, level=logging.DEBUG)
 
@@ -47,7 +43,7 @@ class Application(object):
     for control::
 
         >>> from application.application import Application
-        >>> from application.controller.CurrentController import CurrentController
+        >>> from application.controller.current_controller import CurrentController
 
         >>> application = Application()
         >>> current_controller = application.controller(CurrentController)
@@ -69,15 +65,26 @@ class Application(object):
     """
 
     def __init__(self, path_data="data/", address="localhost", test=False):
-        path_data = Path(path_data)
         self.mod_host = self._initialize(address, test)
 
+        # Data
+        path_data = Path(path_data)
         self.path_data = self._initialize_data(path_data)
         self.autosaver = Autosaver(str(path_data / Path('banks')))
+        self.manager = self.autosaver.load(DeviceController.sys_effect)
+
+        # Controllers
         self.components = []
         self.controllers = self._load_controllers()
 
         self._configure_controllers(self.controllers)
+
+        # Observers
+        self.components_observer = ComponentsObserver(self.manager)
+        current_pedalboard_observer = CurrentPedalboardObserver(self.controller(CurrentController))
+
+        self.manager.register(self.components_observer)
+        self.manager.register(current_pedalboard_observer)
 
     def _initialize(self, address, test=False):
         mod_host = ModHost(address)
@@ -105,14 +112,9 @@ class Application(object):
         controllers = {}
 
         list_controllers = [
-            BanksController,
             ComponentDataController,
             CurrentController,
             DeviceController,
-            EffectController,
-            NotificationController,
-            ParamController,
-            PedalboardController,
             PluginsController,
         ]
 
@@ -128,16 +130,35 @@ class Application(object):
 
     def register(self, component):
         """
-        Register a :class:`Component` extended class into Application.
+        Register a :class:`.Component` extended class into Application.
         The components will be loaded when application is loaded (after `start` method is called).
 
         :param Component component: A module to be loaded when the Application is loaded
         """
         self.components.append(component)
 
+    def register_observer(self, observer):
+        """
+        Register a :class:`.ApplicationObserver` specialization into Application.
+        The observer will receive calls when changes occurs in system, like
+        banks creation, current pedalboard changes.
+
+        :param ApplicationObserver observer: The observer who will receive the changes notifications
+        """
+        self.components_observer.register(observer)
+
+    def unregister_observer(self, observer):
+        """
+        Unregister an observer in :class:`.Application`.
+        The observer not will be more notified of the changes requested in the application API.
+
+        :param ApplicationObserver observer: The observer who will not receive further changes notification
+        """
+        self.components_observer.unregister(observer)
+
     def start(self):
         """
-        Start this API, initializing the components.
+        Start the application, initializing your components.
         """
         current_pedalboard = self.controller(CurrentController).pedalboard
         if current_pedalboard is None:
@@ -156,6 +177,9 @@ class Application(object):
         atexit.register(self.stop)
 
     def stop(self):
+        """
+        Stop the application, closing your components.
+        """
         for component in self.components:
             component.close()
             self.log('Stopping component - {}', component.__class__.__name__)
@@ -186,4 +210,3 @@ class Application(object):
 
     def log(self, message, *args, **kwargs):
         logging.info(message.format(*args, **kwargs))
-        #print('[' + time.strftime('%Y-%m-%d %H:%M:%S') + ']', *args, **kwargs)

@@ -14,8 +14,6 @@
 
 from abc import ABCMeta, abstractmethod
 
-from application.controller.notification_controller import NotificationController
-
 
 class Component(metaclass=ABCMeta):
 
@@ -42,21 +40,16 @@ class Component(metaclass=ABCMeta):
 
     def register_observer(self, observer):
         """
-        Register an observer in :class:`.Application` by :class:`.NotificationController`.
-        Observers will be notified of the changes requested in the application API.
+        Calls :meth:`.Application.register_observer`.
 
-        Obs: If a observer contains a *token* and the request informs the same *token*
-        the observer not will be notified.
-
-        :param UpdatesObserver observer:
+        :param ApplicationObserver observer: The observer who will receive the changes notifications
         """
-        self.controller(NotificationController).register(observer)
+        self.application.register_observer(observer)
 
     def unregister_observer(self, observer):
         """
-        Unregister an observer in :class:`.Application` by :class:`.NotificationController`.
-        The observer not will be more notified of the changes requested in the application API.
+        Calls :meth:`.Application.unregister_observer`.
 
-        :param UpdatesObserver observer:
+        :param ApplicationObserver observer: The observer who will not receive further changes notification
         """
-        self.controller(NotificationController).unregister(observer)
+        self.application.unregister_observer(observer)

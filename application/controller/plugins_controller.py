@@ -27,6 +27,12 @@ class PluginTechnology(Enum):
     Enumeration for informs audio plugins technology
     """
     LV2 = 'lv2'
+    """
+    LV2 is an open standard for audio plugins, used by hundreds of plugins and other projects.
+    At its core, LV2 is a simple stable interface, accompanied by extensions which add functionality
+    to support the needs of increasingly powerful audio software.Informs that the change is caused by
+    the creation of an object
+    """
     LADSPA = 'ladspa'
     VST = 'vst'
 
@@ -95,14 +101,18 @@ class PluginsController(Controller):
         For reload the lv2_plugins_aata, it's necessary the installation of lilv.
         Check `Lv2EffectBuilder.lv2_plugins_data()`_ method documentation for details.
 
-        .. _Lv2EffectBuilder.lv2_plugins_data(): http://pedalpi-pluginsmanager.readthedocs.io/model_lv2.html#pluginsmanager.model.lv2.lv2_effect_builder.Lv2EffectBuilder.lv2_plugins_data
+        .. _Lv2EffectBuilder.lv2_plugins_data(): http://pedalpi-pluginsmanager.readthedocs.io/en/latest/model_lv2.html#pluginsmanager.model.lv2.lv2_effect_builder.Lv2EffectBuilder.lv2_plugins_data
 
-        :param lv2_uri: String thats identifier a effect. Example: `http://guitarix.sourceforge.net/plugins/gx_scream_#_scream_`
+        :param string lv2_uri: String thats identifier a effect. Example: `http://guitarix.sourceforge.net/plugins/gx_scream_#_scream_`
 
-        :return: :class:`Lv2Effect`
+        :return: :class:`.Lv2Effect`
         """
         return self.lv2_builder.build(lv2_uri)
 
     def reload_lv2_plugins_data(self):
+        """
+        Search for LV2 audio plugins in the system and extract the metadata
+        needed by pluginsmanager to generate audio plugins.
+        """
         plugins_data = self.lv2_builder.lv2_plugins_data()
         self._dao.save(plugins_data)
