@@ -31,6 +31,12 @@ class Controller(metaclass=ABCMeta):
     @abstractmethod
     def configure(self):
         """
-        Configure is called by :class:`Application` for initialize this object
+        The `configure` method is called by :class:`Application` for initialize this object
+        """
+        pass
+
+    def close(self):
+        """
+        The `close` method is called by :class:`Application` when application termination is requested
         """
         pass
