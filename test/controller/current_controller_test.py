@@ -30,7 +30,7 @@ class CurrentControllerTest(ControllerTest):
         cls.manager = cls.application.manager
 
     def setUp(self):
-        self._current.set_pedalboard(self._first_pedalboard)
+        self._current.pedalboard = self._first_pedalboard
 
         self.observer = MockObserver()
         self.application.components_observer.register(self.observer)
@@ -38,7 +38,7 @@ class CurrentControllerTest(ControllerTest):
     def tearDown(self):
         self.application.components_observer.unregister(self.observer)
 
-        self._current.set_pedalboard(self._first_pedalboard)
+        self._current.pedalboard = self._first_pedalboard
 
     @property
     def _first_pedalboard(self):

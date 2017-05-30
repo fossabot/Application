@@ -49,9 +49,16 @@ class CurrentController(Controller):
     @property
     def pedalboard(self):
         """
-        Get the current :class:`.Pedalboard`
+        Current :class:`.Pedalboard`
+
+        :getter: Current pedalboard
+        :setter: Set the current pedalboard (calling :meth:`.set_pedalboard`)
         """
         return self._pedalboard
+
+    @pedalboard.setter
+    def pedalboard(self, pedalboard):
+        self.set_pedalboard(pedalboard)
 
     def set_pedalboard(self, pedalboard, notify=True, force=False):
         """
@@ -95,7 +102,7 @@ class CurrentController(Controller):
         return self.pedalboard.bank if self.pedalboard is not None else None
 
     # ************************
-    # Persistance
+    # Persistence
     # ************************
     def _load_current_pedalboard(self):
         data = self._dao.load()
@@ -207,7 +214,7 @@ class CurrentController(Controller):
 
         return next_index
 
-    def set_bank(self, bank, notify=True, try_preserve_index=False):
+    def set_bank(self, bank, try_preserve_index=False):
         """
         Set the current :class:`Bank` for the bank
         only if the ``bank != current_bank``
@@ -220,8 +227,6 @@ class CurrentController(Controller):
             If the current :attr:`.pedalboard` is ``None``, a :class:`.CurrentPedalboardError` is raised.
 
         :param Bank bank: Bank that will be the current
-        :param bool notify: If false, not notify change for :class:`UpdatesObserver`
-                            instances registered in :class:`Application`
         :param bool try_preserve_index: Tries to preserve the index of the current pedalboard
                                         when changing the bank. That is, if the current pedalboard is the fifth,
                                         when updating the bank, it will attempt to place the fifth pedalboard
@@ -237,9 +242,9 @@ class CurrentController(Controller):
 
         if bank.pedalboards:
             pedalboard = self._equivalent_pedalboard(bank) if try_preserve_index else bank.pedalboards[0]
-            self.set_pedalboard(pedalboard, notify)
+            self.set_pedalboard(pedalboard)
         else:
-            self.set_pedalboard(None, notify)
+            self.set_pedalboard(None)
 
     def _equivalent_pedalboard(self, other_bank):
         index = self.pedalboard.index

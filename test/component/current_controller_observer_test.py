@@ -33,14 +33,14 @@ class CurrentControllerObserverTest(ControllerTest):
         
         bank = self.generate_bank('A bank - CurrentControllerObserverTest')
         self._manager.append(bank)
-        self._current.set_pedalboard(bank.pedalboards[0])
+        self._current.pedalboard = bank.pedalboards[0]
         
         self.observer = CurrentPedalboardObserver(self._current)
         self._manager.register(self.observer)
 
     def tearDown(self):
         self._manager.unregister(self.observer)
-        self._current.set_pedalboard(self.original_current_pedalboard)
+        self._current.pedalboard = self.original_current_pedalboard
         
     def generate_bank(self, name):
         # Configure

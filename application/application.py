@@ -43,7 +43,7 @@ class Application(object):
     for control::
 
         >>> from application.application import Application
-        >>> from application.controller.CurrentController import CurrentController
+        >>> from application.controller.current_controller import CurrentController
 
         >>> application = Application()
         >>> current_controller = application.controller(CurrentController)
@@ -130,16 +130,35 @@ class Application(object):
 
     def register(self, component):
         """
-        Register a :class:`Component` extended class into Application.
+        Register a :class:`.Component` extended class into Application.
         The components will be loaded when application is loaded (after `start` method is called).
 
         :param Component component: A module to be loaded when the Application is loaded
         """
         self.components.append(component)
 
+    def register_observer(self, observer):
+        """
+        Register a :class:`.ApplicationObserver` specialization into Application.
+        The observer will receive calls when changes occurs in system, like
+        banks creation, current pedalboard changes.
+
+        :param ApplicationObserver observer: The observer who will receive the changes notifications
+        """
+        self.components_observer.register(observer)
+
+    def unregister_observer(self, observer):
+        """
+        Unregister an observer in :class:`.Application`.
+        The observer not will be more notified of the changes requested in the application API.
+
+        :param ApplicationObserver observer: The observer who will not receive further changes notification
+        """
+        self.components_observer.unregister(observer)
+
     def start(self):
         """
-        Start this API, initializing the components.
+        Start the application, initializing your components.
         """
         current_pedalboard = self.controller(CurrentController).pedalboard
         if current_pedalboard is None:
@@ -158,6 +177,9 @@ class Application(object):
         atexit.register(self.stop)
 
     def stop(self):
+        """
+        Stop the application, closing your components.
+        """
         for component in self.components:
             component.close()
             self.log('Stopping component - {}', component.__class__.__name__)
