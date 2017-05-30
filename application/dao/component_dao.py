@@ -12,22 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from application.dao.database import Database
+from pathlib import Path
+from pluginsmanager.observer.autosaver.persistence import Persistence
 
 
 class ComponentDao(object):
 
     def __init__(self, data_path):
-        self.data_path = data_path + 'components/'
+        self.data_path = data_path / Path('components/')
+        self.path = self.data_path / Path('component.json')
 
     def load(self):
-        return self._read_file()
+        return Persistence.read(self.path)
 
     def save(self, data):
-        Database.save(self._url(), data)
-
-    def _read_file(self):
-        return Database.read(self._url())
-
-    def _url(self):
-        return self.data_path + "component.json"
+        Persistence.save(self.path, data)

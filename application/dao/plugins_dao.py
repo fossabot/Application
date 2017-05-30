@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from pathlib import Path
-from application.dao.database import Database
+from pluginsmanager.observer.autosaver.persistence import Persistence
 
 
 class PluginsDao(object):
@@ -22,18 +22,18 @@ class PluginsDao(object):
     """
 
     def __init__(self, data_path):
-        self._data_path = data_path
-
-    @property
-    def data_path(self):
-        return self._data_path + "plugins_lv2.json"
+        """
+        :param Path data_path:
+        """
+        self.data_path = data_path
+        self.path = self.data_path / Path('plugins_lv2.json')
 
     def load(self):
-        return Database.read(self.data_path)
+        return Persistence.read(self.path)
 
     def save(self, data):
-        Database.save(self.data_path, data)
+        Persistence.save(self.path, data)
 
     @property
     def exists_data(self):
-        return Path(self.data_path).exists()
+        return self.path.exists()

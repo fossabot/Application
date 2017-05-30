@@ -16,9 +16,6 @@ from application.controller.controller import Controller
 from application.controller.device_controller import DeviceController
 from application.controller.notification_controller import NotificationController
 
-from application.dao.bank_dao import BankDao
-
-from pluginsmanager.banks_manager import BanksManager
 from pluginsmanager.model.bank import Bank
 from pluginsmanager.model.update_type import UpdateType
 
@@ -29,190 +26,111 @@ class BankError(Exception):
 
 class BanksController(Controller):
     """
-    Manage :class:`Bank`, creating new, updating or deleting.
+    Notify all observers that a :class:`.Bank` has been created, updated, removed.
+    Also makes changes to the current pedalboard when the current pedalboard bank is affected.
     """
 
     def __init__(self, application):
         super(BanksController, self).__init__(application)
 
-        self.dao = self.app.dao(BankDao)
-
-        self.manager = BanksManager()
-        self.current = None
-        self.notifier = None
+        self.manager = self.app.autosaver.load(DeviceController.sys_effect)
+        self._current = None
+        self._notifier = None
 
     def configure(self):
         # To fix Cyclic dependence
         from application.controller.current_controller import CurrentController
-        self.current = self.app.controller(CurrentController)
 
-        self.notifier = self.app.controller(NotificationController)
-
-        for bank in self.dao.banks(DeviceController.sys_effect):
-            bank.original_name = bank.name
-            self.manager.append(bank)
+        self._current = self.app.controller(CurrentController)
+        self._notifier = self.app.controller(NotificationController)
 
     @property
     def banks(self):
         return self.manager.banks
 
-    def create(self, bank, token=None):
+    def created(self, bank, token=None):
         """
-        Persists a new :class:`Bank` in database.
-
-        :param Bank bank: Bank that will be added
-        :param string token: Request token identifier
-
-        :return int: Bank index
-        """
-        if bank in self.manager.banks:
-            raise BankError('Bank {} already added in banks manager'.format(bank))
-
-        self.manager.append(bank)
-
-        index = len(self.banks) - 1
-        self._notify_change(bank, UpdateType.CREATED, token, index=index)
-
-        bank.original_name = bank.name
-        self.dao.save(bank, index)
-
-        return index
-
-    def update(self, bank, token=None):
-        """
-        Notify all observers that the :class:`Bank` object has updated
-        and persists the new state.
+        Notify all observers that a new :class:`.Bank` has been created.
 
         .. note::
-            If you needs change the bank to other, use ``replace`` instead.
 
-        .. note::
-            If you're changing a bank that has a current pedalboard,
-            the pedalboard should be fully charged and loaded. So, prefer the use
-            of other Controllers methods for simple changes.
+            The bank needs be added in a :class:`.BanksManager` before.
 
-        :param Bank bank: Bank updated
+            >>> banks_manager.append(bank)
+            >>> banks_controller.created(bank)
+
+        :param Bank bank: Bank created and added in banks manager
         :param string token: Request token identifier
         """
         if bank not in self.manager.banks:
-            raise BankError('Bank {} not added in banks manager'.format(bank))
+            raise BankError('Bank {} has not added in banks manager'.format(bank))
 
-        if bank.name != bank.original_name:
-            self.dao.delete(bank)
-            bank.original_name = bank.name
+        self._notify_change(bank, UpdateType.CREATED, token, index=len(self.banks) - 1)
 
-        self.dao.save(bank, self.banks.index(bank))
+    def updated(self, bank, token=None, current_bank=False):
+        """
+        Notify all observers that the :class:`.Bank` object has updated.
 
-        if self.current.is_current_bank(bank):
-            self.current.reload_current_pedalboard()
+        .. note::
+
+            If a swap is realized, call this method for all the involved banks::
+
+                >>> bank[1], bank[3] = bank[3], bank[1]
+                >>> banks_controller.updated(bank[1], TOKEN)
+                >>> banks_controller.updated(bank[3], TOKEN)
+
+        .. note::
+
+            If you're changing a bank that has a current pedalboard,
+            the pedalboard should be fully charged and loaded. So, prefer the use
+            of other Controllers methods for informs simple changes.
+
+        :param Bank bank: Updated bank
+        :param string token: Request token identifier
+        """
+        if bank not in self.manager.banks:
+            raise BankError('Bank {} has not added in banks manager'.format(bank))
+
+        if bank == self._current.bank:
+            self._current.reload_current_pedalboard()
+
+        elif current_bank:
+            pedalboard_index = self._current.pedalboard.index
+            self._current.set_pedalboard(bank.pedalboards[pedalboard_index])
 
         self._notify_change(bank, UpdateType.UPDATED, token)
 
-    def replace(self, old_bank, new_bank, token=None):
+    def deleted(self, bank, old_index, token=None):
         """
-        Replaces the old bank to new bank and notifies all observers that the
-        :class:`Bank` object has UPDATED
+        Notify all observers that the :class:`.Bank` object has deleted.
 
         .. note::
-            If you're changing a bank that has a current pedalboard,
-            the pedalboard should be fully charged and loaded. So, prefer the use
-            of other Controllers methods for simple changes.
 
-        :param Bank old_bank: Bank that will be replaced for new_bank
-        :param Bank new_bank: Bank that replaces old_bank
-        :param string token: Request token identifier
-        """
-        if old_bank not in self.banks:
-            raise BankError('Old bank {} not added in banks manager'.format(old_bank))
-
-        if new_bank in self.banks:
-            raise BankError('New bank {} already added in banks manager'.format(new_bank))
-
-        new_bank.original_name = new_bank.name
-
-        index = self.banks.index(old_bank)
-
-        self.dao.delete(old_bank)
-        self.dao.save(new_bank, index)
-
-        is_current_bank = self.current.is_current_bank(old_bank)
-
-        self.banks[old_bank.index] = new_bank
-
-        if is_current_bank:
-            self.current.reload_current_pedalboard()
-
-        self._notify_change(new_bank, UpdateType.UPDATED, token)
-
-    def delete(self, bank, token=None):
-        """
-        Remove the informed :class:`Bank`.
-
-        .. note::
-            If the Bank contains deleted contains the current pedalboard,
+            If the Bank deleted contains the current pedalboard,
             another pedalboard will be loaded and it will be the new current pedalboard.
 
-        :param Bank bank: Bank to be removed
-        :param string token: Request token identifier
-        """
-        if bank not in self.banks:
-            raise BankError('Bank {} not added in banks manager'.format(bank))
-
-        next_bank = None
-        if bank == self.current.current_bank:
-            self.current.to_next_bank()
-            next_bank = self.current.current_bank
-
-        manager = bank.manager
-        index = self.banks.index(bank)
-        self.dao.delete(bank)
-        self.manager.banks.remove(bank)
-
-        if next_bank is not None:
-            self.current.bank_number = self.banks.index(next_bank)
-
-        self._notify_change(bank, UpdateType.DELETED, token, index=index, manager=manager)
-
-    def swap(self, bank_a, bank_b, token=None):
-        """
-        Swap bank_a with bank_b. The bank a position will be the bank b position
-        and the bank b position will be the bank a position.
-
         .. note::
-            If the any of the banks contains the current pedalboard
-            it will not changed.
 
-        :param Bank bank_a: Bank to the swapped with bank_b
-        :param Bank bank_b: Bank to the swapped with bank_a
+            The bank needs be removed of the :class:`.BanksManager` before.
+
+            >>> index = bank.index
+            >>> banks_manager.banks.remove(bank)
+            >>> banks_controller.deleted(bank, index)
+
+        :param Bank bank: Removed bank
+        :param int old_index: Bank index before it is removed
         :param string token: Request token identifier
         """
-        if bank_a not in self.banks:
-            raise BankError('Bank {} not added in banks manager'.format(bank_a))
-        if bank_b not in self.banks:
-            raise BankError('Bank {} not added in banks manager'.format(bank_b))
+        if bank in self.banks:
+            raise BankError('Bank {} wasn\'t deleted for banks manager'.format(bank))
 
-        index_a = self.banks.index(bank_a)
-        index_b = self.banks.index(bank_b)
+        self._notify_change(bank, UpdateType.DELETED, token, index=old_index)
 
-        current_bank_index = None
-        if self.current.is_current_bank(bank_a):
-            current_bank_index = index_b
-        elif self.current.is_current_bank(bank_b):
-            current_bank_index = index_a
+        if bank == self._current.bank:
+            new_bank = self.banks[self._current.next_bank_index(old_index - 1)]
+            self._current.set_bank(new_bank)
 
-        self.banks[index_a], self.banks[index_b] = self.banks[index_b], self.banks[index_a]
-
-        self.dao.save(bank_a, index_b)
-        self.dao.save(bank_b, index_a)
-
-        if current_bank_index is not None:
-            self.current.bank_number = current_bank_index
-
-        self._notify_change(bank_a, UpdateType.UPDATED, token)
-        self._notify_change(bank_b, UpdateType.UPDATED, token)
-
-    def _notify_change(self, bank, update_type, token=None, index=None, manager=None):
-        manager = manager if manager is not None else bank.manager
+    def _notify_change(self, bank, update_type, token=None, index=None):
         index = index if index is not None else bank.index
 
-        self.notifier.bank_updated(bank, update_type, index=index, origin=manager, token=token)
+        self._notifier.bank_updated(bank, update_type, index=index, origin=self.manager, token=token)

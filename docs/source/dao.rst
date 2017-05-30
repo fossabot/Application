@@ -5,14 +5,11 @@ Dao classes provide a means to persist information.
 
 .. warning::
 
-    When creating a component, persist the information by using the `Controllers classes <controller.html>`__.
+    When creating a component, the model informations are persisted by :class:`Autosaver` class.
 
-BankDao
--------
+.. warning::
 
-.. autoclass:: application.dao.bank_dao.BankDao
-   :members:
-   :special-members:
+    If you need persists and load any data, use the :class:`.ComponentDataController`.
 
 ComponentDao
 ------------
@@ -20,6 +17,7 @@ ComponentDao
 .. autoclass:: application.dao.component_dao.ComponentDao
    :members:
    :special-members:
+   :exclude-members: __weakref__
 
 CurrentDao
 ----------
@@ -27,6 +25,7 @@ CurrentDao
 .. autoclass:: application.dao.current_dao.CurrentDao
    :members:
    :special-members:
+   :exclude-members: __weakref__
 
 PluginsDao
 ----------
@@ -34,10 +33,4 @@ PluginsDao
 .. autoclass:: application.dao.plugins_dao.PluginsDao
    :members:
    :special-members:
-
-Database
---------
-
-.. autoclass:: application.dao.database.Database
-   :members:
-   :special-members:
+   :exclude-members: __weakref__

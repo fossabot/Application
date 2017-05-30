@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from application.controller.banks_controller import BanksController
-from application.controller.effect_controller import EffectController
+from application.controller.effect_controller import EffectController, EffectError, PedalboardConnectionError
 from application.controller.notification_controller import NotificationController
 from application.controller.plugins_controller import PluginsController
 
@@ -24,7 +23,6 @@ from pluginsmanager.model.pedalboard import Pedalboard
 from pluginsmanager.model.connection import Connection
 from pluginsmanager.model.update_type import UpdateType
 
-import unittest
 from unittest.mock import MagicMock
 
 
@@ -37,7 +35,6 @@ class EffectControllerTest(ControllerTest):
         cls.TOKEN = 'EFFECT_TOKEN'
 
         cls.effects = cls.controller(EffectController)
-        cls.banks = cls.controller(BanksController)
         cls.notifier = cls.controller(NotificationController)
 
         cls.plugins = cls.controller(PluginsController)
@@ -60,14 +57,13 @@ class EffectControllerTest(ControllerTest):
 
         pedalboard.append(reverb)
         pedalboard.append(reverb2)
+
         return bank
 
-    def test_create_effect(self):
-        bank = self._create_default_bank('test_create_effect')
+    def test_created_effect(self):
+        bank = self._create_default_bank('test_created_effect')
         pedalboard = bank.pedalboards[0]
         reverb, reverb2 = pedalboard.effects
-
-        self.banks.create(bank)
 
         self.effects.created(reverb)
         self.observer.on_effect_updated.assert_called_with(reverb, UpdateType.CREATED, token=None, index=0, origin=pedalboard)
@@ -75,44 +71,67 @@ class EffectControllerTest(ControllerTest):
         self.effects.created(reverb2, self.TOKEN)
         self.observer.on_effect_updated.assert_called_with(reverb2, UpdateType.CREATED, token=self.TOKEN, index=1, origin=pedalboard)
 
-        self.banks.delete(bank)
+    def test_created_effect_error(self):
+        reverb = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
 
-    def test_delete_effect(self):
-        bank = self._create_default_bank('test_delete_effect')
+        with self.assertRaises(EffectError):
+            self.effects.created(reverb)
+
+        self.observer.on_effect_updated.assert_not_called()
+
+    def test_deleted_effect(self):
+        bank = self._create_default_bank('test_deleted_effect')
         pedalboard = bank.pedalboards[0]
         reverb, reverb2 = pedalboard.effects
 
-        self.banks.create(bank)
+        old_index = reverb.index
 
-        self.effects.delete(reverb)
-        self.observer.on_effect_updated.assert_called_with(reverb, UpdateType.DELETED, token=None, index=0, origin=pedalboard)
+        pedalboard.effects.remove(reverb)
+        self.effects.deleted(reverb, old_index, pedalboard)
+        self.observer.on_effect_updated.assert_called_with(reverb, UpdateType.DELETED, token=None, index=old_index, origin=pedalboard)
 
-        self.effects.delete(reverb2, self.TOKEN)
-        self.observer.on_effect_updated.assert_called_with(reverb2, UpdateType.DELETED, token=self.TOKEN, index=0, origin=pedalboard)
+        old_index = reverb2.index
 
-        self.banks.delete(bank)
+        pedalboard.effects.remove(reverb2)
+        self.effects.deleted(reverb2, old_index, pedalboard, self.TOKEN)
+        self.observer.on_effect_updated.assert_called_with(reverb2, UpdateType.DELETED, token=self.TOKEN, index=old_index, origin=pedalboard)
 
-    def test_toggle_status(self):
-        bank = self._create_default_bank('test_toggle_status')
+    def test_deleted_effect_error(self):
+        pedalboard = Pedalboard('test_deleted_effect_error pedalboard')
+        reverb = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
+
+        pedalboard.append(reverb)
+
+        with self.assertRaises(EffectError):
+            self.effects.deleted(reverb, 0, pedalboard)
+
+        self.observer.on_effect_updated.assert_not_called()
+
+    def test_toggled_status(self):
+        bank = self._create_default_bank('test_toggled_status')
         pedalboard = bank.pedalboards[0]
         reverb, reverb2 = pedalboard.effects
 
-        self.banks.create(bank)
-
-        self.effects.toggle_status(reverb)
+        reverb.toggle()
+        self.effects.toggled_status(reverb)
         self.observer.on_effect_status_toggled.assert_called_with(reverb, None)
 
-        self.effects.toggle_status(reverb2, self.TOKEN)
+        reverb.toggle()
+        self.effects.toggled_status(reverb2, self.TOKEN)
         self.observer.on_effect_status_toggled.assert_called_with(reverb2, self.TOKEN)
 
-        self.banks.delete(bank)
+    def test_deleted_toggled_status_error(self):
+        reverb = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
+
+        with self.assertRaises(EffectError):
+            self.effects.toggled_status(reverb)
+
+        self.observer.on_effect_updated.assert_not_called()
 
     def test_connected(self):
         bank = self._create_default_bank('test_connected')
         pedalboard = bank.pedalboards[0]
         reverb, reverb2 = pedalboard.effects
-
-        self.banks.create(bank)
 
         reverb.outputs[0].connect(reverb2.inputs[0])
         connection1 = pedalboard.connections[-1]
@@ -126,14 +145,22 @@ class EffectControllerTest(ControllerTest):
         self.effects.connected(pedalboard, connection2, self.TOKEN)
         self.observer.on_connection_updated.assert_called_with(connection2, UpdateType.CREATED, pedalboard=pedalboard, token=self.TOKEN)
 
-        self.banks.delete(bank)
+    def test_connected_error(self):
+        pedalboard = Pedalboard('test_connected_error pedalboard')
+
+        reverb = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
+        reverb2 = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
+
+        connection = Connection(reverb.outputs[0], reverb2.inputs[0])
+        with self.assertRaises(PedalboardConnectionError):
+            self.effects.connected(pedalboard, connection)
+
+        self.observer.on_effect_updated.assert_not_called()
 
     def test_disconnected(self):
         bank = self._create_default_bank('test_disconnected')
         pedalboard = bank.pedalboards[0]
         reverb, reverb2 = pedalboard.effects
-
-        self.banks.create(bank)
 
         reverb.outputs[0].connect(reverb2.inputs[0])
         connection1 = pedalboard.connections[-1]
@@ -149,8 +176,16 @@ class EffectControllerTest(ControllerTest):
         self.effects.disconnected(pedalboard, connection2, self.TOKEN)
         self.observer.on_connection_updated.assert_called_with(connection2, UpdateType.DELETED, pedalboard=pedalboard, token=self.TOKEN)
 
-        self.banks.delete(bank)
+    def test_disconnected_error(self):
+        pedalboard = Pedalboard('test_disconnected_error pedalboard')
 
-    @unittest.skip('Not implemented')
-    def test_delete_effect_remove_connections(self):
-        pass
+        reverb = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
+        reverb2 = self.plugins.lv2_effect('http://calf.sourceforge.net/plugins/Reverb')
+
+        connection = Connection(reverb.outputs[0], reverb2.inputs[0])
+        pedalboard.connections.append(connection)
+
+        with self.assertRaises(PedalboardConnectionError):
+            self.effects.disconnected(pedalboard, connection)
+
+        self.observer.on_effect_updated.assert_not_called()

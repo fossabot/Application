@@ -12,15 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import time
-import os
 import atexit
-from shutil import copytree
+import logging
+import os
+import sys
 from pathlib import Path
+from shutil import copytree
+from unittest.mock import MagicMock
 
 from application.controller.banks_controller import BanksController
-from application.controller.current_controller import CurrentController
 from application.controller.component_data_controller import ComponentDataController
+from application.controller.current_controller import CurrentController
 from application.controller.device_controller import DeviceController
 from application.controller.effect_controller import EffectController
 from application.controller.notification_controller import NotificationController
@@ -29,11 +31,7 @@ from application.controller.pedalboard_controller import PedalboardController
 from application.controller.plugins_controller import PluginsController
 
 from pluginsmanager.mod_host.mod_host import ModHost
-
-from unittest.mock import MagicMock
-
-import logging
-import sys
+from pluginsmanager.observer.autosaver.autosaver import Autosaver
 
 logging.basicConfig(format='[%(asctime)s] %(levelname)s - %(message)s', stream=sys.stdout, level=logging.DEBUG)
 
@@ -54,11 +52,11 @@ class Application(object):
         >>> application = Application()
         >>> current_controller = application.controller(CurrentController)
 
-        >>> print(current_controller.current_pedalboard)
+        >>> print(current_controller.pedalboard)
         <Pedalboard object as Shows with 2 effects at 0x7fa3bcb49be0>
 
         >>> current_controller.to_next_pedalboard()
-        >>> current_controller.current_pedalboard
+        >>> current_controller.pedalboard
         <Pedalboard object as Shows 2 with 1 effects at 0x7fa3bbcdecf8>
 
     For more details see the Controllers extended classes.
@@ -71,9 +69,11 @@ class Application(object):
     """
 
     def __init__(self, path_data="data/", address="localhost", test=False):
+        path_data = Path(path_data)
         self.mod_host = self._initialize(address, test)
 
         self.path_data = self._initialize_data(path_data)
+        self.autosaver = Autosaver(str(path_data / Path('banks')))
         self.components = []
         self.controllers = self._load_controllers()
 
@@ -89,15 +89,16 @@ class Application(object):
         return mod_host
 
     def _initialize_data(self, path):
-        if not os.path.exists(path):
+        str_path = str(path)
+        if not os.path.exists(str_path):
             default_path_data = os.path.dirname(os.path.abspath(__file__)) / Path('data')
 
             ignore_files = lambda d, files: [f for f in files if (Path(d) / Path(f)).is_file() and f.endswith('.py')]
-            copytree(str(default_path_data), str(os.path.abspath(path)), ignore=ignore_files)
+            copytree(str(default_path_data), str(os.path.abspath(str_path)), ignore=ignore_files)
 
             self.log('Data - Create initial data')
 
-        self.log('Data - Loads {}', os.path.abspath(path))
+        self.log('Data - Loads {}', os.path.abspath(str_path))
         return path
 
     def _load_controllers(self):
@@ -138,8 +139,13 @@ class Application(object):
         """
         Start this API, initializing the components.
         """
-        current_pedalboard = self.controller(CurrentController).current_pedalboard
-        self.log('Load current pedalboard - "{}"', current_pedalboard.name)
+        current_pedalboard = self.controller(CurrentController).pedalboard
+        if current_pedalboard is None:
+            self.log('Not exists any current pedalboard.')
+            self.log('Use CurrentController to set the current pedalboard')
+        else:
+            self.log('Load current pedalboard - "{}"', current_pedalboard.name)
+
         self.mod_host.pedalboard = current_pedalboard
 
         for component in self.components:

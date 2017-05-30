@@ -12,10 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from application.dao.bank_dao import BankDao
-
 from application.controller.controller import Controller
-from application.controller.banks_controller import BanksController
 from application.controller.current_controller import CurrentController
 from application.controller.notification_controller import NotificationController
 
@@ -28,170 +25,128 @@ class PedalboardError(Exception):
 
 class PedalboardController(Controller):
     """
-    Manage :class:`Pedalboard`, informing the creation, informing the updates
-    or deleting and informing it.
+    Notify all observers that a :class:`.Pedalboard` has been created, updated, removed.
+    Also makes changes to the current pedalboard when the changes affects the current pedalboard.
     """
 
     def __init__(self, application):
         super(PedalboardController, self).__init__(application)
-        self.dao = None
-        self.banks = None
-        self.current = None
-        self.notifier = None
+        self._current = None
+        self._notifier = None
 
     def configure(self):
-        self.dao = self.app.dao(BankDao)
-        self.banks = self.app.controller(BanksController)
-        self.current = self.app.controller(CurrentController)
-        self.notifier = self.app.controller(NotificationController)
+        self._current = self.app.controller(CurrentController)
+        self._notifier = self.app.controller(NotificationController)
 
     def created(self, pedalboard, token=None):
         """
-        Notify all observers that the :class:`Pedalboard` object has been created.
+        Notify all observers that a new :class:`.Pedalboard` object has been created.
 
         .. note::
 
-            The pedalboard needs be added in a :class:`Bank` before.
+            The pedalboard needs be added in a :class:`.Bank` before.
 
             >>> bank.append(pedalboard)
             >>> pedalboard_controller.created(pedalboard)
 
-        :param Pedalboard pedalboard: Pedalboard created
+        :param Pedalboard pedalboard: Pedalboard created and added in your bank
         :param string token: Request token identifier
         """
-        if pedalboard.bank not in self.banks.banks:
-            raise PedalboardError('Bank of pedalboard {} not added in banks manager'.format(pedalboard))
+        if pedalboard.bank is None:
+            raise PedalboardError('Pedalboard {} has not added in any bank'.format(pedalboard))
 
-        self._save(pedalboard)
         self._notify_change(pedalboard, UpdateType.CREATED, token)
 
-    def update(self, pedalboard, token=None, reload=True):
+    def updated(self, pedalboard, token=None, reload=True):
         """
-        Notify all observers that the :class:`Pedalboard` object has updated
-        and persists the new state.
+        Notify all observers that the :class:`.Pedalboard` object has updated.
+
+        .. note::
+
+            If a swap is realized, call this method for all the involved pedalboards::
+
+                >>> pedalboard[1], pedalboard[3] = pedalboard[3], pedalboard[1]
+                >>> pedalboard_controller.updated(pedalboard[1], TOKEN)
+                >>> pedalboard_controller.updated(pedalboard[3], TOKEN)
 
         .. note::
             If you're changing the current pedalboard, the pedalboard should be
-            fully charged and loaded. So, prefer the use of other Controllers
-            methods for simple changes.
+            fully charged and loaded if reload=True.
+            So, prefer the use of other Controllers methods for simple changes.
 
-        :param Pedalboard pedalboard: Pedalboard to be updated
+        :param Pedalboard pedalboard: Updated pedalboard
         :param string token: Request token identifier
         :param bool reload: If it's the current pedalboard, is necessary reload the plugins?
         """
-        if pedalboard.bank not in self.banks.banks:
-            raise PedalboardError('Bank of pedalboard {} not added in banks manager'.format(pedalboard))
+        if pedalboard.bank is None:
+            raise PedalboardError('Pedalboard {} has not added in any bank'.format(pedalboard))
 
-        self._save(pedalboard)
-
-        if self.current.is_current_pedalboard(pedalboard) and reload:
-            self.current.reload_current_pedalboard()
+        if self._current.pedalboard == pedalboard and reload:
+            self._current.set_pedalboard(pedalboard, notify=False, force=True)
 
         self._notify_change(pedalboard, UpdateType.UPDATED, token)
 
-    def replace(self, old_pedalboard, new_pedalboard, token=None):
+    def deleted(self, pedalboard, old_index, old_bank, token=None):
         """
-        Replaces the old pedalboard to new pedalboard and notifies all observers that the
-        :class:`Pedalboard` object has UPDATED
-
-        .. note::
-            If you're changing a bank that has a current pedalboard,
-            the pedalboard should be fully charged and loaded. So, prefer the use
-            of other Controllers methods for simple changes.
-
-        :param Pedalboard old_pedalboard: Pedalboard that will be replaced for new_pedalboard
-        :param Pedalboard new_pedalboard: Pedalboard that replaces old_pedalboard
-        :param string token: Request token identifier
-        """
-        if old_pedalboard.bank not in self.banks.banks:
-            raise PedalboardError('Bank of old_pedalboard {} not added in banks manager'.format(old_pedalboard))
-
-        if new_pedalboard.bank is not None:
-            raise PedalboardError('Bank of new_pedalboard {} already added in banks manager'.format(new_pedalboard))
-
-        bank = old_pedalboard.bank
-        bank.pedalboards[bank.pedalboards.index(old_pedalboard)] = new_pedalboard
-        self.update(new_pedalboard, token)
-
-    def delete(self, pedalboard, token=None):
-        """
-        Remove the :class:`Pedalboard` of your bank.
+        Notify all observers that the :class:`.Pedalboard` object has deleted.
 
         .. note::
             If the pedalboard is the current, another pedalboard will be loaded
             and it will be the new current pedalboard.
 
-        :param Pedalboard pedalboard: Pedalboard to be removed
+        .. note::
+
+            The pedalboard needs be removed of your :class:`.Bank` before.
+
+            >>> bank = pedalboard.bank
+            >>> index = pedalboard.index
+            >>> bank.pedalboards.remove(pedalboard)
+            >>> pedalboard_controller.deleted(pedalboard, index, bank)
+
+        :param Pedalboard pedalboard: Removed pedalboard
+        :param old_index: Pedalboard index before it is removed
+        :param old_bank: Bank where the pedalboard belonged
         :param string token: Request token identifier
         """
-        if pedalboard.bank not in self.banks.banks:
-            raise PedalboardError('Bank of pedalboard {} not added in banks manager'.format(pedalboard))
+        if pedalboard.bank is not None:
+            raise PedalboardError('Pedalboard {} wasn\'t deleted for your bank'.format(pedalboard))
 
-        # Get next pedalboard if the removed is the current pedalboard
-        next_pedalboard = None
-        if self.current.is_current_pedalboard(pedalboard):
-            self.current.to_next_pedalboard()
-            next_pedalboard = self.current.current_pedalboard
+        self._notify_change(pedalboard, UpdateType.DELETED, token, index=old_index, origin=old_bank)
 
-        bank = pedalboard.bank
+        if self._current.pedalboard == pedalboard:
+            pedalboard = old_bank.pedalboards[self._current.next_bank_index(old_index-1)]
+            self._current.set_pedalboard(pedalboard)
 
-        # Remove
-        pedalboard_index = pedalboard.index
-        del pedalboard.bank.pedalboards[pedalboard_index]
-        self._notify_change(pedalboard, UpdateType.DELETED, token, index=pedalboard_index, origin=bank)
-
-        # Update current pedalboard
-        #only_pedalboard_bank_has_removed = len(bank.pedalboards) == 0
-        #if only_pedalboard_bank_has_removed:
-        #    self.current.remove_current(token=token)
-
-        #elif next_pedalboard is not None:
-        if next_pedalboard is not None:
-            self.current.pedalboard_number = next_pedalboard.index
-
-        self.dao.save(bank, self.banks.banks.index(bank))
-
-    def move(self, pedalboard, new_position, token=None):
+    def moved(self, pedalboard, old_index, token=None):
         """
-        Move the pedalboard from the current position in your bank.pedalboards list for the new position::
+        Notify all observers that the :class:`.Pedalboard` object has moved from a new position
+        (pedalboard has DELETED in ``index=old_position``
+        and has CREADED in the ``index=pedalboard.index``).
 
-            >>> # Move the last pedalboard for second position
-            >>> bank.pedalboards
-            [pedalboard a, pedalboard b, pedalboard c, pedalboard d]
-            >>> pedalboard_d = bank.pedalboards[-1]
-            >>> pedalboard_d
-            pedalboard_d
-            >>> pedalboard_controller.move(pedalboard_d, 1)
-            >>> bank.pedalboards
-            [pedalboard a, pedalboard d, pedalboard b, pedalboard c]
+        .. note::
+
+            It's necessary after moves the pedalboard position with ``move()`` method::
+
+            >>> old_index = 3
+            >>> new_index = 1
+            >>> pedalboard = pedalboards[old_index]
+            >>> pedalboards.move(pedalboard, new_index)
+            >>> self.controller.moved(pedalboard, old_index, TOKEN)
 
         :param Pedalboard pedalboard: Pedalboard that will be the position in your bank changed
-        :param int new_position: New index position of the pedalboard
+        :param int old_index: Original (old) index position of the pedalboard
         :param string token: Request token identifier
         """
-        current_pedalboard = self.current.current_pedalboard
-
-        pedalboards = pedalboard.bank.pedalboards
-
-        self._notify_change(pedalboard, UpdateType.DELETED, token=token)
-        pedalboards.pop(pedalboard.index)
-
-        pedalboards.insert(new_position, pedalboard)
+        self._notify_change(pedalboard, UpdateType.DELETED, token=token, index=old_index)
         self._notify_change(pedalboard, UpdateType.CREATED, token=token)
-
-        self._save(pedalboard)
 
         # Save the current pedalboard data
         # The current pedalboard index changes then changes the pedalboard order
-        if current_pedalboard.bank == pedalboard.bank:
-            self.current._set_current(current_pedalboard, notify=False)
-
-    def _save(self, pedalboard):
-        bank = pedalboard.bank
-        self.dao.save(bank, self.banks.banks.index(bank))
+        if self._current.pedalboard == pedalboard:
+            self._current.set_pedalboard(pedalboard, token=token, force=True)
 
     def _notify_change(self, pedalboard, update_type, token=None, **kwargs):
         index = kwargs.pop('index') if 'index' in kwargs else pedalboard.index
         origin = kwargs.pop('origin') if 'origin' in kwargs else pedalboard.bank
 
-        self.notifier.pedalboard_updated(pedalboard, update_type, index=index, origin=origin, token=token, **kwargs)
+        self._notifier.pedalboard_updated(pedalboard, update_type, index=index, origin=origin, token=token, **kwargs)

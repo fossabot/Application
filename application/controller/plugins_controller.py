@@ -13,12 +13,13 @@
 # limitations under the License.
 
 from enum import Enum
-from shutil import copy2
+from pathlib import Path
 
 from application.controller.controller import Controller
 from application.dao.plugins_dao import PluginsDao
 
 from pluginsmanager.model.lv2.lv2_effect_builder import Lv2EffectBuilder
+from pluginsmanager.observer.autosaver.persistence import Persistence
 
 
 class PluginTechnology(Enum):
@@ -52,9 +53,10 @@ class PluginsController(Controller):
                 self.app.log("Lv2Plugins data - It's not possible reload lv2 plugins data")
                 self.app.log("                  Please install lilv")
                 self.app.log("Lv2Plugins data - Using PluginsManager default lv2 plugins data")
-                copy2(Lv2EffectBuilder.plugins_json_file, self._dao.data_path)
+                print(self._dao.data_path, Lv2EffectBuilder.plugins_json_file)
+                self._dao.save(Persistence.read(Path(Lv2EffectBuilder.plugins_json_file)))
 
-        return Lv2EffectBuilder(plugins_json=self._dao.data_path)
+        return Lv2EffectBuilder(plugins_json=self._dao.path)
 
     def by(self, technology):
         """

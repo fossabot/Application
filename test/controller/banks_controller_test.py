@@ -22,7 +22,6 @@ from pluginsmanager.model.bank import Bank
 from pluginsmanager.model.pedalboard import Pedalboard
 from pluginsmanager.model.update_type import UpdateType
 
-import unittest
 from unittest.mock import MagicMock
 
 
@@ -37,351 +36,190 @@ class BanksControllerTest(ControllerTest):
         self.current = controller(CurrentController)
         self.notifier = controller(NotificationController)
 
+        self.manager = self.controller.manager
+
     def test_load_banks(self):
         self.assertIsNotNone(self.controller.banks)
         self.assertNotEqual(0, len(self.controller.banks))
 
-    def test_create_bank(self):
+    def test_created_bank(self):
         observer = MagicMock()
         self.notifier.register(observer)
 
-        bank = Bank('test_create_bank')
-        index = self.controller.create(bank)
-        observer.on_bank_updated.assert_called_with(bank, UpdateType.CREATED, index=index, origin=bank.manager, token=None)
-        self.assertEqual(index, self.controller.banks.index(bank))
+        bank = Bank('test_created_bank')
+        self.manager.append(bank)
+        self.controller.created(bank)
+        observer.on_bank_updated.assert_called_with(bank, UpdateType.CREATED, index=bank.index, origin=self.manager, token=None)
 
-        bank2 = Bank('test_create_bank_2')
-        index2 = self.controller.create(bank2, self.TOKEN)
-        observer.on_bank_updated.assert_called_with(bank2, UpdateType.CREATED, index=index2, origin=bank2.manager, token=self.TOKEN)
-        self.assertEqual(index2, self.controller.banks.index(bank2))
+        bank2 = Bank('test_created_bank_2')
+        self.manager.append(bank2)
+        self.controller.created(bank2, self.TOKEN)
+        observer.on_bank_updated.assert_called_with(bank2, UpdateType.CREATED, index=bank2.index, origin=self.manager, token=self.TOKEN)
 
         self.notifier.unregister(observer)
 
-        self.controller.delete(bank)
-        self.controller.delete(bank2)
+        self.manager.banks.remove(bank)
+        self.manager.banks.remove(bank2)
 
-    def test_create_created_bank(self):
-        bank = Bank('test_create_created_bank')
-        index = self.controller.create(bank)
-        self.assertEqual(index, self.controller.banks.index(bank))
-
+    def test_created_bank_not_added_manager(self):
         observer = MagicMock()
         self.notifier.register(observer)
 
+        bank = Bank('test_create_created_bank')
         with self.assertRaises(BankError):
-            self.controller.create(bank, self.TOKEN)
+            self.controller.created(bank, self.TOKEN)
 
         observer.on_bank_updated.assert_not_called()
+        self.notifier.unregister(observer)
 
-        self.controller.delete(bank)
-
-    def test_update_bank(self):
+    def test_updated_bank(self):
         observer = MagicMock()
 
-        bank = Bank('test_update_bank')
-        self.controller.create(bank)
+        bank = Bank('test_updated_bank')
+        self.manager.append(bank)
+        self.controller.created(bank)
 
         self.notifier.register(observer)
 
-        bank.name = 'test_update_bank_new'
-        self.controller.update(bank)
-        observer.on_bank_updated.assert_called_with(bank, UpdateType.UPDATED, index=bank.index, origin=bank.manager, token=None)
+        bank.name = 'test_updated_bank_new'
+        self.controller.updated(bank)
+        observer.on_bank_updated.assert_called_with(bank, UpdateType.UPDATED, index=bank.index, origin=self.manager, token=None)
 
-        bank.name = 'test_update_bank_new_new'
-        self.controller.update(bank, self.TOKEN)
-        observer.on_bank_updated.assert_called_with(bank, UpdateType.UPDATED, index=bank.index, origin=bank.manager, token=self.TOKEN)
+        bank.name = 'test_updated_bank_new_new'
+        self.controller.updated(bank, self.TOKEN)
+        observer.on_bank_updated.assert_called_with(bank, UpdateType.UPDATED, index=bank.index, origin=self.manager, token=self.TOKEN)
 
-        self.controller.delete(bank)
         self.notifier.unregister(observer)
 
-    def test_update_not_added_bank(self):
+        self.manager.banks.remove(bank)
+
+    def test_updated_not_added_bank(self):
         observer = MagicMock()
         self.notifier.register(observer)
 
         bank = Bank('test_update_not_added_bank')
         with self.assertRaises(BankError):
-            self.controller.update(bank)
+            self.controller.updated(bank)
 
         observer.on_bank_updated.assert_not_called()
-
-    def test_update_current_bank(self):
-        bank = Bank('test_update_current_bank 1')
-        bank.append(Pedalboard('test_update_current_bank pedalboard'))
-
-        original_current_pedalboard = self.current.current_pedalboard
-        self.controller.create(bank)
-
-        current_pedalboard = bank.pedalboards[0]
-        self.current.set_pedalboard(current_pedalboard)
-
-        del bank.pedalboards[0]
-        new_pedalboard = Pedalboard('test_update_current_bank pedalboard2')
-        bank.pedalboards.append(new_pedalboard)
-
-        self.controller.update(bank)
-
-        self.assertEqual(self.current.current_pedalboard, new_pedalboard)
-        self.assertEqual(self.current.current_bank, new_pedalboard.bank)
-
-        self.assertEqual(self.current.pedalboard_number, new_pedalboard.index)
-        self.assertEqual(self.current.bank_number, self.controller.banks.index(new_pedalboard.bank))
-
-        self.current.set_pedalboard(original_current_pedalboard)
-
-        self.controller.delete(bank)
-
-    def test_replace_bank(self):
-        observer = MagicMock()
-        self.notifier.register(observer)
-
-        bank = Bank('test_replace_bank 1')
-        bank.append(Pedalboard('test_replace_bank pedalboard'))
-
-        bank2 = Bank('test_replace_bank 2')
-        bank2.append(Pedalboard('test_replace_bank pedalboard2'))
-
-        bank3 = Bank('test_replace_bank 3')
-        bank3.append(Pedalboard('test_replace_bank pedalboard3'))
-
-        self.controller.create(bank)
-        self.controller.replace(bank, bank2)
-        observer.on_bank_updated.assert_any_call(bank2, UpdateType.UPDATED, index=bank2.index, origin=bank2.manager, token=None)
-
-        self.controller.replace(bank2, bank3, self.TOKEN)
-        observer.on_bank_updated.assert_any_call(bank3, UpdateType.UPDATED, index=bank3.index, origin=bank3.manager, token=self.TOKEN)
-
-        self.controller.delete(bank3)
         self.notifier.unregister(observer)
 
-    def test_replace_bank_error(self):
-        observer = MagicMock()
-        self.notifier.register(observer)
+    def test_updated_current_bank(self):
+        # Configure
+        original_current_pedalboard = self.current.pedalboard
 
-        bank = Bank('test_replace_bank_error 1')
-        bank.append(Pedalboard('test_replace_bank_error pedalboard'))
+        bank = Bank('test_updated_current_bank 1')
+        pedalboard1 = Pedalboard('test_updated_current_bank pedalboard')
+        pedalboard2 = Pedalboard('test_updated_current_bank pedalboard2')
+        bank.append(pedalboard1)
+        bank.append(pedalboard2)
 
-        bank2 = Bank('test_replace_bank_error 2')
-        bank2.append(Pedalboard('test_replace_bank_error pedalboard2'))
+        bank2 = Bank('test_updated_current_bank 2')
+        pedalboard3 = Pedalboard('test_updated_current_bank pedalboard3')
+        pedalboard4 = Pedalboard('test_updated_current_bank pedalboard4')
+        bank2.append(pedalboard3)
+        bank2.append(pedalboard4)
 
-        with self.assertRaises(BankError):
-            self.controller.replace(bank, bank2)
+        self.manager.append(bank)
 
-        observer.on_bank_updated.assert_not_called()
-
-        self.controller.create(bank)
-        self.controller.create(bank2)
-
-        observer.reset_mock()
-        with self.assertRaises(BankError):
-            self.controller.replace(bank, bank2)
-
-        observer.on_bank_updated.assert_not_called()
-
-        self.controller.delete(bank)
-        self.controller.delete(bank2)
-        self.notifier.unregister(observer)
-
-    def test_replace_current_bank(self):
-        bank = Bank('test_replace_current_bank 1')
-        bank.append(Pedalboard('test_replace_bank_error pedalboard'))
-
-        bank2 = Bank('test_replace_current_bank 2')
-        bank2.append(Pedalboard('test_replace_bank_error pedalboard2'))
-
-        original_current_pedalboard = self.current.current_pedalboard
-        current_pedalboard = bank.pedalboards[0]
-
-        self.controller.create(bank)
+        # Apply
+        current_pedalboard = pedalboard1
         self.current.set_pedalboard(current_pedalboard)
+        self.assertEqual(self.current.pedalboard, pedalboard1)
+        self.assertEqual(self.current.bank, bank)
 
-        self.controller.replace(bank, bank2)
+        self.manager.banks[bank.index] = bank2
+        self.assertEqual(self.current.pedalboard, pedalboard1)
+        self.assertEqual(self.current.bank, bank)
 
-        current_pedalboard2 = bank2.pedalboards[0]
-        self.assertEqual(self.current.current_pedalboard, current_pedalboard2)
-        self.assertEqual(self.current.current_bank, current_pedalboard2.bank)
+        # Only changes current pedalboard after notify current bank has updated
+        self.controller.updated(bank2, current_bank=True)
+        self.assertEqual(self.current.pedalboard, pedalboard3)
+        self.assertEqual(self.current.bank, bank2)
 
-        self.assertEqual(self.current.pedalboard_number, current_pedalboard2.index)
-        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_pedalboard2.bank))
-
+        # Tear down
         self.current.set_pedalboard(original_current_pedalboard)
+        self.manager.banks.remove(bank2)
 
-        self.controller.delete(bank2)
-
-    @unittest.skip('NOT IMPLEMENTED EMPTY CASES')
-    def test_replace_current_empty_bank(self):
-        bank = Bank('test_replace_current_bank 1')
-        bank.append(Pedalboard('test_replace_bank_error pedalboard'))
-
-        bank2 = Bank('test_replace_current_bank 2')
-
-        current_pedalboard = bank.pedalboards[0]
-
-        self.controller.create(bank)
-        self.current.set_pedalboard(current_pedalboard)
-
-        self.controller.replace(bank, bank2)
-
-    def test_delete_bank(self):
+    def test_deleted_bank(self):
+        # Configure
         observer = MagicMock()
-
         total = len(self.controller.banks)
 
-        bank = Bank('test_delete_bank')
+        bank = Bank('test_deleted_bank')
 
-        self.controller.create(bank)
+        self.manager.append(bank)
+        self.controller.created(bank)
 
         self.notifier.register(observer)
 
+        # Test
         self.assertLess(total, len(self.controller.banks))
-        self.controller.delete(bank)
+        index = bank.index
+        self.manager.banks.remove(bank)
+        self.controller.deleted(bank, index)
         self.assertEqual(total, len(self.controller.banks))
 
-        observer.on_bank_updated.assert_called_with(bank, UpdateType.DELETED, index=bank.index, origin=self.controller.manager, token=None)
+        observer.on_bank_updated.assert_called_with(bank, UpdateType.DELETED, index=index, origin=self.manager, token=None)
 
-        bank2 = Bank('test_delete_bank')
-        self.controller.create(bank2)
-        self.controller.delete(bank2, self.TOKEN)
+        # Test 2
+        bank2 = Bank('test_deleted_bank 2')
+        self.manager.append(bank2)
+        index = bank2.index
+        self.controller.created(bank2)
+        self.manager.banks.remove(bank2)
+        self.controller.deleted(bank2, index, self.TOKEN)
 
-        observer.on_bank_updated.assert_called_with(bank2, UpdateType.DELETED, index=bank2.index, origin=self.controller.manager, token=self.TOKEN)
+        observer.on_bank_updated.assert_called_with(bank2, UpdateType.DELETED, index=index, origin=self.manager, token=self.TOKEN)
         self.notifier.unregister(observer)
 
-    def test_delete_current_bank(self):
-        bank = Bank('test_delete_current_bank 1')
-        bank.append(Pedalboard('test_delete_current_bank pedalboard'))
-
-        bank2 = Bank('test_delete_current_bank 2')
-        bank2.append(Pedalboard('test_delete_current_bank pedalboard'))
-
-        original_current_pedalboard = self.current.current_pedalboard
-
-        self.controller.create(bank)
-        self.controller.create(bank2)
-
-        current_pedalboard = bank.pedalboards[0]
-        self.current.set_pedalboard(current_pedalboard)
-
-        self.assertEqual(self.current.current_pedalboard, current_pedalboard)
-        self.assertEqual(self.current.current_bank, current_pedalboard.bank)
-
-        self.assertEqual(self.current.pedalboard_number, current_pedalboard.index)
-        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_pedalboard.bank))
-
-        self.controller.delete(bank, bank2)
-
-        current_pedalboard2 = bank2.pedalboards[0]
-
-        self.assertEqual(self.current.current_bank, current_pedalboard2.bank)
-        self.assertEqual(self.current.current_pedalboard, current_pedalboard2)
-
-        self.assertEqual(self.current.pedalboard_number, current_pedalboard2.index)
-        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_pedalboard2.bank))
-
-        self.current.set_pedalboard(original_current_pedalboard)
-        self.controller.delete(bank2)
-
-    def test_delete_current_bank_error(self):
+    def test_deleted_bank_error(self):
         observer = MagicMock()
         self.notifier.register(observer)
 
-        bank = Bank('test_replace_bank_error 1')
-        bank.append(Pedalboard('test_replace_bank_error pedalboard'))
-
+        bank = Bank('test_deleted_bank_error')
+        self.manager.append(bank)
         with self.assertRaises(BankError):
-            self.controller.delete(bank)
+            self.controller.deleted(bank, bank.index)
 
         observer.on_bank_updated.assert_not_called()
-
+        self.manager.banks.remove(bank)
         self.notifier.unregister(observer)
 
-    def test_swap(self):
-        observer = MagicMock()
-        self.notifier.register(observer)
+    def test_deleted_current_bank(self):
+        original_current_pedalboard = self.current.pedalboard
 
-        bank = Bank('test_swap 1')
-        bank2 = Bank('test_swap 2')
+        bank = Bank('test_deleted_current_bank 1')
+        pedalboard1 = Pedalboard('test_deleted_current_bank pedalboard')
+        pedalboard2 = Pedalboard('test_deleted_current_bank pedalboard2')
+        bank.append(pedalboard1)
+        bank.append(pedalboard2)
 
-        index = self.controller.create(bank)
-        index2 = self.controller.create(bank2)
+        bank2 = Bank('test_deleted_current_bank 2')
+        pedalboard3 = Pedalboard('test_deleted_current_bank pedalboard3')
+        pedalboard4 = Pedalboard('test_deleted_current_bank pedalboard4')
+        bank2.append(pedalboard3)
+        bank2.append(pedalboard4)
 
-        self.assertEqual(bank, self.controller.banks[index])
-        self.assertEqual(bank2, self.controller.banks[index2])
+        self.manager.append(bank)
+        self.manager.append(bank2)
 
-        self.controller.swap(bank, bank2)
-        observer.on_bank_updated.assert_any_call(bank, UpdateType.UPDATED, index=bank.index, origin=bank.manager, token=None)
-        observer.on_bank_updated.assert_any_call(bank2, UpdateType.UPDATED, index=bank2.index, origin=bank2.manager, token=None)
-
-        self.assertEqual(bank, self.controller.banks[index2])
-        self.assertEqual(bank2, self.controller.banks[index])
-
-        self.controller.swap(bank, bank2, self.TOKEN)
-        observer.on_bank_updated.assert_any_call(bank, UpdateType.UPDATED, index=bank.index, origin=bank.manager, token=self.TOKEN)
-        observer.on_bank_updated.assert_any_call(bank2, UpdateType.UPDATED, index=bank2.index, origin=bank2.manager, token=self.TOKEN)
-
-        self.assertEqual(bank, self.controller.banks[index])
-        self.assertEqual(bank2, self.controller.banks[index2])
-
-        self.notifier.unregister(observer)
-
-        self.controller.delete(bank)
-        self.controller.delete(bank2)
-
-    def test_swap_error(self):
-        bank = Bank('test_swap_error 1')
-        bank2 = Bank('test_swap_error 2')
-
-        self.controller.create(bank)
-
-        observer = MagicMock()
-        self.notifier.register(observer)
-
-        with self.assertRaises(BankError):
-            self.controller.swap(bank, bank2)
-
-        with self.assertRaises(BankError):
-            self.controller.swap(bank2, bank)
-
-        observer.on_bank_updated.assert_not_called()
-
-        self.controller.delete(bank)
-
-    def test_swap_current_bank(self):
-        bank = Bank('test_swap_current_bank 1')
-        bank.append(Pedalboard('test_swap_current_bank pedalboard'))
-
-        bank2 = Bank('test_swap_current_bank 2')
-        bank2.append(Pedalboard('test_swap_current_bank pedalboard2'))
-
-        original_current_pedalboard = self.current.current_pedalboard
-
-        self.controller.create(bank)
-        self.controller.create(bank2)
-
-        current_pedalboard = bank.pedalboards[0]
+        # Apply
+        current_pedalboard = pedalboard1
         self.current.set_pedalboard(current_pedalboard)
+        self.assertEqual(self.current.pedalboard, pedalboard1)
+        self.assertEqual(self.current.bank, bank)
 
-        self.assertEqual(self.current.current_pedalboard, current_pedalboard)
-        self.assertEqual(self.current.current_bank, current_pedalboard.bank)
+        old_index = bank.index
+        self.manager.banks.remove(bank)
+        self.assertEqual(self.current.pedalboard, pedalboard1)
+        self.assertEqual(self.current.bank, bank)
 
-        self.assertEqual(self.current.pedalboard_number, current_pedalboard.index)
-        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_pedalboard.bank))
+        # Only changes current pedalboard after notify current bank has updated
+        self.controller.deleted(bank, old_index)
+        self.assertEqual(self.current.pedalboard, pedalboard3)
+        self.assertEqual(self.current.bank, bank2)
 
-        self.controller.swap(bank, bank2)
-
-        self.assertEqual(self.current.current_pedalboard, current_pedalboard)
-        self.assertEqual(self.current.current_bank, current_pedalboard.bank)
-
-        self.assertEqual(self.current.pedalboard_number, current_pedalboard.bank.pedalboards.index(current_pedalboard))
-        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_pedalboard.bank))
-
-        self.controller.swap(bank2, bank)
-
-        self.assertEqual(self.current.current_pedalboard, current_pedalboard)
-        self.assertEqual(self.current.current_bank, current_pedalboard.bank)
-
-        self.assertEqual(self.current.pedalboard_number, current_pedalboard.index)
-        self.assertEqual(self.current.bank_number, self.controller.banks.index(current_pedalboard.bank))
-
+        # Tear down
         self.current.set_pedalboard(original_current_pedalboard)
-
-        self.controller.delete(bank)
-        self.controller.delete(bank2)
+        self.manager.banks.remove(bank2)

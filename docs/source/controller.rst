@@ -7,7 +7,8 @@ Token
 `pluginsmanager`_ can notifies they changes. As an example, if a connection
 between effects is created, plugins manager notifies its observers about the change.
 
-This is how :class:`ModHost` and :class:`Autosaver` know when a change occurs.
+This is how :class:`pluginsmanager.mod_host.mod_host.ModHost` and :class:`pluginsmanager.observer.auto_saver.Autosaver`
+know when a change occurs.
 
 These observers work passively: they only receive updates, not using the `pluginsmanager`_
 api to change the state of the application.
@@ -105,6 +106,7 @@ Controller
 .. autoclass:: application.controller.controller.Controller
    :members:
    :special-members:
+   :exclude-members: __weakref__
 
 BanksController
 ---------------
@@ -112,6 +114,7 @@ BanksController
 .. autoclass:: application.controller.banks_controller.BanksController
    :members:
    :special-members:
+   :exclude-members: __weakref__
 
 ComponentDataController
 -----------------------
@@ -119,7 +122,7 @@ ComponentDataController
 .. autoclass:: application.controller.component_data_controller.ComponentDataController
    :members:
    :special-members:
-
+   :exclude-members: __weakref__
 
 CurrentController
 -----------------
@@ -127,6 +130,7 @@ CurrentController
 .. autoclass:: application.controller.current_controller.CurrentController
    :members:
    :special-members:
+   :exclude-members: __weakref__
 
 DeviceController
 ----------------
@@ -134,6 +138,7 @@ DeviceController
 .. autoclass:: application.controller.device_controller.DeviceController
    :members:
    :special-members:
+   :exclude-members: __weakref__
 
 EffectController
 ----------------
@@ -141,6 +146,7 @@ EffectController
 .. autoclass:: application.controller.effect_controller.EffectController
    :members:
    :special-members:
+   :exclude-members: __weakref__
 
 NotificationController
 ----------------------
@@ -148,6 +154,7 @@ NotificationController
 .. autoclass:: application.controller.notification_controller.NotificationController
    :members:
    :special-members:
+   :exclude-members: __weakref__
 
 ParamController
 ---------------
@@ -155,6 +162,7 @@ ParamController
 .. autoclass:: application.controller.param_controller.ParamController
    :members:
    :special-members:
+   :exclude-members: __weakref__
 
 PedalboardController
 --------------------
@@ -162,6 +170,7 @@ PedalboardController
 .. autoclass:: application.controller.pedalboard_controller.PedalboardController
    :members:
    :special-members:
+   :exclude-members: __weakref__
 
 PluginsController
 -----------------
@@ -169,7 +178,9 @@ PluginsController
 .. autoclass:: application.controller.plugins_controller.PluginsController
    :members:
    :special-members:
+   :exclude-members: __weakref__
 
 .. autoclass:: application.controller.plugins_controller.PluginTechnology
    :members:
    :special-members:
+   :exclude-members: __weakref__
