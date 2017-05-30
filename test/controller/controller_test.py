@@ -23,7 +23,12 @@ class ControllerTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.application = Application(path_data='test/data/', test=True)
+        cls.application.start()
 
     @classmethod
     def controller(cls, controller):
         return cls.application.controller(controller)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.application.stop()

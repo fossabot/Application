@@ -66,7 +66,10 @@ Create the script file that contains the code to run the application (as example
     application.start()
 
     from signal import pause
-    pause()
+    try:
+        pause()
+    except KeyboardInterrupt:
+        application.stop()
 
 Download, compile and install `mod-host`_. Mod-host is a *LV2 host for Jack controllable via socket or command line*.
 It is developed by `Mod Devices`_, a company that also develops professional equipment for musicians.
@@ -131,6 +134,14 @@ To add a component in your configuration file, download it and register it befor
 
     # Start application
     application.start()
+
+    # Don't stop application
+    from signal import pause
+    try:
+        pause()
+    except KeyboardInterrupt:
+        # Stop components with safety
+        application.stop()
 
 Each component needs a configuration to work.
 Pay attention to your documentation for details on how to set it up and use it.

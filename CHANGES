@@ -1,3 +1,23 @@
+Version 0.3.0 - released 05/30/17
+=================================
+ - Issue #29 - Secure components close
+ - Issue #30 - Replace print log to logging
+ - **Breaking change**: Issues #39 and #5 - Change save method to pluginsmanager (v0.5.0) Autosaver
+   - Removed BanksDao -> Using now pluginsmanager Autosaver
+   - Removed Database -> Using now pluginsmanager Persistence
+   - BanksController, PedalboardController, EffectController, ParamController,
+     CurrentController changes your API
+ - Issue #41 - Allows current pedalboard is None
+ - Issue #40 - If current pedalboard index file is wrong, Application now starts
+   with the current pedalboard = None
+ - Issue #11 - Banks with same name not will be replaced when Application initialize
+ - Issue #17 - Fixes: Remove bank with current pedalboard will be crash (when reload Application)
+ - Issue #45 - Add plugins manager v0.5.0 support
+
+   - Removed BanksController, PedalboardController, EffectController, ParamController, NotificationController
+   - Implemented :meth:`.Application.register_observer`, :meth:`.Application.unregister_observer`
+
+
 Version 0.2.1 - released 04/14/17
 =================================
  - 21fdb32 Issue #30 - Fix move pedalboard notification

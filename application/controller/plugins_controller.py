@@ -13,12 +13,13 @@
 # limitations under the License.
 
 from enum import Enum
-from shutil import copy2
+from pathlib import Path
 
 from application.controller.controller import Controller
 from application.dao.plugins_dao import PluginsDao
 
 from pluginsmanager.model.lv2.lv2_effect_builder import Lv2EffectBuilder
+from pluginsmanager.observer.autosaver.persistence import Persistence
 
 
 class PluginTechnology(Enum):
@@ -26,6 +27,12 @@ class PluginTechnology(Enum):
     Enumeration for informs audio plugins technology
     """
     LV2 = 'lv2'
+    """
+    LV2 is an open standard for audio plugins, used by hundreds of plugins and other projects.
+    At its core, LV2 is a simple stable interface, accompanied by extensions which add functionality
+    to support the needs of increasingly powerful audio software.Informs that the change is caused by
+    the creation of an object
+    """
     LADSPA = 'ladspa'
     VST = 'vst'
 
@@ -52,9 +59,10 @@ class PluginsController(Controller):
                 self.app.log("Lv2Plugins data - It's not possible reload lv2 plugins data")
                 self.app.log("                  Please install lilv")
                 self.app.log("Lv2Plugins data - Using PluginsManager default lv2 plugins data")
-                copy2(Lv2EffectBuilder.plugins_json_file, self._dao.data_path)
+                print(self._dao.data_path, Lv2EffectBuilder.plugins_json_file)
+                self._dao.save(Persistence.read(Path(Lv2EffectBuilder.plugins_json_file)))
 
-        return Lv2EffectBuilder(plugins_json=self._dao.data_path)
+        return Lv2EffectBuilder(plugins_json=self._dao.path)
 
     def by(self, technology):
         """
@@ -93,14 +101,18 @@ class PluginsController(Controller):
         For reload the lv2_plugins_aata, it's necessary the installation of lilv.
         Check `Lv2EffectBuilder.lv2_plugins_data()`_ method documentation for details.
 
-        .. _Lv2EffectBuilder.lv2_plugins_data(): http://pedalpi-pluginsmanager.readthedocs.io/model_lv2.html#pluginsmanager.model.lv2.lv2_effect_builder.Lv2EffectBuilder.lv2_plugins_data
+        .. _Lv2EffectBuilder.lv2_plugins_data(): http://pedalpi-pluginsmanager.readthedocs.io/en/latest/model_lv2.html#pluginsmanager.model.lv2.lv2_effect_builder.Lv2EffectBuilder.lv2_plugins_data
 
-        :param lv2_uri: String thats identifier a effect. Example: `http://guitarix.sourceforge.net/plugins/gx_scream_#_scream_`
+        :param string lv2_uri: String thats identifier a effect. Example: `http://guitarix.sourceforge.net/plugins/gx_scream_#_scream_`
 
-        :return: :class:`Lv2Effect`
+        :return: :class:`.Lv2Effect`
         """
         return self.lv2_builder.build(lv2_uri)
 
     def reload_lv2_plugins_data(self):
+        """
+        Search for LV2 audio plugins in the system and extract the metadata
+        needed by pluginsmanager to generate audio plugins.
+        """
         plugins_data = self.lv2_builder.lv2_plugins_data()
         self._dao.save(plugins_data)
