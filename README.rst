@@ -189,10 +189,8 @@ The purpose of the tests is:
 
 .. code-block:: bash
 
-    coverage3 run --source=application setup.py test
-    coverage3 report
-    coverage3 html
-    firefox htmlcov/index.html
+    make test
+    make test-details
 
 Generate documentation
 **********************
@@ -203,12 +201,10 @@ You can generate the documentation in your local machine:
 
 .. code-block:: bash
 
-    pip3 install sphinx
+    make install-docs-requirements
+    make docs
 
-    cd docs
-    make html
-
-    firefox build/html/index.html
+    make docs-see
 
 .. _Sphinx: http://www.sphinx-doc.org/
 .. _Read the Docs: http://readthedocs.org
