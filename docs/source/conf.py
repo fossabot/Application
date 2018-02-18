@@ -22,7 +22,7 @@ import sys
 #sys.path.insert(0, os.path.abspath('.'))
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+on_rtd = True#os.environ.get('READTHEDOCS', None) == 'True'
 
 # -- General configuration ------------------------------------------------
 
@@ -63,7 +63,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'PedalPi - Application'
-copyright = '2016, SrMouraSilva'
+copyright = '2018, SrMouraSilva'
 author = 'SrMouraSilva'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -354,4 +354,6 @@ texinfo_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {
+    'https://docs.python.org/3/': None
+}
