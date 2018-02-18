@@ -1,29 +1,60 @@
+Version 0.4.0 - released 02/18/18
+*********************************
+
+ - `Issue #55`_ - Fix bank uuid/name
+ - `Issue #58`_ - Support v0.6.0: Add connection type (audio or midi) in default bank
+ - `Issue #60`_ - Add makefile
+ - `Issue #46`_ - Add changelog in docs
+
+.. _Issue #55: https://github.com/PedalPi/Application/issues/55
+.. _Issue #58: https://github.com/PedalPi/Application/issues/58
+.. _Issue #60: https://github.com/PedalPi/Application/issues/60
+.. _Issue #46: https://github.com/PedalPi/Application/issues/46
+
 Version 0.3.0 - released 05/30/17
-=================================
- - Issue #29 - Secure components close
- - Issue #30 - Replace print log to logging
- - **Breaking change**: Issues #39 and #5 - Change save method to pluginsmanager (v0.5.0) Autosaver
+*********************************
+
+ - `Issue #29`_ - Secure components close
+ - `Issue #30`_ - Replace print log to logging
+ - **Breaking change**: Issues `#39`_ and `#5`_ - Change save method to pluginsmanager (v0.5.0) Autosaver
+
    - Removed BanksDao -> Using now pluginsmanager Autosaver
    - Removed Database -> Using now pluginsmanager Persistence
    - BanksController, PedalboardController, EffectController, ParamController,
      CurrentController changes your API
- - Issue #41 - Allows current pedalboard is None
- - Issue #40 - If current pedalboard index file is wrong, Application now starts
+
+ - `Issue #41`_ - Allows current pedalboard is None
+ - `Issue #40`_ - If current pedalboard index file is wrong, Application now starts
    with the current pedalboard = None
- - Issue #11 - Banks with same name not will be replaced when Application initialize
- - Issue #17 - Fixes: Remove bank with current pedalboard will be crash (when reload Application)
- - Issue #45 - Add plugins manager v0.5.0 support
+ - `Issue #11`_ - Banks with same name not will be replaced when Application initialize
+ - `Issue #17`_ - Fixes: Remove bank with current pedalboard will be crash (when reload Application)
+ - `Issue #45`_ - Add plugins manager v0.5.0 support
 
    - Removed BanksController, PedalboardController, EffectController, ParamController, NotificationController
    - Implemented :meth:`.Application.register_observer`, :meth:`.Application.unregister_observer`
 
+.. _Issue #29: https://github.com/PedalPi/Application/issues/29
+.. _Issue #30: https://github.com/PedalPi/Application/issues/30
+.. _#39: https://github.com/PedalPi/Application/issues/39
+.. _#5: https://github.com/PedalPi/Application/issues/5
+.. _Issue #41: https://github.com/PedalPi/Application/issues/41
+.. _Issue #40: https://github.com/PedalPi/Application/issues/40
+.. _Issue #11: https://github.com/PedalPi/Application/issues/11
+.. _Issue #17: https://github.com/PedalPi/Application/issues/17
+.. _Issue #45: https://github.com/PedalPi/Application/issues/45
 
 Version 0.2.1 - released 04/14/17
-=================================
- - 21fdb32 Issue #30 - Fix move pedalboard notification
+*********************************
+
+ - `21fdb32`_ Issue `#30`_ - Fix move pedalboard notification
  - Fix Readme: Pipy render README.rst
- - fbb9908 - Add Licenses in __init__.py files
+ - `fbb9908`_ - Add Licenses in __init__.py files
+
+.. _21fdb32: https://github.com/PedalPi/Application/commit/21fdb32
+.. _#30: https://github.com/PedalPi/Application/issues/30
+.. _fbb9908: https://github.com/PedalPi/Application/commit/fbb9908
 
 Version 0.2.0 - released 04/05/17
-=================================
+*********************************
+
  - Initial release
