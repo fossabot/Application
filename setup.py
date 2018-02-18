@@ -24,7 +24,7 @@ def readme():
 
 setup(
     name='PedalPi-Application',
-    version='0.3.0',
+    version='0.4.0',
 
     description='Framework for manager the Pedal Pi',
     long_description=readme(),
@@ -52,7 +52,7 @@ setup(
     package_data={
         'application/data': ['*.json', '*/*.json'],
     },
-    install_requires=['PedalPi-PluginsManager>=0.5.0'],
+    install_requires=['PedalPi-PluginsManager==0.7.0'],
 
     test_suite='test',
     tests_requires=['PedalPi-PluginsManager'],

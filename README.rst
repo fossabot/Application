@@ -173,8 +173,10 @@ For example, you have a **Raspberry Pi B+** and a **PC**.
 Creating a component
 --------------------
 
-Subsequently you will be added in the documentation details on how to create a component for the Pedal Pi.
-It is currently recommended to view the API documentation.
+Subsequently will be added details in the documentation on how to create a component for the Pedal Pi.
+For now, you can check the blog post `Building a Pedal Pi Component - Pedalboard selector`_
+
+.. _Building a Pedal Pi Component - Pedalboard selector: https://pedalpi.github.io/blog/building-a-pedal-pi-component-pedalboard-selector.html
 
 Maintenance
 -----------
@@ -189,10 +191,8 @@ The purpose of the tests is:
 
 .. code-block:: bash
 
-    coverage3 run --source=application setup.py test
-    coverage3 report
-    coverage3 html
-    firefox htmlcov/index.html
+    make test
+    make test-details
 
 Generate documentation
 **********************
@@ -203,12 +203,10 @@ You can generate the documentation in your local machine:
 
 .. code-block:: bash
 
-    pip3 install sphinx
+    make install-docs-requirements
+    make docs
 
-    cd docs
-    make html
-
-    firefox build/html/index.html
+    make docs-see
 
 .. _Sphinx: http://www.sphinx-doc.org/
 .. _Read the Docs: http://readthedocs.org
