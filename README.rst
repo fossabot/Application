@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FPedalPi%2FApplication.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FPedalPi%2FApplication?ref=badge_shield)
+
 Pedal Pi - Application
 ======================
 
@@ -210,3 +212,6 @@ You can generate the documentation in your local machine:
 
 .. _Sphinx: http://www.sphinx-doc.org/
 .. _Read the Docs: http://readthedocs.org
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FPedalPi%2FApplication.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FPedalPi%2FApplication?ref=badge_large)
